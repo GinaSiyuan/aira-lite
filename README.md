@@ -23,7 +23,7 @@ xcrun simctl boot "iPhone Air"   # or any booted device
 ```
 
 Useful `-start` ids: `welcome connect recap profile medical home agent
-testing collect guide1..guide5 analyzing report plan settingsless`.
+testing collect guide1..guide5 analyzing report plan`.
 The floating **DEMO ▶** handle on the right edge auto-plays the whole loop (17 steps).
 
 ## Notes
