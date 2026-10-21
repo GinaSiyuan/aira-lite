@@ -3,6 +3,13 @@
 AI-native stress-management prototype — the **core-loop cut** of the Aira T0 app.
 SwiftUI, built with plain `swiftc` (no Xcode project needed), runs in the iOS Simulator.
 
+## ▶ Try it in the browser
+
+**https://ginasiyuan.github.io/aira-lite/** — an interactive web build of the same
+core loop (`index.html` + `app.js`, no framework). Tap through it like a real user,
+or hit the **DEMO ▶** handle on the right edge to auto-play all 17 steps.
+Best viewed on a phone or in a narrow window; all data is mock.
+
 ## The core loop (all that's included)
 
 Welcome → Connect data (Apple Health, 30-day backfill) → First read
