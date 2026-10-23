@@ -441,12 +441,15 @@ function render(){
     case 'welcome': html=vWelcome(); break;
     case 'connect': html=vConnect(); break;
     case 'syncing': html=vSyncing(); break;
-    case 'recap':   html=vRecap(); break;
+    case 'recap':   html=''; break;   // 首读报告由 #frhost 的 iframe（first-read.html）承载
     case 'profile': html=vProfile(); break;
     case 'medical': html=vMedical(); break;
     case 'main':    html=vMain(); break;
   }
   $screen.innerHTML=html;
+  // 计划 tab / 首读报告由常驻 iframe 原型页承载，状态不随切换重置
+  document.getElementById('planhost').classList.toggle('show', S.phase==='main'&&S.tab===2);
+  document.getElementById('frhost').classList.toggle('show', S.phase==='recap');
   wireScreen();
   renderDemo();
   if(S.phase==='main'&&S.tab===1){
@@ -724,7 +727,7 @@ function vMain(){
   let inner='';
   if(S.tab===0) inner=vHome();
   else if(S.tab===1) inner=vAgent();
-  else inner=vPlan();
+  else inner='';   // 计划页内容在 #planhost 的 iframe 里（plan.html）
   return `<div class="view" style="background:var(--page)">
     ${S.tab===1?'<div class="fogscreen"></div>':''}
     <div style="position:relative;flex:1;display:flex;flex-direction:column;min-height:0">${inner}</div>
@@ -1223,8 +1226,15 @@ function shGuidance(){
         ${cta(i===4?'这管完成':'下一步','data-act="gnext"')}</div></div></div>`;
 }
 
-/* -- Report -- */
+/* -- Report：唾液检测后的 T0 报告（report.html 原型，iframe 承载） -- */
 function shReport(){
+  return `<div class="grab"></div>
+    <button data-act="closesheet" style="position:absolute;top:16px;right:16px;z-index:5;width:32px;height:32px;
+      border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.12);
+      display:flex;align-items:center;justify-content:center">${ic('close',12,2.3,'var(--ink2)')}</button>
+    <iframe id="reportframe" src="report.html" title="唾液报告" style="flex:1;width:100%;border:0"></iframe>`;
+}
+function shReportLegacy(){
   const ch=S.reportChapter;
   let body='';
   if(ch===0){
@@ -1450,9 +1460,13 @@ const DEMO_STEPS=[
   ['联合分析',6.4,()=>{deliverReport();}],
   ['报告',4.4,()=>{S.saliva=4;S.tab=1;render();openSheet('report');}],
   ['计划',4.0,()=>{closeSheetNow();S.tab=2;}],
-  ['接受首条建议',3.0,()=>{const d=deck();if(d.length)d[0].state=1;}],
+  ['浏览计划',3.4,()=>{S.tab=2;render();
+    const f=document.getElementById('planframe');
+    try{ f.contentWindow.scrollTo({top:720,behavior:'smooth'}); }catch(e){} }],
 ];
-const Demo={playing:false,index:0,expanded:false,timer:null};
+/* 桌面端控制台在手机壳外，默认展开；手机端保持收起的右缘把手 */
+const Demo={playing:false,index:0,
+  expanded:window.matchMedia('(min-width:768px) and (min-height:640px)').matches,timer:null};
 function closeSheetNow(){ S.sheet=null; $sheet.classList.remove('open'); $veil.classList.remove('open'); $sheet.innerHTML=''; }
 function demoRun(i){
   Demo.index=i;
@@ -1629,7 +1643,48 @@ function flyOff(card,dir,cb){
   card.style.opacity='0';
   setTimeout(cb,240);
 }
-function wireSheet(){ /* delegated clicks cover sheet; nothing extra */ }
+function wireSheet(){
+  const rf=document.getElementById('reportframe');
+  if(rf){ rf.addEventListener('load',()=>wireMock(rf,()=>closeSheet(()=>{S.tab=2;render();})));
+          wireMock(rf,()=>closeSheet(()=>{S.tab=2;render();})); }
+}
+
+/* 原型 iframe 通用接线：铺满宽度 + 把页内 CTA 接回主流程 */
+function wireMock(iframe,onCta){
+  try{
+    const d=iframe.contentDocument; if(!d||!d.body) return;
+    if(!d.getElementById('host-patch')){
+      const st=d.createElement('style'); st.id='host-patch';
+      st.textContent='#phone{width:100%!important;max-width:100%!important;padding-top:max(26px,env(safe-area-inset-top))!important}';
+      d.head.appendChild(st);
+    }
+    const btn=d.querySelector('button.cta');
+    if(btn&&!btn.dataset.wired){ btn.dataset.wired='1'; btn.addEventListener('click',onCta); }
+  }catch(e){}
+}
+
+/* 计划 iframe：隐藏原型自带的 tab 栏（由主壳接管），底部留出主壳 tab 栏的高度 */
+(function(){
+  const pf=document.getElementById('planframe');
+  const patch=()=>{
+    try{
+      const d=pf.contentDocument; if(!d||!d.head) return;
+      if(d.getElementById('host-patch')) return;
+      const st=d.createElement('style'); st.id='host-patch';
+      st.textContent='.tab-bar{display:none!important}.page{padding-bottom:132px!important}';
+      d.head.appendChild(st);
+    }catch(e){}
+  };
+  pf.addEventListener('load',patch); patch();
+})();
+
+/* 首读报告 iframe：CTA「继续，看看另一半」→ 进入 About you */
+(function(){
+  const fr=document.getElementById('frframe');
+  const go=()=>{ S.phase='profile'; S.profStep=0; render(); };
+  fr.addEventListener('load',()=>wireMock(fr,go));
+  wireMock(fr,go);
+})();
 
 /* boot */
 render();

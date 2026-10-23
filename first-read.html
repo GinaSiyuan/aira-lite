@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aira — 首读报告（30 晚）· 样板</title>
+<style>
+:root{
+  --page:#EDEDEC; --card:#fff; --ink:#101011; --ink2:#6B6B6E; --ink3:#A1A1A5;
+  --hair:#E0E0DE; --hair2:#F3F3F1;
+  --dark:#0B0B0C; --onD2:rgba(255,255,255,.58); --onD3:rgba(255,255,255,.34); --hairD:rgba(255,255,255,.12);
+  --lime:#DCF55A; --coral:#FF8A5B; --amber:#FFB85C; --sky:#7ACBFF; --violet:#B79BFF;
+  --r-card:22px; --r-sm:14px;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro SC","SF Pro Text","PingFang SC","Hiragino Sans GB","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);-webkit-font-smoothing:antialiased;
+     display:flex;justify-content:center}
+#phone{width:393px;background:var(--page);min-height:100vh;padding:54px 20px 46px}
+
+.seclabel{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3);text-transform:uppercase}
+h1{font-weight:650;font-size:28px;line-height:1.32;letter-spacing:.2px;margin:12px 0 10px}
+h1 .hl{box-shadow:inset 0 -11px 0 var(--lime)}
+.lede{font-size:13.5px;line-height:1.75;color:var(--ink2)}
+.meta{font-size:11px;line-height:1.6;color:var(--ink3);margin-top:12px}
+
+.chapter{margin-top:40px}
+.chno{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3)}
+.chtitle{font-size:20px;font-weight:650;letter-spacing:.2px;margin:6px 0 5px}
+.chsub{font-size:12.5px;line-height:1.75;color:var(--ink2);margin-bottom:14px}
+
+/* ---- 设计系统:雾面渐变玻璃卡 ---- */
+.fog{position:relative;border-radius:var(--r-card);color:#fff;overflow:hidden;isolation:isolate;
+     box-shadow:0 10px 20px rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.055)}
+.fog>.bg{position:absolute;inset:0;z-index:-1;background:#151514;overflow:hidden;pointer-events:none}
+.fog>.bg::before{content:"";position:absolute;inset:-40%;filter:blur(46px)}
+.fog>.bg::after{content:"";position:absolute;inset:0;
+     background:radial-gradient(130% 120% at 40% 52%, transparent 40%, rgba(0,0,0,.30) 92%);
+     box-shadow:inset 0 0 34px 10px rgba(0,0,0,.35)}
+.fog.cool>.bg::before{background:
+  radial-gradient(90% 85% at -2% 104%, rgba(94,137,168,.82) 0%, rgba(94,137,168,.28) 42%, transparent 70%),
+  radial-gradient(70% 70% at 50% 116%, rgba(111,95,148,.52) 0%, transparent 65%),
+  radial-gradient(64% 64% at 90% -4%, rgba(58,58,51,.86) 0%, transparent 70%)}
+.fog.flat>.bg::before{background:
+  radial-gradient(88% 86% at 22% 106%, rgba(58,58,51,.95) 0%, transparent 72%),
+  radial-gradient(68% 68% at 0% 114%, rgba(168,191,74,.30) 0%, transparent 62%),
+  radial-gradient(60% 60% at 90% -4%, rgba(58,58,51,.7) 0%, transparent 70%)}
+.fog.warm>.bg::before{background:
+  radial-gradient(90% 85% at -2% 104%, rgba(168,191,74,.92) 0%, rgba(168,191,74,.30) 42%, transparent 70%),
+  radial-gradient(70% 70% at 46% 116%, rgba(168,191,74,.46) 0%, transparent 65%),
+  radial-gradient(66% 66% at 90% -4%, rgba(58,58,51,.9) 0%, transparent 70%)}
+.fog.viol>.bg::before{background:
+  radial-gradient(90% 85% at -2% 104%, rgba(111,95,148,.9) 0%, rgba(111,95,148,.3) 42%, transparent 70%),
+  radial-gradient(70% 70% at 52% 116%, rgba(94,137,168,.42) 0%, transparent 65%),
+  radial-gradient(64% 64% at 90% -4%, rgba(58,58,51,.86) 0%, transparent 70%)}
+.fog.alert>.bg::before{background:
+  radial-gradient(90% 85% at 102% 104%, rgba(168,96,63,.86) 0%, transparent 70%),
+  radial-gradient(70% 70% at 52% 116%, rgba(158,122,58,.48) 0%, transparent 65%),
+  radial-gradient(64% 64% at 10% -4%, rgba(58,58,51,.76) 0%, transparent 70%)}
+.fog.alert{border-color:rgba(255,184,92,.55)}
+.pad{padding:17px}
+
+/* 玻璃亮片(fog 卡内) */
+.glass{background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.07));
+       backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+       border:.8px solid rgba(255,255,255,.10);border-radius:var(--r-sm)}
+
+.cardhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
+.cardhead .t{font-size:13px;font-weight:600}
+.cardhead .s{font-size:10px;color:var(--onD3);text-align:right}
+
+/* ---- 无盒子的数字行:发丝线分隔 ---- */
+.figures{display:flex;margin-top:16px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.fig{flex:1;padding:12px 4px 13px 14px;position:relative}
+.fig + .fig{border-left:1px solid var(--hair)}
+.fig .k{font-size:9.5px;font-weight:700;letter-spacing:1.1px;color:var(--ink3)}
+.fig .v{font-size:21px;font-weight:650;letter-spacing:-.4px;margin-top:4px;font-variant-numeric:tabular-nums}
+.fig .v small{font-size:11px;color:var(--ink3);font-weight:500}
+.fig .u{font-size:10px;color:var(--ink2);margin-top:3px;line-height:1.4}
+
+/* ---- 无盒子的旁注(简笔图标 + 文字) ---- */
+.aside{display:flex;gap:14px;align-items:flex-start;margin-top:18px;padding:0 2px}
+.aside .ic{flex:none;width:26px;padding-top:2px}
+.aside .t{font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.aside .t b{font-weight:650;color:var(--ink)}
+.aside .src{font-size:9.5px;color:var(--ink3);margin-top:5px;line-height:1.5}
+
+/* ---- 留下的问题:排版行,不装盒子 ---- */
+.oq{margin-top:20px;padding-top:14px;border-top:1px solid var(--hair)}
+.oq .ihead{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:1.2px;color:#9a6c1e;margin-bottom:7px}
+.oq .ihead svg{flex:none}
+.oq .t{font-size:12.5px;line-height:1.8;color:var(--ink2)}
+.oq .t b{font-weight:650;color:var(--ink)}
+
+.verd{font-size:16px;font-weight:650;line-height:1.5;letter-spacing:.1px;margin-bottom:8px}
+.fog .verd{color:#fff}
+.body13{font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.fog .body13{color:var(--onD2)}
+.footnote{display:flex;gap:7px;font-size:10px;color:var(--ink3);margin-top:12px;line-height:1.65}
+.fog .footnote{color:var(--onD3)}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:10px;color:var(--onD2)}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2.5px;margin-right:5px;vertical-align:-.5px}
+
+.cta{display:flex;align-items:center;gap:14px;width:100%;background:var(--lime);border-radius:99px;
+     padding:5px 5px 5px 22px;box-shadow:0 8px 24px rgba(220,245,90,.25);margin-top:16px;border:0;cursor:pointer}
+.cta .t{font-size:15.5px;font-weight:600;color:var(--ink);flex:1;text-align:left;font-family:var(--sans)}
+.cta .knob{width:42px;height:42px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;color:var(--lime);font-size:16px}
+svg text{font-family:var(--sans)}
+.ico{stroke:#8A8A88;stroke-width:1.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div id="phone">
+
+  <!-- ============ R1-0 封面 ============ -->
+  <div class="seclabel">首读 · 来自 Apple Health</div>
+  <h1>30 个夜晚,<br><span class="hl">四条线索</span>。</h1>
+  <p class="lede">周一的起床、下午两点的困、躺下后睡不着的那 38 分钟——如果这些你也熟悉,Apple Health 的数据里有它们的一半答案。这份首读把这一半摆出来;另一半,要从身体内侧问。</p>
+  <p class="meta">9月22日 – 10月21日 · 30 晚 · 94 小时运动记录 · 所有基线都来自你自己的历史</p>
+
+  <!-- ============ R1-1 作息节律 ============ -->
+  <div class="chapter">
+    <div class="chno">01 — 作息节律</div>
+    <div class="chtitle">你的一周,有自己的节奏</div>
+    <div class="chsub">工作日,你通常 00:47 入睡、07:21 醒来。到了周末,一切往后漂大约 1 小时 50 分——周一早上,再慢慢挪回来。周一的那种沉,也许你早就熟悉了。</div>
+
+    <div class="fog cool"><div class="bg"></div><div class="pad">
+      <div class="cardhead"><span class="t">30 个夜晚,一个形状</span><span class="s">每行是一晚 · 21:00 → 11:00</span></div>
+      <svg id="raster" width="100%" viewBox="0 0 325 258"></svg>
+      <div class="legend">
+        <span><i style="background:rgba(255,255,255,.62)"></i>工作日夜晚</span>
+        <span><i style="background:#DCF55A"></i>周末夜晚</span>
+        <span><i style="background:none;border-top:1.6px dashed rgba(255,255,255,.5);width:12px;height:0;border-radius:0;vertical-align:2.5px"></i>工作日中位数 00:47</span>
+      </div>
+    </div></div>
+
+    <!-- 登机牌:每周往返的社交时差 -->
+    <div class="fog viol" style="margin-top:16px"><div class="bg"></div><div class="pad" style="padding-bottom:13px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div style="font-size:28px;font-weight:650;letter-spacing:.5px">SHA</div>
+             <div style="font-size:10px;color:var(--onD2);margin-top:2px">工作日的你 · 00:47 入睡</div></div>
+        <div style="text-align:center;padding-top:8px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--onD3)">每周往返</div>
+        </div>
+        <div style="text-align:right"><div style="font-size:28px;font-weight:650;letter-spacing:.5px">DXB</div>
+             <div style="font-size:10px;color:var(--onD2);margin-top:2px">周末的你 · 02:37 入睡</div></div>
+      </div>
+      <svg id="ticket" width="100%" viewBox="0 0 325 86"></svg>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--hairD);padding-top:10px;margin-top:2px">
+        <span style="font-size:10px;color:var(--onD2)">时差 <b style="color:#fff">1 小时 50 分</b>,每周倒一次</span>
+        <span style="font-size:10px;color:var(--onD3)">返程周一清晨 · 最颠簸的一班</span>
+      </div>
+      <div class="footnote" style="margin-top:8px"><span>※</span><span>社交时差 · 近 4 周休息日与工作日睡眠中点之差。周末的你,相当于睡在迪拜时区。</span></div>
+    </div></div>
+  </div>
+
+  <!-- ============ R1-2 睡眠账本 ============ -->
+  <div class="chapter">
+    <div class="chno">02 — 睡眠账本</div>
+    <div class="chtitle">少睡的部分,悄悄攒了起来</div>
+    <div class="chsub">按你的年龄段,大约需要 7 小时 30 分;这个月你平均每晚 6 小时 42 分。单看一晚差得不多——滚着攒下来,现在欠着 7 个多小时。</div>
+
+    <div class="fog flat"><div class="bg"></div><div class="pad">
+      <div class="cardhead"><span class="t">滚动 7 晚睡眠债</span><span class="s">多睡可抵扣 · 不会低于零</span></div>
+      <svg id="debt" width="100%" viewBox="0 0 325 110"></svg>
+    </div></div>
+
+    <div class="aside" style="align-items:center">
+      <svg id="losscal" width="128" viewBox="0 0 128 116" style="flex:none"></svg>
+      <div>
+      <div class="t">一个月下来,是 <b>21 个小时</b>——差不多一整天。像是这个月,只过了 29 天。周末的补觉,还回了大约三分之一。</div>
+      <div class="src">睡眠债 · 近 7 晚(需要 − 实际)之和,多睡的晚上可以抵扣</div>
+    </div></div>
+
+    <div class="oq">
+      <div class="ihead"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M6 0 C6.6 3.4 8.6 5.4 12 6 C8.6 6.6 6.6 8.6 6 12 C5.4 8.6 3.4 6.6 0 6 C3.4 5.4 5.4 3.4 6 0 Z" fill="#C9892F"/></svg>AIRA 洞察 · 01</div>
+      <div class="t"><b>下午两点,如果你也常犯困——可能不只是没睡够。</b>疲劳有两个来源:睡眠欠了债,或者压力激素(皮质醇)到下午还降不下来。两种疲劳的感觉一模一样,手表也分不出来——一管下午的唾液,可以给出答案:是该补觉,还是该减压。</div>
+    </div>
+  </div>
+
+  <!-- ============ R1-3 夜间信号 ============ -->
+  <div class="chapter">
+    <div class="chno">03 — 夜间信号</div>
+    <div class="chtitle">夜里的恢复,这个月偏慢</div>
+    <div class="chsub">睡觉时的放松度,是恢复最诚实的读数。这个月它每周都低一点,连休息日都没弹回来——身体在悄悄透支。</div>
+
+    <div class="fog flat"><div class="bg"></div><div class="pad">
+      <div class="cardhead"><span class="t">夜间放松度(HRV) · 30 晚</span><span class="s">越高越好 · 阴影带 = 你的典型范围</span></div>
+      <svg id="hrv" width="100%" viewBox="0 0 325 120"></svg>
+      <div class="legend">
+        <span><i style="background:#FFB85C"></i>超出典型范围的夜</span>
+        <span><i style="background:none;border:1.3px solid rgba(122,203,255,.9);width:7px;height:7px"></i>疑似生病 · 不计入</span>
+      </div>
+    </div></div>
+
+    <div class="oq">
+      <div class="ihead"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M6 0 C6.6 3.4 8.6 5.4 12 6 C8.6 6.6 6.6 8.6 6 12 C5.4 8.6 3.4 6.6 0 6 C3.4 5.4 5.4 3.4 6 0 Z" fill="#C9892F"/></svg>AIRA 洞察 · 02</div>
+      <div class="t"><b>周三和周四的夜里,你恢复得最差——30 晚里 6 个异常夜,4 个落在这两天。</b>是工作?是情绪?手表只看到结果。睡前的皮质醇水平能告诉我们:那几个晚上,身体到底有没有真正放松下来。</div>
+    </div>
+    <div class="oq">
+      <div class="ihead"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M6 0 C6.6 3.4 8.6 5.4 12 6 C8.6 6.6 6.6 8.6 6 12 C5.4 8.6 3.4 6.6 0 6 C3.4 5.4 5.4 3.4 6 0 Z" fill="#C9892F"/></svg>AIRA 洞察 · 03</div>
+      <div class="t"><b>你入睡,平均要花 38 分钟。</b>可能是生物钟天生偏晚,也可能是躺下时大脑还没关机——前者要调光照和作息,后者要睡前减压,方向完全相反。晚间的褪黑素和睡前的皮质醇放在一起,就能分清你是哪一种。</div>
+    </div>
+  </div>
+
+  <!-- ============ R1-4 白天的紧绷 ============ -->
+  <div class="chapter">
+    <div class="chno">04 — 白天的紧绷</div>
+    <div class="chtitle">有一些时段,心率降不下来</div>
+    <div class="chsub">"紧绷"说的是:人安安静静坐着,心率却降不下来。这 30 天,平均每天有 1 小时 34 分——集中在下午和深夜;偏重的那 9 天,多数是周三、周四。</div>
+
+    <div class="fog flat"><div class="bg"></div><div class="pad">
+      <div class="cardhead"><span class="t">一天的紧绷轮廓</span><span class="s">平均每小时的紧绷分钟 · 30 天</span></div>
+      <svg id="tense" width="100%" viewBox="0 0 325 110"></svg>
+    </div></div>
+
+    </div>
+
+  <!-- ============ R1-5 运动 ============ -->
+  <div class="chapter">
+    <div class="chno">05 — 运动</div>
+    <div class="chtitle">你有自己的运动节奏</div>
+    <div class="chsub">周二、周四的晚上 8 点,每次 42 分钟——已经是个真习惯。离 WHO 的 150 分钟只差一小步:每周多一次 35 分钟的快走,就够到了。</div>
+
+    <!-- 脚印墙:30 天里动了的日子 -->
+    <div class="fog flat" style="margin-top:16px"><div class="bg"></div><div class="pad">
+      <div class="cardhead"><span class="t">30 天里,你动了 21 天</span>
+        <span style="font-size:9px;font-weight:800;letter-spacing:.8px;color:#101011;background:var(--lime);border-radius:99px;padding:4px 10px">节奏很稳</span></div>
+      <div style="display:flex;gap:14px;align-items:flex-end">
+        <svg id="steps" width="208" viewBox="0 0 208 118" style="flex:none"></svg>
+        <div style="flex:1;text-align:right;padding-bottom:6px">
+          <div style="font-size:27px;font-weight:650;letter-spacing:-.5px">7,400</div>
+          <div style="font-size:10px;color:var(--onD2);margin-top:2px">步 · 日均</div>
+          <div style="font-size:10px;color:var(--onD3);margin-top:10px;line-height:1.5">亮起的,是至少<br>动了 20 分钟的日子</div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="aside">
+      <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" class="ico">
+        <circle cx="12" cy="12.5" r="7.5"/>
+        <ellipse cx="12" cy="13.5" rx="3" ry="2.4"/>
+        <circle cx="11" cy="13.5" r="0.4" fill="#6B6B6E"/><circle cx="13" cy="13.5" r="0.4" fill="#6B6B6E"/>
+        <path d="M6.2 7.5 L4.8 4.6 L8.4 5.6"/><path d="M17.8 7.5 L19.2 4.6 L15.6 5.6"/>
+      </svg></div>
+      <div>
+      <div class="t">每天 460 大卡是什么概念?一头怀孕的母猪,躺着不动烧得都比这多。也约等于 1.8 个牛角包——<b>每周多一次 35 分钟的快走,WHO 那道线就够到了。</b></div>
+      <div class="src">主动消耗 · 不含基础代谢</div>
+    </div></div>
+
+    <div class="oq">
+      <div class="ihead"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M6 0 C6.6 3.4 8.6 5.4 12 6 C8.6 6.6 6.6 8.6 6 12 C5.4 8.6 3.4 6.6 0 6 C3.4 5.4 5.4 3.4 6 0 Z" fill="#C9892F"/></svg>AIRA 洞察 · 04</div>
+      <div class="t"><b>手表能算清你每天消耗了多少,却看不到身体修复得够不够快。</b>练下去的量,身体有没有在同步补回来?晨起的 DHEA 与皮质醇的比值,是目前最直接的"修复余力"读数。</div>
+    </div>
+  </div>
+
+  <!-- ============ R1-5 收口 ============ -->
+  <div class="chapter">
+    <div class="chno">06 — 四条洞察的另一半</div>
+    <div class="fog warm" style="margin-top:14px"><div class="bg"></div><div class="pad">
+      <div class="verd" style="font-size:18px">四条洞察,都停在同一个地方</div>
+      <div class="body13" style="margin-bottom:12px">手表看到了现象,也给出了怀疑对象——但确认答案的那一半信号,在身体内侧。</div>
+      <div id="qlist"></div>
+      <button class="cta"><span class="t">继续,看看另一半</span><span class="knob">→</span></button>
+      <div style="text-align:center;font-size:11px;color:var(--onD3);margin-top:10px">一个早晨的唾液,就够了</div>
+    </div></div>
+  </div>
+
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+function el(p, n, a){ const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; }
+
+/* ---------- mock 数据:30 晚(9月22日周一起) ---------- */
+function mulberry(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const rnd = mulberry(7);
+const nights = [];
+for (let i = 0; i < 30; i++){
+  const dow = i % 7;
+  const wknd = dow === 4 || dow === 5;
+  let bed = 3.78 + (rnd() - .5) * 0.9;
+  let dur = 6.6  + (rnd() - .5) * 1.1;
+  if (wknd){ bed += 1.6 + rnd() * .6; dur += 0.9 + rnd() * .6; }
+  if (dow === 2 || dow === 3){ dur -= 0.55; }
+  const amber = (i===9||i===10||i===16||i===17||i===23||i===27);
+  const ill = i === 17;
+  nights.push({ bed, dur, wknd, amber, ill, frag: (dow===2 && i>14) });
+}
+
+/* ---------- R1-1 睡眠带状图 ---------- */
+(function(){
+  const s = document.getElementById("raster");
+  const X0 = 30, W = 288, H = 258, rowH = 7.6, span = 14;
+  const x = h => X0 + (h / span) * W;
+  [0,3,6,9,12].forEach((h,i) => {
+    el(s,"line",{x1:x(h),y1:14,x2:x(h),y2:H-16,stroke:"rgba(255,255,255,.09)","stroke-width":1});
+    el(s,"text",{x:x(h),y:H-4,"text-anchor":"middle","font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=["21:00","00:00","03:00","06:00","09:00"][i];
+  });
+  nights.forEach((n,i) => {
+    const y = 16 + i * rowH;
+    const bx = x(n.bed), bw = x(n.bed + n.dur) - bx;
+    const c = n.wknd ? "#DCF55A" : "rgba(255,255,255,.62)";
+    if (n.frag){
+      [[0,.34],[.42,.3],[.78,.22]].forEach(([o,f]) =>
+        el(s,"rect",{x:bx+bw*o,y:y,width:bw*f,height:4.6,rx:2.3,fill:c}));
+    } else {
+      el(s,"rect",{x:bx,y:y,width:bw,height:4.6,rx:2.3,fill:c});
+    }
+    if (i % 7 === 0) el(s,"text",{x:2,y:y+4.5,"font-size":8,fill:"rgba(255,255,255,.34)"}).textContent = "W" + (1 + i/7);
+  });
+  const mx = x(3.78);
+  el(s,"line",{x1:mx,y1:12,x2:mx,y2:H-18,stroke:"rgba(255,255,255,.55)","stroke-width":1.4,"stroke-dasharray":"3 4"});
+  el(s,"text",{x:mx+4,y:20,"font-size":8.5,"font-weight":700,fill:"rgba(255,255,255,.75)"}).textContent="00:47";
+})();
+
+/* ---------- R1-2 滚动睡眠债 ---------- */
+(function(){
+  const d = document.getElementById("debt");
+  const X0 = 24, W = 295, dh = 110, dmax = 10, need = 7.5;
+  const dy = v => dh - 20 - (v / dmax) * (dh - 36);
+  let debt = [], run = 0;
+  nights.forEach((n,i) => {
+    run = Math.max(0, run + (need - n.dur));
+    if (i >= 7) run = Math.max(0, run - Math.max(0, need - nights[i-7].dur));
+    debt.push(Math.min(run, 9.6));
+  });
+  debt[14]=9.1; debt[15]=9.3;
+  const pts = debt.map((v,i)=>`${X0 + i*(W/29)},${dy(v)}`).join(" ");
+  el(d,"polygon",{points:`${X0},${dy(0)} ${pts} ${X0+W},${dy(0)}`,fill:"rgba(255,184,92,.18)"});
+  el(d,"polyline",{points:pts,fill:"none",stroke:"#FFB85C","stroke-width":2,"stroke-linejoin":"round"});
+  [0,5,10].forEach(v=>{ el(d,"text",{x:2,y:dy(v)+3,"font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=v+"h"; });
+  ["9月22日","10月21日"].forEach((t,i)=>{ el(d,"text",{x:i?X0+W:X0,y:dh-4,"text-anchor":i?"end":"start","font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=t; });
+  el(d,"circle",{cx:X0+W,cy:dy(debt[29]),r:3.4,fill:"#FFB85C",stroke:"#151514","stroke-width":2});
+  el(d,"text",{x:X0+W-6,y:dy(debt[29])-8,"text-anchor":"end","font-size":9,"font-weight":700,fill:"#FFD9A0"}).textContent="现在 7:12";
+  el(d,"text",{x:X0+W*15/29,y:dy(9.3)-5,"text-anchor":"middle","font-size":8.5,fill:"#FFD9A0"}).textContent="最紧的一周 9h+";
+})();
+
+/* ---------- R1-2b 简笔日历:少了的一天 ---------- */
+(function(){
+  const s = document.getElementById("losscal");
+  const cw=15, gap=3, cols=6;
+  /* 日历顶部:装订线 */
+  el(s,"line",{x1:2,y1:5,x2:106,y2:5,stroke:"#C9C9C5","stroke-width":1.4,"stroke-linecap":"round"});
+  [20,54,88].forEach(x=>el(s,"line",{x1:x,y1:1,x2:x,y2:9,stroke:"#C9C9C5","stroke-width":1.4,"stroke-linecap":"round"}));
+  for(let i=0;i<30;i++){
+    const col=i%cols, row=Math.floor(i/cols);
+    const a={x:2+col*(cw+gap), y:14+row*(cw+gap), width:cw, height:cw, rx:4};
+    if(i===29){
+      el(s,"rect",{...a,fill:"none",stroke:"#D69634","stroke-width":1.3,"stroke-dasharray":"2.5 2.5"});
+      el(s,"line",{x1:a.x+4,y1:a.y+cw/2,x2:a.x+cw-4,y2:a.y+cw/2,stroke:"#D69634","stroke-width":1.3,"stroke-linecap":"round"});
+    } else {
+      el(s,"rect",{...a,fill:"none",stroke:"#C9C9C5","stroke-width":1.1});
+    }
+  }
+  el(s,"text",{x:2+5*(cw+gap)+cw/2,y:14+4*(cw+gap)+cw+11,"text-anchor":"end","font-size":8.5,"font-weight":700,fill:"#B07416"})
+    .textContent="↑ 被欠走的一天";
+})();
+
+/* ---------- R1-3 夜间放松度 ---------- */
+(function(){
+  const X0 = 26, W = 293, H = 120;
+  const hrv = [];
+  for (let i = 0; i < 30; i++) hrv.push(49.5 - i * .30 + (rnd()-.5)*3.4);
+  nights.forEach((n,i)=>{ if(n.amber) hrv[i]-=4.5; });
+  const sv = document.getElementById("hrv");
+  const y = v => H - 16 - ((v - 34) / 20) * (H - 30);
+  const base = i => 47.3 - i * .30;
+  const band = () => nights.map((_,i)=>`${X0+i*(W/29)},${y(base(i)+4)}`).join(" ") + " " +
+        nights.map((_,i)=>`${X0+(29-i)*(W/29)},${y(base(29-i)-4)}`).join(" ");
+  el(sv,"polygon",{points:band(),fill:"rgba(122,203,255,.13)"});
+  el(sv,"polyline",{points:hrv.map((v,i)=>`${X0+i*(W/29)},${y(v)}`).join(" "),fill:"none",stroke:"#7ACBFF","stroke-width":2,"stroke-linejoin":"round"});
+  nights.forEach((n,i)=>{
+    if(n.ill) el(sv,"circle",{cx:X0+i*(W/29),cy:y(hrv[i]),r:3.6,fill:"none",stroke:"rgba(122,203,255,.9)","stroke-width":1.4});
+    else if(n.amber) el(sv,"circle",{cx:X0+i*(W/29),cy:y(hrv[i]),r:3.2,fill:"#FFB85C",stroke:"#151514","stroke-width":1.6});
+  });
+  el(sv,"text",{x:X0+2,y:y(hrv[0])-8,"font-size":9,fill:"rgba(255,255,255,.58)"}).textContent="49";
+  el(sv,"text",{x:X0+W,y:y(hrv[29])-8,"text-anchor":"end","font-size":9,"font-weight":700,fill:"#7ACBFF"}).textContent="40";
+  ["9月22日","10月21日"].forEach((t,i)=>{ el(sv,"text",{x:i?X0+W:X0,y:H-4,"text-anchor":i?"end":"start","font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=t; });
+})();
+
+/* ---------- R1-1b 登机牌:地图印记 + 航线 + 飞机动效 ---------- */
+(function(){
+  const s = document.getElementById("ticket");
+  function mulb(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  /* 两块点阵地图印记:左下(上海一带)、右上(迪拜一带) */
+  function landmass(cx,cy,rx,ry,seed,n){
+    const rr = mulb(seed);
+    for(let i=0;i<n;i++){
+      const a = rr()*Math.PI*2, d = Math.sqrt(rr());
+      const x = cx + Math.cos(a)*rx*d, y = cy + Math.sin(a)*ry*d;
+      el(s,"circle",{cx:x,cy:y,r:.9+rr()*.7,fill:`rgba(255,255,255,${(.05+rr()*.09).toFixed(3)})`});
+    }
+  }
+  landmass(40,66,52,20,11,90);
+  landmass(282,38,50,18,23,90);
+  /* 城市点 */
+  el(s,"circle",{cx:22,cy:70,r:3,fill:"#fff"});
+  el(s,"circle",{cx:22,cy:70,r:6.5,fill:"none",stroke:"rgba(255,255,255,.35)","stroke-width":1});
+  el(s,"circle",{cx:303,cy:32,r:3,fill:"#DCF55A"});
+  el(s,"circle",{cx:303,cy:32,r:6.5,fill:"none",stroke:"rgba(220,245,90,.45)","stroke-width":1});
+  el(s,"text",{x:32,y:81,"font-size":8.5,fill:"rgba(255,255,255,.45)"}).textContent="上海";
+  el(s,"text",{x:294,y:20,"text-anchor":"end","font-size":8.5,fill:"rgba(255,255,255,.45)"}).textContent="迪拜";
+  /* 航线 */
+  const arc = "M22 70 Q 162 6 303 32";
+  el(s,"path",{d:arc,fill:"none",stroke:"rgba(255,255,255,.2)","stroke-width":1.3,"stroke-dasharray":"1 5","stroke-linecap":"round"});
+  const flown = el(s,"path",{d:arc,fill:"none",stroke:"#DCF55A","stroke-width":2,"stroke-linecap":"round",opacity:.85});
+  const L = flown.getTotalLength();
+  const plane = el(s,"g",{});
+  el(plane,"path",{d:"M9.5 0 L-4.5 -1.5 L-8 -5.8 L-10.2 -5.2 L-7.8 -1 L-11.5 -.4 L-11.5 .4 L-7.8 1 L-10.2 5.2 L-8 5.8 L-4.5 1.5 Z",fill:"#DCF55A"});
+  /* 动效:出发(慢) → 停留 → 返程(快、变暗) → 循环 */
+  const phases = [
+    {dur:3600, from:0, to:1,  hold:0,    back:false},  // 周五出发
+    {dur:900,  from:1, to:1,  hold:900,  back:false},  // 周末停留
+    {dur:1600, from:1, to:0,  hold:0,    back:true },  // 周一返程
+    {dur:700,  from:0, to:0,  hold:700,  back:true },
+  ];
+  let pi=0, t0=performance.now();
+  const ease = u => u<.5 ? 2*u*u : 1-Math.pow(-2*u+2,2)/2;
+  function frame(now){
+    const ph = phases[pi];
+    let u = Math.min(1,(now-t0)/ph.dur);
+    if(u>=1){ pi=(pi+1)%phases.length; t0=now; }
+    const prog = ph.from + (ph.to-ph.from)*ease(u);
+    const len = Math.max(.001, L*prog);
+    flown.setAttribute("stroke-dasharray", ph.back ? `${len} ${L}` : `${len} ${L}`);
+    flown.setAttribute("opacity", ph.back ? .3 : .85);
+    const p = flown.getPointAtLength(len), p2 = flown.getPointAtLength(Math.min(L,len+2));
+    let ang = Math.atan2(p2.y-p.y,p2.x-p.x)*180/Math.PI;
+    if(ph.back) ang += 180;
+    plane.setAttribute("transform",`translate(${p.x},${p.y}) rotate(${ang})`);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- R1-4 紧绷轮廓 ---------- */
+(function(){
+  const s = document.getElementById("tense");
+  const X0=24, W=295, H=110;
+  /* 6:00–24:00,每小时的平均紧绷分钟 */
+  const mins = [2,3,4,6,5,4,3,8,16,20,18,12,7,5,9,18,22,14];
+  const max=26, bw=W/18-2.6;
+  const y=v=>H-24-(v/max)*(H-40);
+  [10,20].forEach(v=>{
+    el(s,"line",{x1:X0,y1:y(v),x2:X0+W,y2:y(v),stroke:"rgba(255,255,255,.08)","stroke-width":1});
+    el(s,"text",{x:2,y:y(v)+3,"font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=v+"m";
+  });
+  mins.forEach((v,i)=>{
+    const hot = (i>=8&&i<=11)||(i>=15&&i<=17);
+    el(s,"rect",{x:X0+i*(W/18),y:y(v),width:bw,height:(H-24)-y(v),rx:2.4,
+       fill: hot ? "#FFB85C" : "rgba(255,255,255,.3)"});
+  });
+  [["6:00",0],["10:00",4],["14:00",8],["18:00",12],["22:00",16]].forEach(([t,i])=>{
+    el(s,"text",{x:X0+i*(W/18),y:H-10,"font-size":8.5,fill:"rgba(255,255,255,.4)"}).textContent=t;
+  });
+  el(s,"text",{x:X0+9.5*(W/18),y:y(22)-6,"text-anchor":"middle","font-size":8.8,"font-weight":700,fill:"#FFD9A0"}).textContent="下午 14–17";
+  el(s,"text",{x:X0+16*(W/18),y:y(24)-6,"text-anchor":"middle","font-size":8.8,"font-weight":700,fill:"#FFD9A0"}).textContent="晚 21 点后";
+})();
+
+/* ---------- R1-4b 脚印墙 ---------- */
+(function(){
+  const s = document.getElementById("steps");
+  /* 训练日(周二/四/六) + 散步日点亮,共 21 天 */
+  const lit = new Set();
+  nights.forEach((n,i)=>{ const d=i%7; if(d===1||d===3||d===5) lit.add(i); });
+  [0,6,7,13,16,20,24,27,29].forEach(i=>lit.add(i));
+  const cw=34, ch=23;
+  for(let i=0;i<30;i++){
+    const col=i%6, row=Math.floor(i/6);
+    const on = lit.has(i), mirror = (i%2===1);
+    const g = el(s,"g",{transform:`translate(${17+col*cw},${12+row*ch}) rotate(${mirror?10:-10}) ${mirror?"scale(-1,1)":""}`});
+    const fill = on ? "#DCF55A" : "rgba(255,255,255,.13)";
+    el(g,"ellipse",{cx:0,cy:-2.5,rx:3.6,ry:5.4,fill});           /* 前掌 */
+    el(g,"circle",{cx:1.1,cy:5.8,r:2.3,fill});                   /* 脚跟 */
+  }
+})();
+
+/* ---------- R1-5 收口清单 ---------- */
+(function(){
+  const qs = [
+    ["01","下午的困——欠觉,还是化学?","下午皮质醇"],
+    ["02","周三的夜晚,发生了什么?","睡前皮质醇"],
+    ["03","生物钟偏晚,还是没能安静下来?","褪黑素起始"],
+    ["04","修复,跟上消耗了吗?","DHEA / 皮质醇"],
+  ];
+  const w = document.getElementById("qlist");
+  qs.forEach(([n,t,m])=>{
+    const r = document.createElement("div");
+    r.style.cssText="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid rgba(255,255,255,.12)";
+    r.innerHTML = `<span style="font-size:10px;font-weight:800;color:rgba(255,255,255,.4)">${n}</span>
+      <span style="flex:1;font-size:13px;color:#fff">${t}</span>
+      <span style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:rgba(255,255,255,.55)">${m}</span>`;
+    w.appendChild(r);
+  });
+})();
+</script>
+</body>
+</html>
