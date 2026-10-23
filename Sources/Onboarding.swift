@@ -383,7 +383,7 @@ struct ConnectView: View {
 
     static var onbTotal: Int {
         #if LITE
-        return 3          // Connect → About you（含训练页）→ 既往史
+        return 2          // Connect → About you（含训练页），健康背景页已下线
         #else
         return 4
         #endif
@@ -470,7 +470,13 @@ struct ProfileView: View {
     }
 
     private var lastStep: Int { 1 }   // 两版一致：基础页 + 训练页
-    private func finish() { app.phase = .medical }
+    private func finish() {
+        #if LITE
+        app.phase = .main     // Lite：训练页是最后一步，健康背景页已下线
+        #else
+        app.phase = .medical
+        #endif
+    }
 
     var body: some View {
         OnbShell(step: 1, total: ConnectView.onbTotal,

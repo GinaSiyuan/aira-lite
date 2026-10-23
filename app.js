@@ -443,7 +443,6 @@ function render(){
     case 'syncing': html=vSyncing(); break;
     case 'recap':   html=''; break;   // 首读报告由 #frhost 的 iframe（first-read.html）承载
     case 'profile': html=vProfile(); break;
-    case 'medical': html=vMedical(); break;
     case 'main':    html=vMain(); break;
   }
   $screen.innerHTML=html;
@@ -533,7 +532,7 @@ function vConnect(){
     ['breath','呼吸频率','疾病的旁证']];
   const wearables=[['appicon_oura','Oura Ring'],['appicon_whoop','WHOOP'],['appicon_garmin','Garmin']];
   return `<div class="view" style="background:var(--page)"><div class="onb">
-    ${onbTop(0,3,'data-act="phase" data-v="welcome"')}
+    ${onbTop(0,2,'data-act="phase" data-v="welcome"')}
     <h2>连接你的数据</h2>
     <div class="sub">只读权限。Aira 会导入最近 30 天数据，让你的第一份解读一开始就有基线可对比。</div>
     <div class="body">
@@ -676,10 +675,10 @@ function vProfile(){
     </div>`;
   }
   return `<div class="view" style="background:var(--page)"><div class="onb">
-    ${onbTop(1,3, step===0?'data-act="phase" data-v="recap"':'data-act="profstep" data-v="0"')}
+    ${onbTop(1,2, step===0?'data-act="phase" data-v="recap"':'data-act="profstep" data-v="0"')}
     <h2>${title}</h2><div class="sub">${sub}</div>
     <div class="body">${body}</div>
-    <div class="foot">${cta(step===0?'继续':'没问题', step===0?'data-act="profstep" data-v="1"':'data-act="phase" data-v="medical"')}</div>
+    <div class="foot">${cta(step===0?'继续':'没问题', step===0?'data-act="profstep" data-v="1"':'data-act="finishonb"')}</div>
   </div></div>`;
 }
 
@@ -1450,7 +1449,6 @@ const DEMO_STEPS=[
   ['第一份解读',4.2,()=>{S.phase='recap';}],
   ['关于你',2.6,()=>{S.phase='profile';S.profStep=0;S.nickname='Chloe';}],
   ['训练习惯',2.4,()=>{S.phase='profile';S.profStep=1;}],
-  ['健康背景',2.6,()=>{S.phase='medical';S.meds.add(BIOTIN);}],
   ['首页 · 每日循环',3.6,()=>{S.phase='main';S.tab=0;closeSheetNow();}],
   ['Aira 发起对话',3.6,()=>{S.phase='main';S.tab=1;}],
   ['为什么是唾液',3.2,()=>{S.phase='main';S.tab=1;if(!S.sent.includes('为什么是唾液？'))S.sent.push('为什么是唾液？');}],
@@ -1491,7 +1489,7 @@ function renderDemo(){
   el.className=Demo.expanded?'expanded':'';
   el.innerHTML=`${Demo.expanded?`<div class="panel">
       <div class="head"><button class="pp" data-demo="toggle">${Demo.playing?pauseGlyph():playGlyph('var(--ink)')}</button>
-        <span>${Demo.playing?DEMO_STEPS[Math.min(Demo.index,16)][0]:'播放完整流程'}</span></div>
+        <span>${Demo.playing?DEMO_STEPS[Math.min(Demo.index,DEMO_STEPS.length-1)][0]:'播放完整流程'}</span></div>
       <div class="steps">${DEMO_STEPS.map((s,i)=>`<button class="${i===Demo.index?'cur':''}" data-demo="jump" data-v="${i}">
         <span class="d"></span>${i+1}. ${s[0]}</button>`).join('')}</div></div>`:''}
     <button class="handle" data-demo="expand">

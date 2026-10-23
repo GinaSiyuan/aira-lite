@@ -45,9 +45,6 @@ final class Demo: ObservableObject {
         .init(title: "训练习惯", seconds: 2.4) { a in
             a.profStep = 1
         },
-        .init(title: "健康背景", seconds: 2.6) { a in
-            a.phase = .medical; a.meds = ["生物素（维生素 B7）"]
-        },
         .init(title: "首页 · 每日循环", seconds: 3.6) { a in
             a.phase = .main; a.tab = 0; a.sheet = nil
         },
