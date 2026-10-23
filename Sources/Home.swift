@@ -63,9 +63,9 @@ struct TodayPreviewCard: View {
     private var day: Mock.Day { Mock.days[app.dayIndex] }
     private var band: (String, Color) {
         switch day.recovery {
-        case ..<45: ("Well recovered", T.lime)
-        case ..<58: ("Mild buildup", .white)
-        default:    ("Load is high", T.coral)
+        case ..<45: ("恢复良好", T.lime)
+        case ..<58: ("轻度积累", .white)
+        default:    ("负荷偏高", T.coral)
         }
     }
 
@@ -75,8 +75,8 @@ struct TodayPreviewCard: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Tue, Oct 14").font(.system(size: 12.5)).foregroundStyle(T.ink3)
-                        Text("Good morning, \(app.nickname.isEmpty ? "Chloe" : app.nickname)").font(.system(size: 21, weight: .semibold)).tracking(-0.6)
+                        Text("10月14日 周二").font(.system(size: 12.5)).foregroundStyle(T.ink3)
+                        Text("早上好，\(app.nickname.isEmpty ? "Chloe" : app.nickname)").font(.system(size: 21, weight: .semibold)).tracking(-0.6)
                             .foregroundStyle(T.ink)
                     }
                     Spacer(minLength: 12)
@@ -99,17 +99,17 @@ struct TodayPreviewCard: View {
                                 HStack(spacing: 10) {
                                     IBadge(icon: .recover)
                                     VStack(alignment: .leading, spacing: 1) {
-                                        Text("Recovery load").font(.system(size: 16, weight: .medium))
-                                        Text("Recent · 7-day window").font(.system(size: 10)).foregroundStyle(T.onD3)
+                                        Text("恢复负荷").font(.system(size: 16, weight: .medium))
+                                        Text("近期 · 7 天窗口").font(.system(size: 10)).foregroundStyle(T.onD3)
                                     }
                                 }
                                 Spacer()
                                 VStack(alignment: .trailing, spacing: 1) {
                                     HStack(alignment: .firstTextBaseline, spacing: 3) {
                                         Text("47").font(.system(size: 19, weight: .semibold)).monospacedDigit()
-                                        Text("/ baseline").font(.system(size: 11)).foregroundStyle(T.onD2)
+                                        Text("/ 基线").font(.system(size: 11)).foregroundStyle(T.onD2)
                                     }
-                                    Text("prev 28 days").font(.system(size: 10)).foregroundStyle(T.onD3)
+                                    Text("前 28 天").font(.system(size: 10)).foregroundStyle(T.onD3)
                                 }
                             }
 
@@ -134,9 +134,9 @@ struct TodayPreviewCard: View {
 
                             // 近 7 天均值（不是单日）：主卡讲"近期"，单日往下看
                             HStack(alignment: .top, spacing: 8) {
-                                heroStat(Mock.avgSleepText(7), "", "Sleep · 7-day avg")
-                                heroStat("\(Int(Mock.avg(7) { Double($0.hrv) }.rounded()))", "ms", "HRV · 7-day avg")
-                                heroStat("\(Int(Mock.avg(7) { Double($0.rhr) }.rounded()))", "bpm", "RHR · 7-day avg")
+                                heroStat(Mock.avgSleepText(7), "", "睡眠 · 7天均值")
+                                heroStat("\(Int(Mock.avg(7) { Double($0.hrv) }.rounded()))", "ms", "HRV · 7天均值")
+                                heroStat("\(Int(Mock.avg(7) { Double($0.rhr) }.rounded()))", "bpm", "静息心率 · 7天均值")
                             }
                             .padding(.top, 20)
                         }
@@ -176,17 +176,17 @@ struct TodayPreviewCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         VStack(alignment: .leading, spacing: 1) {
-                            Text("How you've felt").font(.system(size: 13.5, weight: .semibold))
+                            Text("你的感受").font(.system(size: 13.5, weight: .semibold))
                                 .foregroundStyle(T.ink)
-                            Text(app.loggedToday ? "Logged \(faceNames[app.feelBand]) today"
-                                                 : "No check-in yet today")
+                            Text(app.loggedToday ? "今天已记录 ·「\(faceNames[app.feelBand])」"
+                                                 : "今天还没打卡")
                                 .font(.system(size: 10.5)).foregroundStyle(T.ink3)
                         }
                         Spacer()
                         Button { Haptic.tap(); app.sheet = .checkIn } label: {
                             HStack(spacing: 6) {
                                 Icon(app.loggedToday ? .refresh : .plus, size: 12, weight: 2.2, color: .white)
-                                Text(app.loggedToday ? "Edit" : "Check in")
+                                Text(app.loggedToday ? "修改" : "打卡")
                                     .font(.system(size: 12, weight: .semibold)).foregroundStyle(.white)
                             }
                             .padding(.horizontal, 12).padding(.vertical, 8)
@@ -355,10 +355,10 @@ struct SleepScrubber: View {
 
                 // 读数：说清楚是什么
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(d.sleep == "—" ? "No data this day" : "Sleep \(d.sleep)")
+                    Text(d.sleep == "—" ? "该日无数据" : "睡眠 \(d.sleep)")
                         .font(.system(size: 14, weight: .semibold)).tracking(-0.2).foregroundStyle(T.ink)
                     Text(d.sleep == "—" ? "\(d.weekday) \(d.date)"
-                         : "\(d.weekday) \(d.date) · Asleep \(d.onset) · Woke \(d.wakeups) ×")
+                         : "\(d.weekday) \(d.date) · 入睡 \(d.onset) · 醒 \(d.wakeups) 次")
                         .font(.system(size: 10.5)).foregroundStyle(T.ink3)
                 }
                 .frame(width: w - pl, alignment: .leading)
@@ -479,10 +479,10 @@ struct MissingDayCard: View {
     var body: some View {
         FogCard(tone: .flat) {
             VStack(alignment: .leading, spacing: 13) {
-                CardHead(icon: .info, title: "No data this day",
-                         sub: "\(day.date) · \(day.weekday)", chip: "Excluded", chipTone: .off)
-                Text("The watch wasn't worn, or didn't sync.").font(.system(size: 14))
-                Text("Excluded from the 7-day average — so the \"7-day mean\" is based on 6 days.")
+                CardHead(icon: .info, title: "该日无数据",
+                         sub: "\(day.date) · \(day.weekday)", chip: "已剔除", chipTone: .off)
+                Text("没戴手表，或没有同步。").font(.system(size: 14))
+                Text("已从 7 天均值中剔除 —— 所以「7 天均值」实际基于 6 天。")
                     .font(.system(size: 12.5)).foregroundStyle(T.onD2).lineSpacing(3.5)
             }
         }
@@ -501,7 +501,7 @@ struct SalivaStatusCard: View {
                         IBadge(icon: .drop)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(title).font(.system(size: 13, weight: .semibold))
-                            Text("First saliva test").font(.system(size: 10.5)).foregroundStyle(T.onD3)
+                            Text("第一次唾液检测").font(.system(size: 10.5)).foregroundStyle(T.onD3)
                         }
                         Spacer(minLength: 6)
                         if app.saliva == .collecting {
@@ -522,20 +522,20 @@ struct SalivaStatusCard: View {
     }
     private var title: String {
         switch app.saliva {
-        case .notScheduled: "Saliva · not scheduled"
-        case .scheduled:    "Saliva · starts tomorrow"
-        case .collecting:   "Saliva · in progress"
-        case .shipped:      "Shipped · at the lab"
-        case .reportReady:  "Saliva report ready"
+        case .notScheduled: "唾液检测 · 未安排"
+        case .scheduled:    "唾液检测 · 明早开始"
+        case .collecting:   "唾液检测 · 采集中"
+        case .shipped:      "已寄出 · 实验室处理中"
+        case .reportReady:  "唾液报告已出"
         }
     }
     private var sub: String {
         switch app.saliva {
-        case .notScheduled: "We still can't say why recovery load is up. Salivary cortisol separates an HPA-axis problem from plain sleep debt."
-        case .scheduled:    "First tube within 30 min of waking. Stop biotin supplements starting tonight."
-        case .collecting:   "Next tube \(app.points.first(where: { !$0.done })?.when ?? "") · \(app.points.first(where: { !$0.done })?.name ?? "")"
-        case .shipped:      "Results usually take 5–7 business days, then we read them against these weeks of sleep."
-        case .reportReady:  "HPA axis: Strained. Can't get going in the morning, can't switch off at night."
+        case .notScheduled: "我们仍说不清恢复负荷为什么升高。唾液皮质醇能区分：是 HPA 轴的问题，还是单纯欠睡。"
+        case .scheduled:    "醒后 30 分钟内取第一管。今晚开始停用生物素补剂。"
+        case .collecting:   "下一管 \(app.points.first(where: { !$0.done })?.when ?? "") · \(app.points.first(where: { !$0.done })?.name ?? "")"
+        case .shipped:      "结果通常需要 5–7 个工作日，之后 Aira 会把它和这几周的睡眠放在一起解读。"
+        case .reportReady:  "HPA 轴：透支。早上启动不了，晚上关不掉。"
         }
     }
 }
@@ -549,9 +549,9 @@ struct RecoveryCard: View {
     private var level: Double { Double(day.recovery) / 100 }
     private var band: (String, ChipTone) {
         switch day.recovery {
-        case ..<45:  ("Well recovered", .good)
-        case ..<58:  ("Mild buildup", .off)
-        default:     ("Load is high", .warn)
+        case ..<45:  ("恢复良好", .good)
+        case ..<58:  ("轻度积累", .off)
+        default:     ("负荷偏高", .warn)
         }
     }
 
@@ -561,8 +561,8 @@ struct RecoveryCard: View {
                 HStack(alignment: .center, spacing: 9) {
                     IBadge(icon: .recover)
                     VStack(alignment: .leading, spacing: 1) {
-                        Text("Recovery load").font(.system(size: 13, weight: .semibold))
-                        Text("\(app.range.title) window · vs \(app.range.baselineLabel)")
+                        Text("恢复负荷").font(.system(size: 13, weight: .semibold))
+                        Text("\(app.range.title)窗口 · 对比\(app.range.baselineLabel)")
                             .font(.system(size: 10.5)).foregroundStyle(T.onD3)
                     }
                     Spacer(minLength: 24)
@@ -572,13 +572,13 @@ struct RecoveryCard: View {
                 HStack(alignment: .lastTextBaseline, spacing: 10) {
                     Text("\(day.recovery)").numeral(46)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("out of 100").font(.system(size: 11)).foregroundStyle(T.onD3)
+                        Text("满分 100").font(.system(size: 11)).foregroundStyle(T.onD3)
                         Text(band.0).font(.system(size: 12.5, weight: .semibold))
                             .foregroundStyle(day.recovery >= 58 ? T.coral : T.lime)
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("vs baseline").font(.system(size: 10.5)).foregroundStyle(T.onD3)
+                        Text("对比基线").font(.system(size: 10.5)).foregroundStyle(T.onD3)
                         Text("+\(day.recoveryDelta)").font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(T.coral).monospacedDigit()
                     }
@@ -589,17 +589,17 @@ struct RecoveryCard: View {
                 StressTide(level: level, height: 86)
                     .padding(.top, 10)
                     .overlay(alignment: .bottomLeading) {
-                        Text("baseline 47").font(.system(size: 9.5)).foregroundStyle(T.onD3)
+                        Text("基线 47").font(.system(size: 9.5)).foregroundStyle(T.onD3)
                     }
 
                 // 三个归因指标：给偏离位置，不给"↑↓"
                 VStack(spacing: 0) {
                     Rectangle().fill(T.hairD).frame(height: 1).padding(.top, 12)
-                    DevRow(name: "Sleep", value: day.sleep,
+                    DevRow(name: "睡眠", value: day.sleep,
                            pos: norm(Mock.hm(day.sleep), lo: 5.5, hi: 8.0), bandLo: 0.58, bandHi: 0.95)
-                    DevRow(name: "Heart rate variability", value: "\(day.hrv) ms",
+                    DevRow(name: "心率变异性", value: "\(day.hrv) ms",
                            pos: norm(Double(day.hrv), lo: 34, hi: 56), bandLo: 0.45, bandHi: 0.9)
-                    DevRow(name: "Resting heart rate", value: "\(day.rhr) bpm",
+                    DevRow(name: "静息心率", value: "\(day.rhr) bpm",
                            pos: norm(Double(day.rhr), lo: 54, hi: 66), bandLo: 0.08, bandHi: 0.58)
                 }
             }
@@ -660,24 +660,24 @@ struct NightCard: View {
     var body: some View {
         FogCard {
             VStack(alignment: .leading, spacing: 0) {
-                CardHead(icon: .moon, title: "Last night", sub: "\(day.date) · Apple Watch",
-                         chip: day.wakeups >= 3 ? "Fragmented" : "Continuous",
+                CardHead(icon: .moon, title: "昨夜", sub: "\(day.date) · Apple Watch",
+                         chip: day.wakeups >= 3 ? "碎片化" : "连续",
                          chipTone: day.wakeups >= 3 ? .warn : .good,
                          trailing: onOpen.map { f in AnyView(OpenBtn(action: f)) })
                 HStack(alignment: .firstTextBaseline) {
                     Text(day.sleep).numeral(36)
                     Spacer()
-                    Text("↓ \(abs(day.sleepDelta)) min")
+                    Text("↓ \(abs(day.sleepDelta)) 分钟")
                         .font(.system(size: 12.5, weight: .semibold)).foregroundStyle(T.coral)
                 }
                 .padding(.top, 13)
-                Text("baseline 7:28 · prev 28 days · Excluded 10/10")
+                Text("基线 7:28 · 前 28 天 · 已剔除 10/10")
                     .font(.system(size: 10.5)).foregroundStyle(T.onD3).padding(.top, 4)
                 SleepAxis(day: day).padding(.top, 12)
                 StatTrio(items: [
-                    .init(v: deep, k: "Deep 20%"),
+                    .init(v: deep, k: "深睡 20%"),
                     .init(v: rem, k: "REM 25%"),
-                    .init(v: "\(day.wakeups) × · \(day.awakeMin)m", k: "Awakenings")
+                    .init(v: "\(day.wakeups) 次 · \(day.awakeMin)分", k: "觉醒")
                 ])
             }
         }
@@ -694,17 +694,17 @@ struct DayCard: View {
     var body: some View {
         FogCard {
             VStack(alignment: .leading, spacing: 0) {
-                CardHead(icon: .clock, title: "Yesterday", sub: "Activity × Energy · 10/13",
-                         chip: "Afternoon dip", chipTone: .warn,
+                CardHead(icon: .clock, title: "昨天", sub: "活动 × 精力 · 10/13",
+                         chip: "午后低谷", chipTone: .warn,
                          trailing: onOpen.map { f in AnyView(OpenBtn(action: f)) })
-                Text("Yesterday's sitting block\nlanded right on your energy low.")
+                Text("昨天的久坐时段，\n正好压在你的精力低点上。")
                     .font(.system(size: 15, weight: .semibold)).tracking(-0.3).lineSpacing(4)
                     .padding(.top, 12)
                 DayRibbon().padding(.top, 8)
                 StatTrio(items: [
-                    .init(v: "8,260", k: "Steps"),
-                    .init(v: "13:10", k: "Sitting began"),
-                    .init(v: "rated 2", k: "Energy at 14:00")
+                    .init(v: "8,260", k: "步数"),
+                    .init(v: "13:10", k: "开始久坐"),
+                    .init(v: "自评 2 分", k: "14:00 的精力")
                 ])
             }
         }

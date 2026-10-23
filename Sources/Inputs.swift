@@ -107,7 +107,7 @@ struct TickRing: View {
             }
         }
     }
-    private var stressWords: [String] { ["Calm", "Fine", "A bit tense", "Tense", "Very tense"] }
+    private var stressWords: [String] { ["平静", "还好", "有点紧", "紧绷", "很紧绷"] }
 }
 
 // MARK: - RulerPick：横向标尺选数（年龄这类离散量比滑杆顺手得多）

@@ -299,3 +299,12 @@ struct BrightGlass: View {
         else { AnyShape(RoundedRectangle(cornerRadius: radius, style: .continuous)) }
     }
 }
+
+// MARK: - 中文衬线标题（宋体）
+
+extension Font {
+    /// 中文衬线大标题：Songti SC（iOS 内置），替代 design: .serif；中文不收字距
+    static func serifZh(_ size: CGFloat, _ weight: Font.Weight = .semibold) -> Font {
+        .custom("Songti SC", size: size).weight(weight)
+    }
+}

@@ -14,10 +14,10 @@ struct InitialRecapView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     VStack(alignment: .leading, spacing: 6) {
-                        SectionLabel(text: "From synced data · Oct 7 – 13")
-                        Text("There's already\nsomething to see")
-                            .font(.system(size: 28, weight: .semibold, design: .serif)).tracking(-0.6)
-                        Text("No need to wait for saliva — your last 7 days of sleep and heart rate already say part of it.")
+                        SectionLabel(text: "来自已同步数据 · 10月7日 – 13日")
+                        Text("数据里已经\n能看出一些东西了")
+                            .font(.serifZh(27))
+                        Text("不用等唾液 —— 最近 7 天的睡眠和心率，已经能说出一部分。")
                             .font(.system(size: 13.5)).foregroundStyle(T.ink2).lineSpacing(3)
                     }
                     .padding(.top, 18)
@@ -28,16 +28,16 @@ struct InitialRecapView: View {
                     // Aira 的第一个判断 —— 和其他雾面卡同一套卡头
                     FogCard(tone: .warm) {
                         VStack(alignment: .leading, spacing: 12) {
-                            CardHead(icon: .spark, title: "Aira's first read",
-                                     sub: "Device data × your own words")
-                            Text("It's not that you slept less — you slept broken.")
+                            CardHead(icon: .spark, title: "Aira 的第一个判断",
+                                     sub: "设备数据 × 你自己的话")
+                            Text("不是睡少了 —— 是睡碎了。")
                                 .font(.system(size: 19, weight: .semibold)).tracking(-0.5)
-                            Text("Total is 64 min below baseline, but the night broke into 5 pieces with the longest only 2 hours. Deep sleep accumulates in long blocks — which matches you waking up tired.")
+                            Text("总时长比基线少 64 分钟，但更关键的是整夜断成 5 段，最长一段只有 2 小时。深睡需要长段连续累积 —— 这正对上你醒来仍然疲惫。")
                                 .font(.system(size: 13.5)).foregroundStyle(T.onD2).lineSpacing(4)
 
                             Qualifier(
-                                head: "That's as far as I can go",
-                                body_: "Sleep and heart rate show recovery load rose, but not why. Night caregiving and a work crunch overlap, and the data can't separate them.",
+                                head: "我只能说到这里",
+                                body_: "睡眠和心率只能显示恢复负荷升高了 —— 说不了为什么。夜间照护和工作冲刺重叠在一起，数据分不开它们。",
                                 action: nil
                             )
                         }
@@ -46,12 +46,12 @@ struct InitialRecapView: View {
                     // 唾液能补上什么 —— 同一张雾面卡语言，不再换白壳
                     FogCard(tone: .flat) {
                         VStack(alignment: .leading, spacing: 13) {
-                            CardHead(icon: .drop, title: "What saliva adds",
-                                     sub: "Three questions device data can't answer")
+                            CardHead(icon: .drop, title: "唾液能补上什么",
+                                     sub: "三个设备数据答不了的问题")
                             ForEach(Array([
-                                ("Can't get going, or simply short on sleep", "The rise across the two morning points (CAR) tells them apart"),
-                                ("How badly you can't switch off at night", "The before-bed tube is the one point where all five states separate"),
-                                ("Too much drain, or too little repair", "DHEA and the testosterone/cortisol ratio point to different interventions")
+                                ("是「启动不了」，还是单纯没睡够", "清晨两个点之间的上升幅度（CAR）能把它们区分开"),
+                                ("晚上到底有多难「关机」", "睡前那一管，是五种状态唯一能分开的点"),
+                                ("是消耗太多，还是修复太少", "DHEA 与睾酮/皮质醇比值，指向完全不同的干预")
                             ].enumerated()), id: \.offset) { i, p in
                                 HStack(alignment: .top, spacing: 11) {
                                     Text("0\(i + 1)").font(.system(size: 10, weight: .bold))
@@ -74,8 +74,8 @@ struct InitialRecapView: View {
             .scrollIndicators(.hidden)
 
             VStack(spacing: 10) {
-                CTA(title: "Continue") { app.phase = .profile }
-                Button("Skip setup, go to Home") { Haptic.tap(); app.phase = .main; app.tab = 0 }
+                CTA(title: "继续") { app.phase = .profile }
+                Button("跳过设置，直接进首页") { Haptic.tap(); app.phase = .main; app.tab = 0 }
                     .font(.system(size: 13)).foregroundStyle(T.ink3)
             }
             .padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 20)

@@ -131,7 +131,7 @@ struct Qualifier: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text("Caveat · \(head)")
+            Text("存疑 · \(head)")
                 .font(.system(size: 9, weight: .bold)).tracking(1.4)
                 .textCase(.uppercase).foregroundStyle(T.sky)
             Text(body_).font(.system(size: 12)).foregroundStyle(.white).lineSpacing(2)
@@ -303,7 +303,7 @@ struct FaceSketch: View {
     }
 }
 
-let faceNames = ["Calm", "Fine", "A bit tense", "Tense", "Very tense"]
+let faceNames = ["平静", "还好", "有点紧", "紧绷", "很紧绷"]
 
 // MARK: - 自由刻度环（连续输入，分档输出）
 

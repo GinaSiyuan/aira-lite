@@ -71,27 +71,27 @@ enum Mock {
     /// 9/15–9/30：基线良好期（30 天窗口的前段，衬出 10 月的恶化轨迹）
     static let earlier: [Day] = {
         let spec: [(String, String, String, Int, Int, String, String, Int, Int, Int, Int, Int, String)] = [
-            ("09/15", "Mon", "7:28", 0,  1,  "4:50", "23:40", 0,  42, -5, 51, 56, "9,850"),
-            ("09/16", "Tue", "7:18", -10, 1, "4:35", "23:42", 2,  44, -3, 50, 57, "10,340"),
-            ("09/17", "Wed", "7:33", 5,  1,  "5:00", "23:38", -2, 41, -6, 52, 56, "8,920"),
-            ("09/18", "Thu", "7:12", -16, 1, "4:20", "23:48", 8,  45, -2, 49, 57, "9,480"),
-            ("09/19", "Fri", "6:56", -32, 2, "3:40", "00:04", 24, 49, 2,  47, 58, "8,350"),
-            ("09/20", "Sat", "7:41", 13, 1,  "5:05", "23:52", 12, 42, -5, 51, 56, "6,780"),
-            ("09/21", "Sun", "7:25", -3, 1,  "4:45", "23:44", 4,  43, -4, 50, 57, "7,640"),
-            ("09/22", "Mon", "7:20", -8, 1,  "4:30", "23:41", 1,  44, -3, 50, 57, "10,120"),
-            ("09/23", "Tue", "7:15", -13, 1, "4:25", "23:46", 6,  45, -2, 49, 57, "9,760"),
-            ("09/24", "Wed", "7:30", 2,  1,  "4:55", "23:39", -1, 42, -5, 51, 56, "9,210"),
-            ("09/25", "Thu", "7:08", -20, 2, "4:00", "23:50", 10, 46, -1, 48, 58, "8,870"),
-            ("09/26", "Fri", "6:50", -38, 2, "3:30", "00:08", 28, 50, 3,  47, 58, "8,540"),
-            ("09/27", "Sat", "7:36", 8,  1,  "5:00", "23:55", 15, 43, -4, 51, 56, "5,980"),
-            ("09/28", "Sun", "7:22", -6, 1,  "4:40", "23:45", 5,  44, -3, 50, 57, "7,320"),
-            ("09/29", "Mon", "7:14", -14, 1, "4:22", "23:43", 3,  45, -2, 49, 57, "9,930"),
-            ("09/30", "Tue", "7:26", -2, 1,  "4:48", "23:40", 0,  43, -4, 50, 57, "10,050")
+            ("09/15", "周一", "7:28", 0,  1,  "4:50", "23:40", 0,  42, -5, 51, 56, "9,850"),
+            ("09/16", "周二", "7:18", -10, 1, "4:35", "23:42", 2,  44, -3, 50, 57, "10,340"),
+            ("09/17", "周三", "7:33", 5,  1,  "5:00", "23:38", -2, 41, -6, 52, 56, "8,920"),
+            ("09/18", "周四", "7:12", -16, 1, "4:20", "23:48", 8,  45, -2, 49, 57, "9,480"),
+            ("09/19", "周五", "6:56", -32, 2, "3:40", "00:04", 24, 49, 2,  47, 58, "8,350"),
+            ("09/20", "周六", "7:41", 13, 1,  "5:05", "23:52", 12, 42, -5, 51, 56, "6,780"),
+            ("09/21", "周日", "7:25", -3, 1,  "4:45", "23:44", 4,  43, -4, 50, 57, "7,640"),
+            ("09/22", "周一", "7:20", -8, 1,  "4:30", "23:41", 1,  44, -3, 50, 57, "10,120"),
+            ("09/23", "周二", "7:15", -13, 1, "4:25", "23:46", 6,  45, -2, 49, 57, "9,760"),
+            ("09/24", "周三", "7:30", 2,  1,  "4:55", "23:39", -1, 42, -5, 51, 56, "9,210"),
+            ("09/25", "周四", "7:08", -20, 2, "4:00", "23:50", 10, 46, -1, 48, 58, "8,870"),
+            ("09/26", "周五", "6:50", -38, 2, "3:30", "00:08", 28, 50, 3,  47, 58, "8,540"),
+            ("09/27", "周六", "7:36", 8,  1,  "5:00", "23:55", 15, 43, -4, 51, 56, "5,980"),
+            ("09/28", "周日", "7:22", -6, 1,  "4:40", "23:45", 5,  44, -3, 50, 57, "7,320"),
+            ("09/29", "周一", "7:14", -14, 1, "4:22", "23:43", 3,  45, -2, 49, 57, "9,930"),
+            ("09/30", "周二", "7:26", -2, 1,  "4:48", "23:40", 0,  43, -4, 50, 57, "10,050")
         ]
         return spec.map { d in
             Day(date: d.0, weekday: d.1, sleep: d.2, sleepDelta: d.3, wakeups: d.4, awakeMin: d.4 * 6,
                 longest: d.5, onset: d.6, onsetDelta: d.7, recovery: d.8, recoveryDelta: d.9,
-                hrv: d.10, rhr: d.11, steps: d.12, note: "A steady baseline night.")
+                hrv: d.10, rhr: d.11, steps: d.12, note: "一个平稳的基线夜。")
         }
     }()
 
@@ -122,56 +122,56 @@ enum Mock {
     }
 
     static let days: [Day] = earlier + [
-        .init(date: "10/01", weekday: "Wed", sleep: "7:22", sleepDelta: -6,  wakeups: 1, awakeMin: 7,
+        .init(date: "10/01", weekday: "周三", sleep: "7:22", sleepDelta: -6,  wakeups: 1, awakeMin: 7,
               longest: "4:40", onset: "23:35", onsetDelta: -5, recovery: 44, recoveryDelta: -3,
-              hrv: 50, rhr: 57, steps: "10,210", note: "The steadiest night this week."),
-        .init(date: "10/02", weekday: "Thu", sleep: "7:10", sleepDelta: -18, wakeups: 1, awakeMin: 10,
+              hrv: 50, rhr: 57, steps: "10,210", note: "这周最平稳的一夜。"),
+        .init(date: "10/02", weekday: "周四", sleep: "7:10", sleepDelta: -18, wakeups: 1, awakeMin: 10,
               longest: "4:05", onset: "23:45", onsetDelta: 5, recovery: 46, recoveryDelta: -1,
-              hrv: 49, rhr: 57, steps: "9,640", note: "Within normal range."),
-        .init(date: "10/03", weekday: "Fri", sleep: "6:48", sleepDelta: -40, wakeups: 2, awakeMin: 16,
+              hrv: 49, rhr: 57, steps: "9,640", note: "在正常范围内。"),
+        .init(date: "10/03", weekday: "周五", sleep: "6:48", sleepDelta: -40, wakeups: 2, awakeMin: 16,
               longest: "3:20", onset: "00:02", onsetDelta: 22, recovery: 50, recoveryDelta: 3,
-              hrv: 47, rhr: 58, steps: "8,980", note: "Friday starts drifting later."),
-        .init(date: "10/04", weekday: "Sat", sleep: "7:35", sleepDelta: 7,   wakeups: 1, awakeMin: 8,
+              hrv: 47, rhr: 58, steps: "8,980", note: "周五开始往后漂。"),
+        .init(date: "10/04", weekday: "周六", sleep: "7:35", sleepDelta: 7,   wakeups: 1, awakeMin: 8,
               longest: "4:55", onset: "23:50", onsetDelta: 10, recovery: 43, recoveryDelta: -4,
-              hrv: 51, rhr: 56, steps: "6,320", note: "Some of it came back over the weekend."),
-        .init(date: "10/05", weekday: "Sun", sleep: "7:04", sleepDelta: -24, wakeups: 2, awakeMin: 13,
+              hrv: 51, rhr: 56, steps: "6,320", note: "周末补回来了一些。"),
+        .init(date: "10/05", weekday: "周日", sleep: "7:04", sleepDelta: -24, wakeups: 2, awakeMin: 13,
               longest: "3:45", onset: "23:58", onsetDelta: 18, recovery: 47, recoveryDelta: 0,
-              hrv: 48, rhr: 58, steps: "7,450", note: "Still near baseline."),
-        .init(date: "10/06", weekday: "Mon", sleep: "6:58", sleepDelta: -30, wakeups: 2, awakeMin: 15,
+              hrv: 48, rhr: 58, steps: "7,450", note: "仍接近基线。"),
+        .init(date: "10/06", weekday: "周一", sleep: "6:58", sleepDelta: -30, wakeups: 2, awakeMin: 15,
               longest: "3:30", onset: "00:00", onsetDelta: 20, recovery: 49, recoveryDelta: 2,
-              hrv: 48, rhr: 58, steps: "9,120", note: "A new week begins."),
-        .init(date: "10/07", weekday: "Tue", sleep: "6:50", sleepDelta: -38, wakeups: 2, awakeMin: 17,
+              hrv: 48, rhr: 58, steps: "9,120", note: "新的一周开始。"),
+        .init(date: "10/07", weekday: "周二", sleep: "6:50", sleepDelta: -38, wakeups: 2, awakeMin: 17,
               longest: "3:10", onset: "00:05", onsetDelta: 25, recovery: 52, recoveryDelta: 5,
-              hrv: 46, rhr: 59, steps: "8,700", note: "The trend starts to deviate."),
-        .init(date: "10/08", weekday: "Wed", sleep: "7:06", sleepDelta: -22, wakeups: 1, awakeMin: 9,
+              hrv: 46, rhr: 59, steps: "8,700", note: "趋势开始偏离。"),
+        .init(date: "10/08", weekday: "周三", sleep: "7:06", sleepDelta: -22, wakeups: 1, awakeMin: 9,
               longest: "4:10", onset: "23:50", onsetDelta: 10, recovery: 51, recoveryDelta: 4,
-              hrv: 47, rhr: 58, steps: "9,140", note: "A reasonably whole night."),
-        .init(date: "10/09", weekday: "Thu", sleep: "6:54", sleepDelta: -34, wakeups: 2, awakeMin: 18,
+              hrv: 47, rhr: 58, steps: "9,140", note: "相对完整的一夜。"),
+        .init(date: "10/09", weekday: "周四", sleep: "6:54", sleepDelta: -34, wakeups: 2, awakeMin: 18,
               longest: "3:05", onset: "00:05", onsetDelta: 25, recovery: 55, recoveryDelta: 8,
-              hrv: 45, rhr: 59, steps: "7,820", note: "Sleep onset starts sliding later."),
-        .init(date: "10/10", weekday: "Fri", sleep: "—", sleepDelta: 0, wakeups: 0, awakeMin: 0,
+              hrv: 45, rhr: 59, steps: "7,820", note: "入睡点开始往后滑。"),
+        .init(date: "10/10", weekday: "周五", sleep: "—", sleepDelta: 0, wakeups: 0, awakeMin: 0,
               longest: "—", onset: "—", onsetDelta: 0, recovery: 0, recoveryDelta: 0,
-              hrv: 0, rhr: 0, steps: "—", note: "No record this day — excluded from the mean."),
-        .init(date: "10/11", weekday: "Sat", sleep: "6:12", sleepDelta: -76, wakeups: 4, awakeMin: 51,
+              hrv: 0, rhr: 0, steps: "—", note: "该日无记录 —— 已从均值中剔除。"),
+        .init(date: "10/11", weekday: "周六", sleep: "6:12", sleepDelta: -76, wakeups: 4, awakeMin: 51,
               longest: "1:40", onset: "00:40", onsetDelta: 60, recovery: 68, recoveryDelta: 21,
-              hrv: 38, rhr: 63, steps: "5,410", note: "The most fragmented night."),
-        .init(date: "10/12", weekday: "Sun", sleep: "6:36", sleepDelta: -52, wakeups: 3, awakeMin: 35,
+              hrv: 38, rhr: 63, steps: "5,410", note: "睡得最碎的一夜。"),
+        .init(date: "10/12", weekday: "周日", sleep: "6:36", sleepDelta: -52, wakeups: 3, awakeMin: 35,
               longest: "2:20", onset: "00:20", onsetDelta: 40, recovery: 61, recoveryDelta: 14,
-              hrv: 41, rhr: 61, steps: "8,900", note: "A slight rebound."),
-        .init(date: "10/13", weekday: "Mon", sleep: "6:24", sleepDelta: -64, wakeups: 3, awakeMin: 42,
+              hrv: 41, rhr: 61, steps: "8,900", note: "略有回弹。"),
+        .init(date: "10/13", weekday: "周一", sleep: "6:24", sleepDelta: -64, wakeups: 3, awakeMin: 42,
               longest: "2:00", onset: "00:30", onsetDelta: 50, recovery: 64, recoveryDelta: 17,
-              hrv: 40, rhr: 62, steps: "8,260", note: "Matches what you said about waking up tired."),
-        .init(date: "10/14", weekday: "Tue", sleep: "6:31", sleepDelta: -57, wakeups: 2, awakeMin: 26,
+              hrv: 40, rhr: 62, steps: "8,260", note: "和你说的「醒来仍疲惫」对得上。"),
+        .init(date: "10/14", weekday: "周二", sleep: "6:31", sleepDelta: -57, wakeups: 2, awakeMin: 26,
               longest: "2:45", onset: "00:15", onsetDelta: 35, recovery: 60, recoveryDelta: 13,
-              hrv: 42, rhr: 61, steps: "6,180", note: "Today isn't over yet.")
+              hrv: 42, rhr: 61, steps: "6,180", note: "今天还没结束。")
     ]
     /// 时间维度：窗口长度 + 对应的对比基准（基准必须跟着窗口变，否则 delta None意义）
     enum Range: Int, CaseIterable {
         case d7 = 0, d14, d30
-        var title: String { ["7d", "14d", "30d"][rawValue] }
+        var title: String { ["7天", "14天", "30天"][rawValue] }
         var days: Int { [7, 14, 30][rawValue] }
-        var baselineLabel: String { ["prev 28-day baseline", "prev 14 days", "prev 90-day baseline"][rawValue] }
-        var grain: String { ["Daily", "Daily", "Weekly avg"][rawValue] }
+        var baselineLabel: String { ["前 28 天基线", "前 14 天", "前 90 天基线"][rawValue] }
+        var grain: String { ["按日", "按日", "周均值"][rawValue] }
     }
 }
 
@@ -293,11 +293,11 @@ final class App: ObservableObject {
     // Collection
     @Published var saliva: SalivaPhase = .notScheduled
     @Published var points: [SamplePoint] = [
-        .init(name: "C1 · 30 min after waking", when: "06:45", hint: "Stay in bed; take the first tube before moving"),
-        .init(name: "C2 · 45 min after waking", when: "07:15", hint: "30 min after C1 — this pair defines CAR"),
-        .init(name: "C3 · Before lunch", when: "11:30", hint: "Before eating, to avoid food interference"),
-        .init(name: "C4 · 16–17h", when: "16:30", hint: "The afternoon trough"),
-        .init(name: "C5 · Before bed", when: "22:30", hint: "The decisive tube — it sets the state group")
+        .init(name: "C1 · 醒后 30 分钟", when: "06:45", hint: "留在床上，起身活动前先取第一管"),
+        .init(name: "C2 · 醒后 45 分钟", when: "07:15", hint: "C1 后 30 分钟 —— 这一对决定 CAR"),
+        .init(name: "C3 · 午餐前", when: "11:30", hint: "进食前采样，避免食物干扰"),
+        .init(name: "C4 · 16–17 点", when: "16:30", hint: "午后低谷"),
+        .init(name: "C5 · 睡前", when: "22:30", hint: "决定性的一管 —— 它决定状态分组")
     ]
     @Published var activePoint: Int? = nil
     @Published var retestScheduled = false
@@ -344,47 +344,47 @@ final class App: ObservableObject {
     // V1.1 —— 推荐卡堆（按数据阶段切换）
     /// 设备数据阶段：只依赖已同步的可穿戴数据
     @Published var deviceRecs: [PlanRec] = [
-        .init(tag: "Movement", tagColor: T.sky,
-              title: "Stand 2 min every hour",
-              because: "You sat 2 h 40 m straight from 13:10–15:50 — right on the energy trough.",
-              evidence: ["Activity · 7d", "Self-report 14:00"],
-              constraint: "Weekdays · start this afternoon",
-              timeline: "Felt within days"),
-        .init(tag: "Sleep", tagColor: T.violet,
-              title: "Phone down at 22:30",
-              because: "Median sleep onset over 5 days is 00:30 — 50 min later than your baseline.",
-              evidence: ["Sleep onset · 5d", "Baseline 28d"],
-              constraint: "Daily · try one week",
-              timeline: "Onset usually moves in 1–2 weeks"),
-        .init(tag: "Movement", tagColor: T.sky,
-              title: "20-min brisk walk in the afternoon",
-              because: "Only 2 workouts this week, and Saturday was your most fragmented night.",
-              evidence: ["Workouts · 7d", "Sleep 10/12"],
-              constraint: "3×/week · no added intensity",
-              timeline: "Felt within a week")
+        .init(tag: "活动", tagColor: T.sky,
+              title: "每小时站立 2 分钟",
+              because: "你从 13:10 到 15:50 连续坐了 2 小时 40 分 —— 正好压在精力低谷上。",
+              evidence: ["活动 · 7天", "14:00 自评"],
+              constraint: "工作日 · 今天下午就开始",
+              timeline: "几天内可感知"),
+        .init(tag: "睡眠", tagColor: T.violet,
+              title: "22:30 放下手机",
+              because: "近 5 天入睡点中位数是 00:30 —— 比你的基线晚了 50 分钟。",
+              evidence: ["入睡点 · 5天", "基线 28天"],
+              constraint: "每天 · 先试一周",
+              timeline: "入睡点通常 1–2 周内前移"),
+        .init(tag: "活动", tagColor: T.sky,
+              title: "下午快走 20 分钟",
+              because: "这周只有 2 次运动，而周六是你睡得最碎的一夜。",
+              evidence: ["运动 · 7天", "睡眠 10/12"],
+              constraint: "每周 3 次 · 不加强度",
+              timeline: "一周内可感知")
     ]
     /// 报告阶段：生物标志物 + 硬件数据联合推荐
     @Published var reportRecs: [PlanRec] = [
-        .init(tag: "Lifestyle", tagColor: T.sky,
-              title: "Fixed wake time (±30 min)",
-              because: "The only lever acting on both ends — morning rise and evening shut-off. Set the wake time and onset drifts earlier on its own.",
-              evidence: ["CAR 32%", "Sleep onset · 5d", "AUCg 33.3"],
-              constraint: "Daily · ranks above supplements and exercise",
-              timeline: "~2 weeks to feel it · 6 weeks full effect",
+        .init(tag: "生活方式", tagColor: T.sky,
+              title: "固定起床时间（±30 分钟）",
+              because: "唯一同时作用于两端的杠杆 —— 晨间上升与夜间关机。定住起床时间，入睡点会自己前移。",
+              evidence: ["CAR 32%", "入睡点 · 5天", "AUCg 33.3"],
+              constraint: "每天 · 优先级高于补剂和运动",
+              timeline: "约 2 周有感 · 6 周完整效果",
               impact: 9.1, saliva: true),
-        .init(tag: "Breathwork", tagColor: T.lime,
-              title: "10 min slow breathing before bed",
-              because: "Your evening cortisol never comes down (1.29 before bed vs 0.4 balanced) — this targets exactly that point.",
-              evidence: ["Bedtime cortisol 1.29", "HRV · 14d"],
-              constraint: "5×/week · no other evening tasks",
-              timeline: "~2 weeks to feel it",
+        .init(tag: "呼吸练习", tagColor: T.lime,
+              title: "睡前 10 分钟缓慢呼吸",
+              because: "你的夜间皮质醇一直降不下来（睡前 1.29，平衡值 0.4）—— 这个练习正好打在这个点上。",
+              evidence: ["睡前皮质醇 1.29", "HRV · 14天"],
+              constraint: "每周 5 次 · 晚间不安排其他任务",
+              timeline: "约 2 周有感",
               impact: 8.4, saliva: true),
-        .init(tag: "Nutrition", tagColor: T.amber,
-              title: "Lunch carbs under 40 g",
-              because: "Your 14:00–16:00 trough is your lowest cortisol window — heavy lunch carbs deepen it.",
-              evidence: ["Cortisol 16:30 · 1.69", "Self-report 14:00"],
-              constraint: "Weekdays · targets the afternoon dip",
-              timeline: "~1 week to notice",
+        .init(tag: "营养", tagColor: T.amber,
+              title: "午餐碳水控制在 40 g 以内",
+              because: "14:00–16:00 是你皮质醇最低的窗口 —— 午餐碳水过重会加深这个低谷。",
+              evidence: ["16:30 皮质醇 1.69", "14:00 自评"],
+              constraint: "工作日 · 针对午后低谷",
+              timeline: "约 1 周可感知",
               impact: 7.2, saliva: true)
     ]
 
@@ -613,52 +613,52 @@ struct AskContext: Identifiable {
 // MARK: - Agent 预设回答（mock，但和上下文严格一致）
 
 enum AgentKB {
-    static let sleep = AskContext(subject: "Last nightSleep", presets: [
-        .init(q: "What does this do to my body?",
-              a: "6:24 total is 64 min under baseline, but the bigger issue is it broke into 5 pieces with the longest only 2 hours. Deep sleep accumulates in long blocks — which is why it feels like you slept without resting."),
-        .init(q: "Why do I still wake up tired?",
-              a: "It's not that you slept less — you slept broken. 3 awakenings totalling 42 min against a baseline of 1.2 and 13 min. Fragmentation interrupts deep-sleep accumulation, and perceived fatigue tracks fragmentation more closely than total duration."),
-        .init(q: "How long until it improves?",
-              a: "Steady the onset first. A fixed wake time usually pulls onset earlier within 1–2 weeks; fragmentation improves more slowly — measurable change typically appears on day 7–14."),
-        .init(q: "What if I skip a day?",
-              a: "One day barely matters. What re-drifts the rhythm is breaking for 3+ days in a row.")
+    static let sleep = AskContext(subject: "昨夜睡眠", presets: [
+        .init(q: "这对我的身体意味着什么？",
+              a: "总时长 6:24，比基线少 64 分钟，但更大的问题是整夜断成 5 段，最长一段只有 2 小时。深睡需要长段连续累积 —— 所以才会觉得睡了却没歇着。"),
+        .init(q: "为什么我醒来还是累？",
+              a: "不是睡少了 —— 是睡碎了。3 次觉醒共 42 分钟，而你的基线是 1.2 次、13 分钟。碎片化会打断深睡累积，而主观疲惫感跟碎片化的相关性比总时长更强。"),
+        .init(q: "多久能改善？",
+              a: "先把入睡点稳住。固定起床时间通常 1–2 周内就能把入睡点往前拉；碎片化改善得更慢 —— 可测的变化一般出现在第 7–14 天。"),
+        .init(q: "偶尔断一天怎么办？",
+              a: "一天几乎没有影响。真正会把节律重新带偏的，是连续中断 3 天以上。")
     ])
 
-    static let recovery = AskContext(subject: "Recovery load", presets: [
-        .init(q: "How is the 64 computed?",
-              a: "From three signals together: sleep −64 min, HRV −8 ms, resting HR +4 bpm, against your prev-28-day baseline. Recovery load is only flagged when all three point the same way."),
-        .init(q: "What's causing it?",
-              a: "Not yet certain. Night caregiving and a work crunch overlap, and current data can't separate them. Salivary cortisol would help — it distinguishes an HPA-axis problem from plain sleep debt."),
-        .init(q: "Should I worry?",
-              a: "Not right now. It's a direction, not a diagnosis. What matters is whether it stays elevated for 3+ weeks.")
+    static let recovery = AskContext(subject: "恢复负荷", presets: [
+        .init(q: "这个 64 是怎么算的？",
+              a: "由三个信号共同得出：睡眠 −64 分钟、HRV −8 ms、静息心率 +4 bpm，对照你前 28 天的基线。只有三个信号指向一致时，恢复负荷才会被标记。"),
+        .init(q: "是什么引起的？",
+              a: "还不能确定。夜间照护和工作冲刺重叠在一起，现有数据分不开它们。唾液皮质醇会有帮助 —— 它能区分 HPA 轴的问题和单纯的睡眠欠债。"),
+        .init(q: "需要担心吗？",
+              a: "现在还不用。它是一个方向，不是诊断。真正要紧的是它是否持续升高 3 周以上。")
     ])
 
-    static let hpa = AskContext(subject: "HPA axis", presets: [
-        .init(q: "What does Strained mean?",
-              a: "Can't start when you should, can't stop when you should. The morning rise never happened (CAR 32%, expected >50%) and the afternoon and evening never came down (AUCg 33.3 vs 22.0 for Balanced)."),
-        .init(q: "Is it related to my sleep?",
-              a: "Directionally yes: not switching off at night makes falling asleep harder, and your onset is 50 min later than usual. But with one day sampled I can't tell cause from coincidence."),
-        .init(q: "How do we find out?",
-              a: "Collect 2 more days at the same time points (+30 min after waking and before bed), and log whether there was night caregiving. A shape that repeats across both days counts as a stable state."),
-        .init(q: "What does low DHEA mean?",
-              a: "DHEA 2.1 and a testosterone/cortisol ratio of 0.38 both point catabolic. It's the other face of not switching off: stay on alert long enough and the repair side gets suppressed.")
+    static let hpa = AskContext(subject: "HPA 轴", presets: [
+        .init(q: "「透支」是什么意思？",
+              a: "该启动时启动不了，该停下时停不下来。晨间上升没有出现（CAR 32%，预期 >50%），下午和晚上也始终没降下来（AUCg 33.3，平衡值 22.0）。"),
+        .init(q: "和我的睡眠有关系吗？",
+              a: "方向上有关：晚上关不掉会让入睡更难，你的入睡点比平时晚了 50 分钟。但只采了一天，我分不清是因果还是巧合。"),
+        .init(q: "怎么才能弄清楚？",
+              a: "在相同时间点再采 2 天（醒后 +30 分钟和睡前），并记录当天是否有夜间照护。形状在两天里重复出现，才算稳定状态。"),
+        .init(q: "DHEA 偏低说明什么？",
+              a: "DHEA 2.1 和 0.38 的睾酮/皮质醇比值都指向分解代谢。这是「关不掉」的另一面：警觉得够久，修复那一侧就会被压制。")
     ])
 
-    static let load = AskContext(subject: "Today's load", presets: [
-        .init(q: "Does sitting cause the energy dip?",
-              a: "Right now it's only co-occurrence. The afternoon has a natural circadian dip; sitting may amplify it, or you may simply be at a desk then. Separating them needs days with activity in the same window."),
-        .init(q: "How do I break up the sitting?",
-              a: "You don't have to fix it all at once. Set a stand reminder at 13:10 — 2 minutes an hour is enough. The goal is breaking the block, not adding volume. With recovery load high, don't add intensity."),
-        .init(q: "Is 8,260 steps enough?",
-              a: "Normal for you (28-day median 8,900). But steps correlate weakly with recovery load, so I won't draw conclusions from it.")
+    static let load = AskContext(subject: "今天的负荷", presets: [
+        .init(q: "久坐是精力下滑的原因吗？",
+              a: "目前只是同时出现。下午本来就有自然的昼夜低谷；久坐可能放大它，也可能只是你那个时段恰好在桌前。要分开它们，需要几天在同一时段有活动的数据。"),
+        .init(q: "怎么打断久坐？",
+              a: "不用一次全改。在 13:10 设一个站立提醒 —— 每小时 2 分钟就够。目标是打断整块时间，不是增加运动量。恢复负荷偏高时，不要加强度。"),
+        .init(q: "8,260 步够吗？",
+              a: "对你来说正常（28 天中位数 8,900）。但步数和恢复负荷的相关性很弱，我不会用它下结论。")
     ])
 
-    static let plan = AskContext(subject: "Your plan", presets: [
-        .init(q: "Why is wake time first?",
-              a: "Highest weight (9.1), and the only intervention acting on both ends — fix the wake time and sleep onset drifts earlier on its own."),
-        .init(q: "Do I need supplements?",
-              a: "No. No supplement advice this round — your data can't support that call yet, and behavioural interventions have stronger evidence."),
-        .init(q: "What if I can't do it daily?",
-              a: "Weekdays only is fine. Just don't break for 3 days in a row — that re-drifts a rhythm you just steadied.")
+    static let plan = AskContext(subject: "你的计划", presets: [
+        .init(q: "为什么起床时间排第一？",
+              a: "权重最高（9.1），而且是唯一同时作用于两端的干预 —— 定住起床时间，入睡点会自己前移。"),
+        .init(q: "我需要补剂吗？",
+              a: "不需要。这一轮不给补剂建议 —— 你的数据还撑不起那个判断，而且行为干预的证据更强。"),
+        .init(q: "做不到每天执行怎么办？",
+              a: "只在工作日做也可以。只要别连续中断 3 天 —— 那会把刚稳住的节律重新带偏。")
     ])
 }

@@ -21,20 +21,20 @@ enum Lib {
     static let tintLilac = Color(hex: 0xE8E3F4)
 
     static let workout: [Activity] = [
-        .init(name: "Brisk walk",   sub: "Low intensity · best fit", icon: .walk,     tint: tintLime,  kind: 0, defaultMin: 20),
-        .init(name: "Running",   sub: "Mod–high",       icon: .run,      tint: tintPink,  kind: 0, defaultMin: 30),
-        .init(name: "Cycling",   sub: "Moderate",         icon: .bike,     tint: tintBlue,  kind: 0, defaultMin: 40),
-        .init(name: "Strength",   sub: "High load",         icon: .strength, tint: tintSand,  kind: 0, defaultMin: 45),
-        .init(name: "Swimming",   sub: "Full body · low impact",  icon: .swim,     tint: tintMint,  kind: 0, defaultMin: 30),
-        .init(name: "Jump rope",   sub: "High intensity · short",  icon: .rope,     tint: tintLilac, kind: 0, defaultMin: 10)
+        .init(name: "快走",   sub: "低强度 · 最合适", icon: .walk,     tint: tintLime,  kind: 0, defaultMin: 20),
+        .init(name: "跑步",   sub: "中高强度",       icon: .run,      tint: tintPink,  kind: 0, defaultMin: 30),
+        .init(name: "骑行",   sub: "中等强度",         icon: .bike,     tint: tintBlue,  kind: 0, defaultMin: 40),
+        .init(name: "力量",   sub: "高负荷",         icon: .strength, tint: tintSand,  kind: 0, defaultMin: 45),
+        .init(name: "游泳",   sub: "全身 · 低冲击",  icon: .swim,     tint: tintMint,  kind: 0, defaultMin: 30),
+        .init(name: "跳绳",   sub: "高强度 · 短时",  icon: .rope,     tint: tintLilac, kind: 0, defaultMin: 10)
     ]
     static let relax: [Activity] = [
-        .init(name: "Breathwork", sub: "Before bed · best fit", icon: .meditate, tint: tintLime,  kind: 1, defaultMin: 10),
-        .init(name: "Stretching",     sub: "After sitting",       icon: .stretch,  tint: tintMint,  kind: 1, defaultMin: 8),
-        .init(name: "Walk",     sub: "Afternoon",         icon: .walk,     tint: tintBlue,  kind: 1, defaultMin: 15),
-        .init(name: "Coffee", sub: "Before 14:00",     icon: .coffee,   tint: tintSand,  kind: 1, defaultMin: 15),
-        .init(name: "Dancing",     sub: "Just move",     icon: .dance,    tint: tintPink,  kind: 1, defaultMin: 15),
-        .init(name: "Reading",     sub: "Instead of scrolling",   icon: .read,     tint: tintLilac, kind: 1, defaultMin: 20)
+        .init(name: "呼吸练习", sub: "睡前 · 最合适", icon: .meditate, tint: tintLime,  kind: 1, defaultMin: 10),
+        .init(name: "拉伸",     sub: "久坐之后",       icon: .stretch,  tint: tintMint,  kind: 1, defaultMin: 8),
+        .init(name: "散步",     sub: "下午",         icon: .walk,     tint: tintBlue,  kind: 1, defaultMin: 15),
+        .init(name: "咖啡", sub: "14:00 之前",     icon: .coffee,   tint: tintSand,  kind: 1, defaultMin: 15),
+        .init(name: "跳舞",     sub: "动起来就好",     icon: .dance,    tint: tintPink,  kind: 1, defaultMin: 15),
+        .init(name: "阅读",     sub: "代替刷手机",   icon: .read,     tint: tintLilac, kind: 1, defaultMin: 20)
     ]
 }
 
@@ -60,9 +60,9 @@ struct PlanView: View {
             VStack(alignment: .leading, spacing: 15) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(hasReport ? "Saliva biomarkers × device data" : "From the last 7 days of device data")
+                        Text(hasReport ? "唾液生物标志物 × 设备数据" : "来自最近 7 天的设备数据")
                             .font(.system(size: 12.5)).foregroundStyle(T.ink3)
-                        Text("Your plan").font(.system(size: 23, weight: .semibold)).tracking(-0.7)
+                        Text("你的计划").font(.system(size: 23, weight: .semibold))
                     }
                     Spacer()
                     #if LITE
@@ -83,11 +83,11 @@ struct PlanView: View {
 
                 // 推荐卡堆：右滑收进计划，左滑跳过，点卡展开证据链
                 HStack {
-                    SectionLabel(text: hasReport ? "Ranked by impact · from the report"
-                                                 : "For you today · from device data")
+                    SectionLabel(text: hasReport ? "按影响力排序 · 来自报告"
+                                                 : "今天适合你 · 来自设备数据")
                     Spacer()
                     if !app.deck.isEmpty {
-                        Text("\(app.deck.count) to sort")
+                        Text("待处理 \(app.deck.count) 条")
                             .font(.system(size: 10.5, weight: .semibold)).monospacedDigit()
                             .foregroundStyle(T.ink3)
                     }
@@ -97,7 +97,7 @@ struct PlanView: View {
 
                 // 已接受：集中管理，有执行进度，左划移回卡堆
                 if !app.acceptedRecs.isEmpty || !app.arranged.isEmpty {
-                    SectionLabel(text: "In your plan · \(app.acceptedRecs.count + app.arranged.count) items")
+                    SectionLabel(text: "已在计划中 · \(app.acceptedRecs.count + app.arranged.count) 项")
                         .padding(.top, 4)
                     ForEach(app.acceptedRecs) { rec in
                         AcceptedRecRow(rec: rec)
@@ -107,9 +107,9 @@ struct PlanView: View {
                     }
                 }
 
-                SectionLabel(text: "Build your own").padding(.top, 4)
+                SectionLabel(text: "自己安排").padding(.top, 4)
                 HStack(spacing: 6) {
-                    ForEach(Array(["Workout", "Unwind"].enumerated()), id: \.offset) { i, s in
+                    ForEach(Array(["训练", "放松"].enumerated()), id: \.offset) { i, s in
                         Button {
                             Haptic.tap()
                             withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) { seg = i }
@@ -130,7 +130,7 @@ struct PlanView: View {
                 }
 
                 if seg == 0 {
-                    NoteStrip(text: "Recovery load is high right now. Don't add intensity this week — the two low-intensity options fit better.")
+                    NoteStrip(text: "恢复负荷目前偏高。这周不要加强度 —— 两个低强度选项更合适。")
                 }
 
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -153,11 +153,11 @@ struct PlanView: View {
                 if hasReport {
                     FogCard(tone: .flat) {
                         VStack(alignment: .leading, spacing: 11) {
-                            Text("Not this round").font(.system(size: 11, weight: .semibold))
+                            Text("本轮不做").font(.system(size: 11, weight: .semibold))
                                 .tracking(1.2).textCase(.uppercase).foregroundStyle(T.onD3)
-                            ForEach(["Supplements — current data can't support that call",
-                                     "More intensity — recovery load is already high",
-                                     "Caffeine — wasn't verified at sampling; next round"], id: \.self) { s in
+                            ForEach(["补剂 —— 现有数据撑不起这个判断",
+                                     "加大强度 —— 恢复负荷已经偏高",
+                                     "咖啡因 —— 采样时未核实，下一轮再说"], id: \.self) { s in
                                 HStack(alignment: .top, spacing: 8) {
                                     Icon(.minus, size: 11, weight: 2, color: T.onD3).padding(.top, 2)
                                     Text(s).font(.system(size: 12.5)).foregroundStyle(T.onD2).lineSpacing(3)
@@ -171,7 +171,7 @@ struct PlanView: View {
                 Button { Haptic.tap(); app.sheet = .ask(AgentKB.plan) } label: {
                     HStack(spacing: 9) {
                         Icon(.ask, size: 15, weight: 2, color: T.ink)
-                        Text("Ask about this plan").font(.system(size: 14, weight: .medium))
+                        Text("问问这份计划").font(.system(size: 14, weight: .medium))
                         Spacer()
                         Icon(.chevron, size: 12, weight: 2, color: T.ink3)
                     }
@@ -211,7 +211,7 @@ struct AcceptedRecRow: View {
                 .overlay(alignment: .trailing) {
                     VStack(spacing: 3) {
                         Icon(.refresh, size: 14, weight: 2.2, color: .white)
-                        Text("Back to\ndeck").font(.system(size: 8, weight: .semibold))
+                        Text("移回\n卡堆").font(.system(size: 8, weight: .semibold))
                             .foregroundStyle(.white).multilineTextAlignment(.center)
                     }
                     .padding(.trailing, 18)
@@ -304,11 +304,11 @@ struct ReportTargetCard: View {
     var body: some View {
         FogCard(tone: .cool) {
             VStack(alignment: .leading, spacing: 11) {
-                CardHead(icon: .breath, title: "This round's target", sub: "From report · chapter 01",
-                         chip: "Tense", chipTone: .warn)
-                Text("Start with the \"can't switch off at night\" end.")
+                CardHead(icon: .breath, title: "本轮目标", sub: "来自报告 · 第 01 章",
+                         chip: "紧绷", chipTone: .warn)
+                Text("从「晚上关不掉」这一端开始。")
                     .font(.system(size: 17, weight: .semibold)).tracking(-0.4)
-                Text("It's the more movable end — a fixed wake time pulls onset earlier and the morning side usually follows. The other way round rarely works.")
+                Text("这一端更容易撬动 —— 固定起床时间会把入睡点往前拉，早晨那端通常随之好转。反过来几乎不成立。")
                     .font(.system(size: 13)).foregroundStyle(T.onD2).lineSpacing(4)
             }
         }
@@ -320,13 +320,13 @@ struct PendingTargetCard: View {
     var body: some View {
         FogCard(tone: .flat) {
             VStack(alignment: .leading, spacing: 12) {
-                CardHead(icon: .clock, title: "Full plan waits on saliva",
-                         sub: "A few things work regardless", chip: "Test in progress", chipTone: .off)
-                Text("Until saliva is back I can't tell whether the morning or the evening end matters more — and the interventions differ completely. The items below rely only on device data you already have.")
+                CardHead(icon: .clock, title: "完整计划等唾液结果",
+                         sub: "有几件事无论如何都值得做", chip: "检测进行中", chipTone: .off)
+                Text("唾液结果回来之前，我分不清早晨和夜晚哪一端更要紧 —— 而两者的干预完全不同。下面这些建议只依赖你已有的设备数据。")
                     .font(.system(size: 13)).foregroundStyle(T.onD2).lineSpacing(4)
                 Button { Haptic.tap(); app.sheet = .testing } label: {
                     HStack(spacing: 7) {
-                        Text("Schedule collection").font(.system(size: 12, weight: .semibold)).tracking(0.6)
+                        Text("安排采集").font(.system(size: 12, weight: .semibold)).tracking(0.6)
                         Icon(.arrowRight, size: 12, weight: 2, color: T.lime)
                     }
                     .foregroundStyle(T.lime)
@@ -346,14 +346,14 @@ struct ArrangeSheet: View {
     @State private var minutes: Int = 20
     @State private var slot: Int = 1
 
-    private let slots = ["Morning · 07:00", "Afternoon · 13:30", "Evening · 18:00", "Before bed · 22:00"]
+    private let slots = ["早晨 · 07:00", "下午 · 13:30", "傍晚 · 18:00", "睡前 · 22:00"]
 
     var body: some View {
         ZStack {
             PageBG()
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
-                    Text("Arrange").font(.system(size: 18, weight: .semibold)).tracking(-0.4)
+                    Text("安排").font(.system(size: 18, weight: .semibold))
                     Spacer()
                     Button { dismiss() } label: {
                         Icon(.close, size: 13, weight: 2, color: T.ink2)
@@ -376,7 +376,7 @@ struct ArrangeSheet: View {
                 }
                 .padding(.top, 20)
 
-                SectionLabel(text: "Duration").padding(.top, 24)
+                SectionLabel(text: "时长（分钟）").padding(.top, 24)
                 HStack(spacing: 8) {
                     ForEach([10, 15, 20, 30, 45], id: \.self) { m in
                         Button {
@@ -397,7 +397,7 @@ struct ArrangeSheet: View {
                 }
                 .padding(.top, 10)
 
-                SectionLabel(text: "Time of day").padding(.top, 20)
+                SectionLabel(text: "时间段").padding(.top, 20)
                 VStack(spacing: 8) {
                     ForEach(Array(slots.enumerated()), id: \.offset) { i, s in
                         Button {
@@ -407,7 +407,7 @@ struct ArrangeSheet: View {
                             HStack(spacing: 8) {
                                 Text(s).font(.system(size: 14.5, weight: slot == i ? .semibold : .regular))
                                 if i == recommended {
-                                    Text("Aira suggests").font(.system(size: 10, weight: .semibold))
+                                    Text("Aira 建议").font(.system(size: 10, weight: .semibold))
                                         .padding(.horizontal, 7).padding(.vertical, 3)
                                         .background(Capsule().fill(T.lime)).foregroundStyle(T.ink)
                                 }
@@ -429,7 +429,7 @@ struct ArrangeSheet: View {
                 NoteStrip(text: reason).padding(.top, 16)
 
                 Spacer()
-                CTA(title: "Add to plan") {
+                CTA(title: "加入计划") {
                     app.arranged.append(.init(activity: activity, time: slots[slot], minutes: minutes))
                     dismiss()
                 }
@@ -449,9 +449,9 @@ struct ArrangeSheet: View {
     }
     private var reason: String {
         switch recommended {
-        case 3: "Before bed — your problem is not switching off at night, so this slot pays the most."
-        case 1: "Afternoon — your 13:10–15:50 sitting block sits right on the energy trough."
-        default: "Evening — at least 3 h before bed, so onset doesn't slide later."
+        case 3: "睡前 —— 你的问题是晚上关不掉，这个时段收益最大。"
+        case 1: "下午 —— 你 13:10–15:50 的久坐时段，正好压在精力低谷上。"
+        default: "傍晚 —— 距睡前至少 3 小时，入睡点才不会被推后。"
         }
     }
 }
@@ -478,7 +478,7 @@ struct ArrangedRow: View {
                 .frame(width: 50, height: 50)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(item.activity.name).font(.system(size: 15, weight: .semibold)).tracking(-0.2)
-                    Text("\(item.time) · \(item.minutes) min")
+                    Text("\(item.time) · \(item.minutes) 分钟")
                         .font(.system(size: 11.5)).foregroundStyle(T.ink3)
                 }
                 Spacer()

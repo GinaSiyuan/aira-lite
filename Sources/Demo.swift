@@ -27,79 +27,79 @@ final class Demo: ObservableObject {
 
     /// Lite：只走核心闭环 Onboard → Home → Agent 推动采集 → 报告 → Plan
     static let liteSteps: [DemoStep] = [
-        .init(title: "Welcome", seconds: 3.0) { a in
+        .init(title: "欢迎页", seconds: 3.0) { a in
             a.reset(); a.phase = .welcome
         },
-        .init(title: "Connect data", seconds: 2.4) { a in
+        .init(title: "连接数据", seconds: 2.4) { a in
             a.phase = .connect; a.healthGranted = true
         },
-        .init(title: "Importing 30 days", seconds: 4.0) { a in
+        .init(title: "导入 30 天", seconds: 4.0) { a in
             a.beginSync()
         },
-        .init(title: "First read", seconds: 4.2) { a in
+        .init(title: "第一份解读", seconds: 4.2) { a in
             a.phase = .recap
         },
-        .init(title: "About you", seconds: 2.6) { a in
+        .init(title: "关于你", seconds: 2.6) { a in
             a.phase = .profile; a.nickname = "Chloe"
         },
-        .init(title: "Do you train?", seconds: 2.4) { a in
+        .init(title: "训练习惯", seconds: 2.4) { a in
             a.profStep = 1
         },
-        .init(title: "Health background", seconds: 2.6) { a in
-            a.phase = .medical; a.meds = ["Biotin (vitamin B7)"]
+        .init(title: "健康背景", seconds: 2.6) { a in
+            a.phase = .medical; a.meds = ["生物素（维生素 B7）"]
         },
-        .init(title: "Home · daily loop", seconds: 3.6) { a in
+        .init(title: "首页 · 每日循环", seconds: 3.6) { a in
             a.phase = .main; a.tab = 0; a.sheet = nil
         },
-        .init(title: "Aira opens the thread", seconds: 3.6) { a in
+        .init(title: "Aira 发起对话", seconds: 3.6) { a in
             a.tab = 1
         },
-        .init(title: "Why saliva?", seconds: 3.2) { a in
-            a.sent = ["Why saliva?"]
+        .init(title: "为什么是唾液", seconds: 3.2) { a in
+            a.sent = ["为什么是唾液？"]
         },
-        .init(title: "Schedule collection", seconds: 2.6) { a in
-            a.sent = ["Why saliva?", "Schedule for tomorrow"]; a.schedule()
+        .init(title: "安排采集", seconds: 2.6) { a in
+            a.sent = ["为什么是唾液？", "安排在明天"]; a.schedule()
         },
-        .init(title: "Collection steps", seconds: 3.4) { a in
+        .init(title: "采集步骤", seconds: 3.4) { a in
             a.tab = 0; a.activePoint = 0; a.stepIndex = 1; a.sheet = .guidance
         },
-        .init(title: "Samples done", seconds: 2.2) { a in
+        .init(title: "样本完成", seconds: 2.2) { a in
             a.sheet = nil
             for i in a.points.indices { a.points[i].done = true }
             a.saliva = .shipped
         },
-        .init(title: "Joint analysis", seconds: 6.4) { a in
+        .init(title: "联合分析", seconds: 6.4) { a in
             a.deliverReport()
         },
-        .init(title: "Report", seconds: 4.4) { a in
+        .init(title: "报告", seconds: 4.4) { a in
             a.analyzing = false; a.saliva = .reportReady; a.tab = 1; a.sheet = .report
         },
-        .init(title: "Plan", seconds: 4.0) { a in
+        .init(title: "计划", seconds: 4.0) { a in
             a.sheet = nil; a.tab = 2
         },
-        .init(title: "Accept top action", seconds: 3.0) { a in
+        .init(title: "接受首条建议", seconds: 3.0) { a in
             if let top = a.deck.first { a.setRec(top.id, .accepted) }
         }
     ]
 
     static let fullSteps: [DemoStep] = [
-        .init(title: "Welcome", seconds: 3.0) { a in
+        .init(title: "欢迎页", seconds: 3.0) { a in
             a.reset(); a.phase = .welcome
         },
-        .init(title: "Connect data", seconds: 2.4) { a in
+        .init(title: "连接数据", seconds: 2.4) { a in
             a.phase = .connect; a.healthGranted = true; a.devices = ["Oura Ring"]
         },
-        .init(title: "Importing 30 days", seconds: 4.0) { a in
+        .init(title: "导入 30 天", seconds: 4.0) { a in
             a.beginSync()
         },
-        .init(title: "First read", seconds: 4.2) { a in
+        .init(title: "第一份解读", seconds: 4.2) { a in
             a.phase = .recap
         },
-        .init(title: "About you", seconds: 2.6) { a in
+        .init(title: "关于你", seconds: 2.6) { a in
             a.phase = .profile; a.nickname = "Chloe"
         },
-        .init(title: "Health background", seconds: 2.6) { a in
-            a.phase = .medical; a.meds = ["Biotin (vitamin B7)"]
+        .init(title: "健康背景", seconds: 2.6) { a in
+            a.phase = .medical; a.meds = ["生物素（维生素 B7）"]
         },
         .init(title: "Notifications", seconds: 2.4) { a in
             a.phase = .notify
@@ -121,23 +121,23 @@ final class Demo: ObservableObject {
             a.sheet = nil; a.tab = 1
         },
         .init(title: "Ask about saliva", seconds: 3.2) { a in
-            a.sent = ["Why saliva?"]
+            a.sent = ["为什么是唾液？"]
         },
-        .init(title: "Schedule collection", seconds: 2.6) { a in
-            a.sent = ["Why saliva?", "Schedule for tomorrow"]; a.schedule()
+        .init(title: "安排采集", seconds: 2.6) { a in
+            a.sent = ["为什么是唾液？", "安排在明天"]; a.schedule()
         },
-        .init(title: "Collection steps", seconds: 3.0) { a in
+        .init(title: "采集步骤", seconds: 3.0) { a in
             a.tab = 0; a.activePoint = 0; a.stepIndex = 1; a.sheet = .guidance
         },
-        .init(title: "Samples done", seconds: 2.2) { a in
+        .init(title: "样本完成", seconds: 2.2) { a in
             a.sheet = nil
             for i in a.points.indices { a.points[i].done = true }
             a.saliva = .shipped
         },
-        .init(title: "Joint analysis", seconds: 6.4) { a in
+        .init(title: "联合分析", seconds: 6.4) { a in
             a.deliverReport()
         },
-        .init(title: "Report", seconds: 4.4) { a in
+        .init(title: "报告", seconds: 4.4) { a in
             a.analyzing = false; a.saliva = .reportReady; a.tab = 1; a.sheet = .report
         },
         .init(title: "Plan · report stage", seconds: 4.0) { a in
@@ -236,7 +236,7 @@ struct DemoBar: View {
                         }
                         .buttonStyle(PressStyle())
                         Text(demo.playing ? Demo.steps[min(demo.index, Demo.steps.count - 1)].title
-                                          : "Play the whole flow")
+                                          : "播放完整流程")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(.white.opacity(0.85))
                             .lineLimit(1)

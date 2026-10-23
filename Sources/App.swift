@@ -123,7 +123,7 @@ struct TestingSheet: View {
             PageBG()
             VStack(spacing: 0) {
                 HStack {
-                    Text("Saliva collection").font(.system(size: 18, weight: .semibold)).tracking(-0.4)
+                    Text("唾液采集").font(.system(size: 18, weight: .semibold))
                     Spacer()
                     Button { dismiss() } label: {
                         Image(systemName: "xmark").font(.system(size: 12, weight: .bold))
@@ -146,7 +146,7 @@ struct TabBar: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            item(0, .home, "Home")
+            item(0, .home, "首页")
 
             // 中间：Aira —— 主入口。在磨砂栏上用柠檬实心才压得住
             Button {
@@ -174,7 +174,7 @@ struct TabBar: View {
             .buttonStyle(PressStyle())
             .accessibilityLabel("Aira")
 
-            item(2, .plan, "Plan")
+            item(2, .plan, "计划")
         }
         .padding(.horizontal, 6)
         .frame(height: 66)

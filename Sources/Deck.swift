@@ -78,7 +78,7 @@ struct RecDeck: View {
             HStack(spacing: 5) {
                 Icon(.chevron, size: 10, weight: 2.4, color: .white.opacity(0.9))
                     .rotationEffect(.degrees(180))
-                Text("Skip").font(.system(size: 11, weight: .bold))
+                Text("跳过").font(.system(size: 11, weight: .bold))
             }
             .padding(.horizontal, 10).padding(.vertical, 7)
             .background(Capsule().fill(.black.opacity(0.45)))
@@ -86,7 +86,7 @@ struct RecDeck: View {
             .opacity(hinting || dx < -24 ? 1 : 0)
             Spacer()
             HStack(spacing: 5) {
-                Text("Add").font(.system(size: 11, weight: .bold))
+                Text("收进计划").font(.system(size: 11, weight: .bold))
                 Icon(.chevron, size: 10, weight: 2.4, color: T.ink)
             }
             .padding(.horizontal, 10).padding(.vertical, 7)
@@ -108,12 +108,12 @@ struct RecDeck: View {
                 Circle().fill(T.lime.opacity(0.5)).frame(width: 44, height: 44)
                 Icon(.check, size: 18, weight: 2.4, color: T.ink)
             }
-            Text("All sorted").font(.system(size: 14.5, weight: .semibold))
-            Text("\(app.acceptedRecs.count) in your plan\(app.skippedCount > 0 ? " · \(app.skippedCount) skipped" : "")")
+            Text("全部处理完").font(.system(size: 14.5, weight: .semibold))
+            Text("\(app.acceptedRecs.count) 条已进计划\(app.skippedCount > 0 ? " · \(app.skippedCount) 条已跳过" : "")")
                 .font(.system(size: 11.5)).foregroundStyle(T.ink3)
             if app.skippedCount > 0 {
                 Button { app.restoreSkipped() } label: {
-                    Text("Review skipped").font(.system(size: 12, weight: .semibold))
+                    Text("回看跳过的").font(.system(size: 12, weight: .semibold))
                         .padding(.horizontal, 14).padding(.vertical, 8)
                         .background(Capsule().fill(.white))
                         .overlay(Capsule().strokeBorder(T.hair, lineWidth: 1))
@@ -168,7 +168,7 @@ struct RecCard: View {
                     if let imp = rec.impact {
                         VStack(spacing: 1) {
                             Text(String(format: "%.1f", imp)).numeral(20).foregroundStyle(rec.tagColor)
-                            Text("IMPACT").font(.system(size: 7.5, weight: .bold)).tracking(1)
+                            Text("影响力").font(.system(size: 7.5, weight: .bold)).tracking(1)
                                 .foregroundStyle(T.onD3)
                         }
                         .frame(width: 44)
@@ -182,7 +182,7 @@ struct RecCard: View {
                             if rec.saliva {
                                 HStack(spacing: 3) {
                                     Icon(.drop, size: 9, weight: 2.2, color: T.lime)
-                                    Text("BIOMARKER").font(.system(size: 8, weight: .bold)).tracking(0.8)
+                                    Text("生物标志物").font(.system(size: 8, weight: .bold)).tracking(0.8)
                                         .foregroundStyle(T.lime)
                                 }
                             }
@@ -204,7 +204,7 @@ struct RecCard: View {
                 if expanded {
                     VStack(alignment: .leading, spacing: 10) {
                         Rectangle().fill(T.hairD).frame(height: 1)
-                        Text("BUILT ON").font(.system(size: 8.5, weight: .bold)).tracking(1.4)
+                        Text("依据").font(.system(size: 8.5, weight: .bold)).tracking(1.4)
                             .foregroundStyle(T.onD3)
                         FlowWrap(rec.evidence) { e in
                             HStack(spacing: 4) {
@@ -234,7 +234,7 @@ struct RecCard: View {
                         withAnimation(.spring(response: 0.34, dampingFraction: 0.84)) { expanded.toggle() }
                     } label: {
                         HStack(spacing: 4) {
-                            Text(expanded ? "Less" : "Why this").font(.system(size: 10.5, weight: .semibold))
+                            Text(expanded ? "收起" : "为什么").font(.system(size: 10.5, weight: .semibold))
                             Icon(.chevron, size: 8, weight: 2.4, color: T.lime)
                                 .rotationEffect(.degrees(expanded ? -90 : 90))
                         }
@@ -259,17 +259,17 @@ struct CoverageStrip: View {
 
     private var hasSaliva: Bool { app.saliva == .reportReady }
     private var dims: [(String, Bool)] {
-        [("Sleep", true), ("HRV", true), ("RHR", true), ("Activity", true),
-         ("Cortisol", hasSaliva), ("DHEA", hasSaliva)]
+        [("睡眠", true), ("HRV", true), ("静息心率", true), ("活动", true),
+         ("皮质醇", hasSaliva), ("DHEA", hasSaliva)]
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("WHAT AIRA CAN SEE").font(.system(size: 9, weight: .bold)).tracking(1.4)
+                Text("AIRA 现在看得见").font(.system(size: 9, weight: .bold)).tracking(1.4)
                     .foregroundStyle(T.ink3)
                 Spacer()
-                Text("\(dims.filter(\.1).count) of 6 signals")
+                Text("\(dims.filter(\.1).count) / 6 个信号")
                     .font(.system(size: 10.5, weight: .semibold)).monospacedDigit()
                     .foregroundStyle(hasSaliva ? T.ink : T.ink2)
             }
@@ -292,8 +292,8 @@ struct CoverageStrip: View {
                 }
             }
             Text(hasSaliva
-                 ? "Saliva came back 10/21 — recommendations below now carry biomarker evidence."
-                 : "Working from device data. Saliva adds the two hormone signals — and sharper recommendations.")
+                 ? "唾液结果 10/21 已返回 —— 下面的建议已带上生物标志物证据。"
+                 : "目前只基于设备数据。唾液会补上两个激素信号 —— 以及更锋利的建议。")
                 .font(.system(size: 10.5)).foregroundStyle(T.ink3).lineSpacing(2.5)
         }
         .padding(13)

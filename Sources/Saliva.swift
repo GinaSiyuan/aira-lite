@@ -31,11 +31,11 @@ struct TestingView: View {
 
     private var statusLine: String {
         switch app.saliva {
-        case .notScheduled: "Not scheduled"
-        case .scheduled:    "Scheduled · tomorrow morning"
-        case .collecting:   "Collecting · \(app.points.filter { $0.done }.count) / 5"
-        case .shipped:      "Shipped · at the lab"
-        case .reportReady:  "Report ready"
+        case .notScheduled: "未安排"
+        case .scheduled:    "已安排 · 明天早上"
+        case .collecting:   "采集中 · \(app.points.filter { $0.done }.count) / 5"
+        case .shipped:      "已寄出 · 实验室处理中"
+        case .reportReady:  "报告已出"
         }
     }
 }
@@ -48,10 +48,10 @@ private struct IntroBlock: View {
         VStack(alignment: .leading, spacing: 16) {
             FogCard(tone: .cool) {
                 VStack(alignment: .leading, spacing: 14) {
-                    CardHead(icon: .drop, title: "Five tubes, one day", sub: "At home · mailed to the lab", chip: "~15 min", chipTone: .sky)
-                    Text("Why five time points")
+                    CardHead(icon: .drop, title: "五管，一天", sub: "在家完成 · 寄回实验室", chip: "约 15 分钟", chipTone: .sky)
+                    Text("为什么是五个时间点")
                         .font(.system(size: 17, weight: .semibold)).tracking(-0.4)
-                    Text("Cortisol can differ 10× across one day. The shape is the measurement — tap a point to see what it carries.")
+                    Text("同一个人一天内的皮质醇可以相差 10 倍。形状本身就是测量结果 —— 点一个点，看它承载什么。")
                         .font(.system(size: 13)).foregroundStyle(T.onD2).lineSpacing(3.5)
                     FiveTubesCurve().padding(.top, 4)
                 }
@@ -59,9 +59,9 @@ private struct IntroBlock: View {
 
             FogCard(tone: .flat) {
                 VStack(alignment: .leading, spacing: 12) {
-                    CardHead(icon: .info, title: "Avoid on sampling day",
-                             sub: "Four things — all of them skew the assay")
-                    ForEach(["No biotin (vitamin B7) for 24 h before", "No food or coffee for 30 min before", "No brushing for 10 min before — gum bleeding contaminates the sample", "Don't exercise after waking — first tube within 30 min"], id: \.self) { s in
+                    CardHead(icon: .info, title: "采样日注意避开",
+                             sub: "四件事 —— 都会让检测失真")
+                    ForEach(["前 24 小时停用生物素（维生素 B7）", "前 30 分钟不进食、不喝咖啡", "前 10 分钟不刷牙 —— 牙龈出血会污染样本", "醒来后先别运动 —— 第一管在醒后 30 分钟内"], id: \.self) { s in
                         HStack(alignment: .top, spacing: 10) {
                             Icon(.close, size: 10, weight: 2.4, color: T.coral)
                                 .frame(width: 18, height: 18)
@@ -73,7 +73,7 @@ private struct IntroBlock: View {
                 }
             }
 
-            CTA(title: "Schedule for tomorrow") { app.schedule() }
+            CTA(title: "安排在明天") { app.schedule() }
                 .padding(.top, 4)
         }
     }
@@ -87,11 +87,11 @@ private struct CollectBlock: View {
         VStack(alignment: .leading, spacing: 16) {
             FogCard {
                 VStack(alignment: .leading, spacing: 0) {
-                    CardHead(icon: .drop, title: "Today's five tubes", sub: "Oct 15",
+                    CardHead(icon: .drop, title: "今天的五管", sub: "10月15日",
                              chip: "\(app.points.filter { $0.done }.count) / 5", chipTone: .good)
                     Comb(count: 5, filled: Double(app.points.filter { $0.done }.count) / 5, height: 22)
                         .padding(.top, 14)
-                    Text("Sample at each time point — within 15 minutes is fine.")
+                    Text("在每个时间点采样 —— 前后 15 分钟内都有效。")
                         .font(.system(size: 11)).foregroundStyle(T.onD3).padding(.top, 8)
                 }
             }
@@ -120,7 +120,7 @@ private struct CollectBlock: View {
                             }
                             Spacer(minLength: 4)
                             if p.done {
-                                Text("Done").font(.system(size: 11.5, weight: .medium)).foregroundStyle(T.ink3)
+                                Text("完成").font(.system(size: 11.5, weight: .medium)).foregroundStyle(T.ink3)
                             } else {
                                 Icon(.chevron, size: 12, weight: 2.2, color: T.ink3)
                             }
@@ -135,7 +135,7 @@ private struct CollectBlock: View {
                 }
             }
 
-            Button("Demo: skip ahead to the report") { Haptic.tap(); app.fastForwardToReport() }
+            Button("演示：直接跳到报告") { Haptic.tap(); app.fastForwardToReport() }
                 .font(.system(size: 12.5)).foregroundStyle(T.ink3)
                 .frame(maxWidth: .infinity).padding(.top, 4)
         }
@@ -150,9 +150,9 @@ private struct ShippedBlock: View {
         VStack(alignment: .leading, spacing: 16) {
             FogCard(tone: .flat) {
                 VStack(alignment: .leading, spacing: 14) {
-                    CardHead(icon: .plan, title: "Shipped", sub: "Oct 15 · 18:20", chip: "Processing", chipTone: .off)
+                    CardHead(icon: .plan, title: "已寄出", sub: "10/15 · 18:20", chip: "处理中", chipTone: .off)
                     VStack(alignment: .leading, spacing: 12) {
-                        ForEach(Array([("All 5 tubes collected", true), ("Shipped", true), ("Lab processing", false), ("Report generated", false)].enumerated()), id: \.offset) { _, s in
+                        ForEach(Array([("五管全部采集完成", true), ("已寄出", true), ("实验室处理中", false), ("报告生成", false)].enumerated()), id: \.offset) { _, s in
                             HStack(spacing: 10) {
                                 ZStack {
                                     Circle().strokeBorder(.white.opacity(0.2), lineWidth: 1.4)
@@ -167,11 +167,11 @@ private struct ShippedBlock: View {
                             }
                         }
                     }
-                    Text("Results usually arrive in 5–7 business days. Aira will read them together with these weeks of sleep.")
+                    Text("结果通常 5–7 个工作日送达。Aira 会把它和这几周的睡眠放在一起解读。")
                         .font(.system(size: 12)).foregroundStyle(T.onD2).lineSpacing(3.5)
                 }
             }
-            CTA(title: "Demo: report ready") { app.deliverReport() }
+            CTA(title: "演示：报告已出") { app.deliverReport() }
         }
     }
 }
@@ -184,19 +184,19 @@ private struct ReadyBlock: View {
         VStack(alignment: .leading, spacing: 16) {
             FogCard(tone: .cool) {
                 VStack(alignment: .leading, spacing: 13) {
-                    CardHead(icon: .plan, title: "Report ready", sub: "Collected 10/15 · issued 10/21", chip: "Tense", chipTone: .warn)
-                    Text("HPA axis: Tense")
+                    CardHead(icon: .plan, title: "报告已出", sub: "采样 10/15 · 出具 10/21", chip: "紧绷", chipTone: .warn)
+                    Text("HPA 轴：紧绷")
                         .font(.system(size: 19, weight: .semibold)).tracking(-0.5)
-                    Text("Can't get going in the morning, can't switch off at night — matching what you said about waking tired and falling asleep later.")
+                    Text("早上启动不了，晚上关不掉 —— 和你说的「醒来疲惫、入睡变晚」对得上。")
                         .font(.system(size: 13.5)).foregroundStyle(T.onD2).lineSpacing(4)
                 }
             }
-            CTA(title: "Open full report") { app.go(.report) }
+            CTA(title: "打开完整报告") { app.go(.report) }
             if app.retestScheduled {
                 HStack(spacing: 8) {
                     Icon(.check, size: 13, weight: 2.4, color: T.ink)
                         .frame(width: 22, height: 22).background(Circle().fill(T.lime))
-                    Text("Re-test scheduled · 10/24 + 10/25, same time points")
+                    Text("已安排复测 · 10/24 + 10/25，相同时间点")
                         .font(.system(size: 12.5, weight: .medium)).foregroundStyle(T.ink2)
                     Spacer()
                 }
@@ -207,7 +207,7 @@ private struct ReadyBlock: View {
                     Haptic.ok()
                     withAnimation(.spring(response: 0.32, dampingFraction: 0.84)) { app.retestScheduled = true }
                 } label: {
-                    Text("Collect 2 more days — confirm the state")
+                    Text("再采 2 天 —— 确认这个状态")
                         .font(.system(size: 13, weight: .semibold)).foregroundStyle(T.ink)
                         .frame(maxWidth: .infinity).padding(.vertical, 13)
                         .background(Capsule().fill(.white))
@@ -227,16 +227,16 @@ struct GuidanceFlow: View {
     @Environment(\.dismiss) private var dismiss
 
     private let steps: [(String, String)] = [
-        ("Rinse with water",
-         "Rinse for 10 seconds and spit. No brushing, no mouthwash — both skew results."),
-        ("Wait 10 minutes",
-         "Let your mouth return to baseline. Nothing to eat or drink while you wait."),
-        ("Hold the swab for 2 minutes",
-         "Under the tongue, don't chew. Saturated is enough — no effort needed."),
-        ("Back in the tube, seal it",
-         "Drop the swab straight in without touching the tip, press the cap until it clicks."),
-        ("Label the time point",
-         "Write the time point and the actual clock time — a wrong label makes the result unusable.")
+        ("清水漱口",
+         "漱 10 秒后吐掉。不要刷牙、不要用漱口水 —— 两者都会让结果失真。"),
+        ("等待 10 分钟",
+         "让口腔回到基线。等待期间不吃不喝。"),
+        ("含住采样棉 2 分钟",
+         "放在舌下，不要咀嚼。浸透即可 —— 不用使劲。"),
+        ("放回管中，封好",
+         "不碰棉头，直接放入，按下管盖直到咔哒一声。"),
+        ("标注时间点",
+         "写上时间点和实际时刻 —— 标错会让这管结果作废。")
     ]
 
     var body: some View {
@@ -251,7 +251,7 @@ struct GuidanceFlow: View {
                 HStack {
                     HStack(spacing: 7) {
                         Circle().fill(T.lime).frame(width: 6, height: 6)
-                        Text(app.activePoint.map { app.points[$0].name } ?? "Collection")
+                        Text(app.activePoint.map { app.points[$0].name } ?? "采集")
                             .font(.system(size: 12, weight: .semibold)).foregroundStyle(T.ink2)
                     }
                     .padding(.horizontal, 11).padding(.vertical, 7)
@@ -272,11 +272,11 @@ struct GuidanceFlow: View {
 
                 // 文案区：对齐 onboarding 的排版（kicker → serif 大标题 → 小字说明）
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("STEP \(app.stepIndex + 1) OF \(steps.count)")
+                    Text("第 \(app.stepIndex + 1) 步 · 共 \(steps.count) 步")
                         .font(.system(size: 10, weight: .bold)).tracking(1.6)
                         .foregroundStyle(T.ink3)
                     Text(steps[app.stepIndex].0)
-                        .font(.system(size: 28, weight: .semibold, design: .serif)).tracking(-0.6)
+                        .font(.serifZh(27))
                         .foregroundStyle(T.ink)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 8)
@@ -288,7 +288,7 @@ struct GuidanceFlow: View {
                     if app.stepIndex == 1 {
                         HStack(spacing: 8) {
                             Icon(.bell, size: 12, weight: 2, color: T.ink)
-                            Text("Aira will remind you in 10 minutes")
+                            Text("Aira 会在 10 分钟后提醒你")
                                 .font(.system(size: 12, weight: .medium)).foregroundStyle(T.ink2)
                         }
                         .padding(.horizontal, 12).padding(.vertical, 9)
@@ -317,7 +317,7 @@ struct GuidanceFlow: View {
                             }
                             .buttonStyle(PressStyle())
                         }
-                        CTA(title: app.stepIndex == steps.count - 1 ? "Tube done" : "Next") {
+                        CTA(title: app.stepIndex == steps.count - 1 ? "这管完成" : "下一步") {
                             if app.stepIndex == steps.count - 1 {
                                 if let i = app.activePoint { app.completePoint(i) }
                                 dismiss()

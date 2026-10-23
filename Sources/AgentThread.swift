@@ -116,11 +116,11 @@ struct AgentThreadView: View {
 
     private var stageLine: String {
         switch app.saliva {
-        case .notScheduled: "Tracking · recovery load, 7d"
-        case .scheduled:    "Tracking · collection starts tomorrow"
-        case .collecting:   "Tracking · collecting \(app.points.filter { $0.done }.count)/5"
-        case .shipped:      "Tracking · waiting on the lab"
-        case .reportReady:  "Tracking · report and plan"
+        case .notScheduled: "追踪中 · 恢复负荷 7 天"
+        case .scheduled:    "追踪中 · 明天开始采集"
+        case .collecting:   "追踪中 · 已采 \(app.points.filter { $0.done }.count)/5"
+        case .shipped:      "追踪中 · 等待实验室"
+        case .reportReady:  "追踪中 · 报告与计划"
         }
     }
 
@@ -170,7 +170,7 @@ struct AgentThreadView: View {
 
         case .agentQualifier(let h, let b, let a):
             Qualifier(head: h, body_: b, action: a) {
-                if a?.contains("Arrange") == true { app.schedule(); send("Schedule for tomorrow") }
+                if a?.contains("安排") == true { app.schedule(); send("安排在明天") }
             }
             .padding(.top, -12)
             .padding(.trailing, 34)
@@ -308,7 +308,7 @@ struct AgentThreadView: View {
 
                 HStack(spacing: 8) {
                     TextField("", text: $typed,
-                              prompt: Text("Message").foregroundStyle(.white.opacity(0.38)))
+                              prompt: Text("发消息").foregroundStyle(.white.opacity(0.38)))
                         .textFieldStyle(.plain).font(.system(size: 15))
                         .foregroundStyle(.white)
                         .focused($focus)
@@ -340,17 +340,17 @@ struct AgentThreadView: View {
     /// 建议条：第一条是当前阶段的主行动（高亮），后面是追问
     private var primaryChip: String? {
         switch app.saliva {
-        case .notScheduled: app.sent.contains("Schedule for tomorrow") ? nil : "Schedule for tomorrow"
-        case .reportReady:  app.sent.contains("Open full report") ? nil : "Open full report"
+        case .notScheduled: app.sent.contains("安排在明天") ? nil : "安排在明天"
+        case .reportReady:  app.sent.contains("打开完整报告") ? nil : "打开完整报告"
         default: nil
         }
     }
     private var contextChips: [String] {
         switch app.saliva {
-        case .notScheduled: ["Why saliva?", "What's wrong with my sleep?", "Show me Home"]
-        case .scheduled, .collecting: ["What should I avoid?", "What if I miss a time point?", "Progress?"]
-        case .shipped: ["How long will it take?", "What can I do meanwhile?"]
-        case .reportReady: ["What does Strained mean?", "Why these three?"]
+        case .notScheduled: ["为什么是唾液？", "我的睡眠哪里有问题？", "带我看首页"]
+        case .scheduled, .collecting: ["采样日要避免什么？", "错过时间点怎么办？", "进度如何？"]
+        case .shipped: ["要等多久？", "等待期间我能做什么？"]
+        case .reportReady: ["「透支」是什么意思？", "为什么是这三件事？"]
         }
     }
 
@@ -361,9 +361,9 @@ struct AgentThreadView: View {
     private func send(_ s: String) {
         guard !app.sent.contains(s) else { return }
         withAnimation(.smooth) { app.sent.append(s); app.unread = 0 }
-        if s == "Schedule for tomorrow" { app.schedule() }
-        if s == "Open full report" { app.go(.report) }
-        if s == "Show me Home" { app.tab = 0 }
+        if s == "安排在明天" { app.schedule() }
+        if s == "打开完整报告" { app.go(.report) }
+        if s == "带我看首页" { app.tab = 0 }
     }
 
     // MARK: 线程内容（由状态生成，保证前后文一致）
@@ -371,49 +371,49 @@ struct AgentThreadView: View {
     private var items: [ThreadItem] {
         var out: [ThreadItem] = []
 
-        out.append(.stageMark("Tue, Oct 14"))
-        out.append(.agentText("Your data is in. I looked at the last 7 days."))
+        out.append(.stageMark("10月14日 周二"))
+        out.append(.agentText("你的数据进来了。我看了最近 7 天。"))
         out.append(.agentCard(AnyView(NightCard(compact: true).environmentObject(app))))
-        out.append(.agentLead("It's not that you slept less — you slept broken."))
-        out.append(.agentText("Total is 64 min below baseline, but the night broke into 5 pieces and the longest was only 2 hours. Deep sleep accumulates in long blocks — which matches you waking up tired."))
+        out.append(.agentLead("不是睡少了 —— 是睡碎了。"))
+        out.append(.agentText("总时长比基线少 64 分钟，但整夜断成 5 段，最长一段只有 2 小时。深睡需要长段连续累积 —— 这正对上你醒来仍然疲惫。"))
 
         if app.saliva == .notScheduled {
-            out.append(.agentQualifier("That's as far as I can go",
-                "Sleep and heart rate only show recovery load went up — not why. Night caregiving and a work crunch fell in the same window, and the data can't separate them.",
+            out.append(.agentQualifier("我只能说到这里",
+                "睡眠和心率只能显示恢复负荷升高了 —— 说不了为什么。夜间照护和工作冲刺落在同一个窗口里，数据分不开它们。",
                 nil))
-            out.append(.agentText("Salivary cortisol can separate them — the morning rise tells us whether this is the HPA axis itself or plain sleep debt."))
+            out.append(.agentText("唾液皮质醇能把它们分开 —— 晨间上升会告诉我们：这是 HPA 轴本身的问题，还是单纯的睡眠欠债。"))
         }
 
         for s in app.sent { out.append(contentsOf: exchange(for: s)) }
 
         if app.saliva >= .scheduled && app.saliva < .reportReady {
-            out.append(.stageMark("Collection"))
+            out.append(.stageMark("采集"))
             switch app.saliva {
             case .scheduled:
-                out.append(.agentText("Scheduled for tomorrow. First tube within 30 min of waking — I'll remind you at your usual wake time."))
-                out.append(.agentText("Stop biotin (vitamin B7) supplements starting tonight — it interferes with the assay."))
+                out.append(.agentText("已安排在明天。醒后 30 分钟内取第一管 —— 我会在你平时的起床时间提醒你。"))
+                out.append(.agentText("今晚开始停用生物素（维生素 B7）补剂 —— 它会干扰检测。"))
             case .collecting:
                 let n = app.points.filter { $0.done }.count
-                out.append(.agentText("\(n) done. Next up: \(app.points.first(where: { !$0.done })?.name ?? "") at \(app.points.first(where: { !$0.done })?.when ?? "")."))
+                out.append(.agentText("已完成 \(n) 管。下一管：\(app.points.first(where: { !$0.done })?.name ?? "")，\(app.points.first(where: { !$0.done })?.when ?? "")。"))
             case .shipped:
-                out.append(.agentText("All five tubes are in and shipped. Results usually take 5–7 business days."))
-                out.append(.agentText("I'll keep watching your sleep meanwhile. If onset steadies, we'll be able to tell which changes came from the intervention."))
+                out.append(.agentText("五管全部收齐并寄出了。结果通常需要 5–7 个工作日。"))
+                out.append(.agentText("等待期间我会继续盯着你的睡眠。如果入睡点稳定下来，我们就能分清哪些变化来自干预本身。"))
             default: break
             }
         }
 
         if app.saliva == .reportReady {
-            out.append(.stageMark("Report"))
-            if !app.sent.contains("Open full report") {
-                out.append(.deepThink("Running joint analysis on your saliva result and 30 days of wearable data"))
+            out.append(.stageMark("报告"))
+            if !app.sent.contains("打开完整报告") {
+                out.append(.deepThink("正在把你的唾液结果与 30 天可穿戴数据做联合分析"))
             }
-            out.append(.agentText("The report is in."))
-            out.append(.agentLead("You're Strained — can't get going when you should, can't stop when you should."))
+            out.append(.agentText("报告出来了。"))
+            out.append(.agentLead("你的状态是「透支」—— 该启动时启动不了，该停下时停不下来。"))
             out.append(.agentCard(AnyView(HPAMiniCard())))
-            out.append(.agentText("The morning rise that should be there didn't happen (CAR 32%, expected >50%), and the afternoon and evening never came down (AUCg 33.3 vs 22.0 for Balanced). Both ends match what you told me."))
-            out.append(.agentQualifier("Only one day",
-                "Only one day sampled. Balanced and Strained overlap on single-day data — add the +30 min and before-bed points to confirm.", nil))
-            out.append(.agentText("I drafted three, ranked by impact. The first one works on both ends at once."))
+            out.append(.agentText("该出现的晨间上升没有出现（CAR 32%，预期 >50%），下午和晚上也始终没降下来（AUCg 33.3，平衡值 22.0）。两端都和你说的对得上。"))
+            out.append(.agentQualifier("只有一天",
+                "只采了一天。单日数据上「平衡」与「透支」会重叠 —— 补采「醒后 +30 分钟」和「睡前」两个点来确认。", nil))
+            out.append(.agentText("我起草了三条行动，按影响力排序。第一条同时作用于两端。"))
             out.append(.agentCard(AnyView(PlanHandoffCard())))
         }
 
@@ -458,34 +458,34 @@ struct AgentThreadView: View {
     private func exchange(for s: String) -> [ThreadItem] {
         var out: [ThreadItem] = [.user(s)]
         switch s {
-        case "Schedule for tomorrow":
-            out.append(.agentText("Done. First tube at 06:45 tomorrow — I'll remind you. The step-by-step guide lives under Collection."))
-        case "Why saliva?":
-            out.append(.agentText("Saliva is the only easy way to measure free cortisol — most of what's in blood is protein-bound and doesn't reflect current regulation. Saliva also lets you sample 5× a day; blood doesn't."))
-            out.append(.agentText("Cortisol is strongly circadian — 10× between morning and night in the same person. One reading proves nothing; the daily shape does."))
-        case "What's wrong with my sleep?":
-            out.append(.agentText("Duration is 64 min short, but fragmentation matters more: 3 awakenings totalling 42 min, against a baseline of 1.2 and 13 min. The longest unbroken block is 2 hours — deep sleep can't accumulate."))
-        case "Show me Home":
-            out.append(.agentText("Sure. Home is organised by day — you can scrub back through the week."))
-        case "What should I avoid?":
-            out.append(.agentText("Three things: no food or coffee 30 min before, no brushing 10 min before, no exercise after waking. The time point matters more than precision — within 15 minutes is fine."))
-        case "What if I miss a time point?":
-            out.append(.agentText("Write the actual clock time on the label, not the planned one. I compute CAR from the real time — a wrong label makes it incomparable."))
-        case "Progress?":
-            out.append(.agentText("\(app.points.filter { $0.done }.count) of 5 done. Next tube \(app.points.first(where: { !$0.done })?.when ?? "—")."))
-        case "How long will it take?":
-            out.append(.agentText("5–7 business days. You'll hear from me the moment it lands."))
-        case "What can I do meanwhile?":
-            out.append(.agentText("Start with a fixed wake time. It doesn't depend on saliva, and it helps us attribute changes once the report lands."))
-        case "What does Strained mean?":
-            out.append(.agentText("Can't get going when you should, can't stop when you should. The morning side means your body hasn't entered a ready state; the evening side means it stays on alert, which makes falling asleep harder."))
-        case "Why these three?":
-            out.append(.agentText("Fixed wake time carries the highest weight (9.1) and is the only one acting on both ends — set the wake time and sleep onset drifts earlier on its own. The other two target the evening end and the afternoon trough."))
-            out.append(.agentText("No supplement advice this round — the data can't support that call yet."))
-        case "Open full report":
-            out.append(.agentText("Opened. Chapter three is entirely about what still can't be known this round."))
+        case "安排在明天":
+            out.append(.agentText("好了。明天 06:45 第一管 —— 我会提醒你。分步指引就在「采集」里。"))
+        case "为什么是唾液？":
+            out.append(.agentText("唾液是测量游离皮质醇唯一方便的途径 —— 血液里的大部分皮质醇被蛋白结合着，反映不了当下的调节状态。而且唾液一天能采 5 次，血液做不到。"))
+            out.append(.agentText("皮质醇有很强的昼夜节律 —— 同一个人早晚能差 10 倍。单次读数说明不了什么，一整天的形状才说明问题。"))
+        case "我的睡眠哪里有问题？":
+            out.append(.agentText("时长少了 64 分钟，但碎片化更关键：3 次觉醒共 42 分钟，而你的基线是 1.2 次、13 分钟。最长连续段只有 2 小时 —— 深睡累积不起来。"))
+        case "带我看首页":
+            out.append(.agentText("好。首页按天组织 —— 你可以往回拖着看这一周。"))
+        case "采样日要避免什么？":
+            out.append(.agentText("三件事：采样前 30 分钟不进食不喝咖啡，前 10 分钟不刷牙，醒来后先别运动。时间点比精确更重要 —— 前后 15 分钟内都有效。"))
+        case "错过时间点怎么办？":
+            out.append(.agentText("在标签上写实际时刻，不要写计划时刻。我按真实时间计算 CAR —— 标错了反而没法比。"))
+        case "进度如何？":
+            out.append(.agentText("已完成 \(app.points.filter { $0.done }.count)/5。下一管 \(app.points.first(where: { !$0.done })?.when ?? "—")。"))
+        case "要等多久？":
+            out.append(.agentText("5–7 个工作日。结果一到我马上告诉你。"))
+        case "等待期间我能做什么？":
+            out.append(.agentText("先固定起床时间。它不依赖唾液结果，而且等报告落地后，也方便我们归因哪些变化来自干预。"))
+        case "「透支」是什么意思？":
+            out.append(.agentText("该启动时启动不了，该停下时停不下来。早晨那端意味着身体没有进入就绪状态；夜晚那端意味着持续警觉 —— 这会让入睡更难。"))
+        case "为什么是这三件事？":
+            out.append(.agentText("固定起床时间权重最高（9.1），而且是唯一同时作用于两端的 —— 定住起床时间，入睡点会自己前移。另外两条分别针对夜晚那端和午后低谷。"))
+            out.append(.agentText("这一轮不给补剂建议 —— 现有数据还撑不起那个判断。"))
+        case "打开完整报告":
+            out.append(.agentText("打开了。第三章整章都在讲这一轮还无法断言的事。"))
         default:
-            out.append(.agentText("That needs data you haven't synced yet. I have sleep, HRV, resting heart rate and activity — happy to go deeper on those. For hormones or metabolism, I'd rather wait for saliva."))
+            out.append(.agentText("这需要你还没同步的数据。我手上有睡眠、HRV、静息心率和活动 —— 这些可以聊得很深。激素和代谢的问题，我更想等唾液结果。"))
         }
         return out
     }
@@ -500,15 +500,15 @@ struct HPAMiniCard: View {
             HStack(spacing: 9) {
                 IBadge(icon: .breath)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("HPA axis").font(.system(size: 13, weight: .semibold))
-                    Text("Saliva · 10/15").font(.system(size: 10.5)).foregroundStyle(.white.opacity(0.45))
+                    Text("HPA 轴").font(.system(size: 13, weight: .semibold))
+                    Text("唾液 · 10/15").font(.system(size: 10.5)).foregroundStyle(.white.opacity(0.45))
                 }
                 Spacer()
-                Chip(text: "Slower regulation", tone: .warn)
+                Chip(text: "调节变慢", tone: .warn)
             }
             HStack(alignment: .firstTextBaseline, spacing: 7) {
-                Text("Tense").numeral(25).foregroundStyle(T.amber)
-                Text("Strained").font(.system(size: 12.5)).foregroundStyle(.white.opacity(0.55))
+                Text("紧绷").font(.system(size: 24, weight: .semibold)).foregroundStyle(T.amber)
+                Text("透支").font(.system(size: 12.5)).foregroundStyle(.white.opacity(0.55))
             }
             .padding(.top, 11)
             HPADeviation().padding(.top, 8)
@@ -533,21 +533,21 @@ struct ContextStrip: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 7) {
-                chip(icon: .recover, label: "Recovery", value: "60 · high", warn: true) {
+                chip(icon: .recover, label: "恢复", value: "60 · 偏高", warn: true) {
                     app.go(.detail(.recovery))
                 }
-                chip(icon: .moon, label: "Sleep", value: "6:31 ↓64m", warn: true) {
+                chip(icon: .moon, label: "睡眠", value: "6:31 ↓64分", warn: true) {
                     app.go(.detail(.night))
                 }
                 chip(icon: .pulse, label: "HRV", value: "42 ms", warn: false) {
                     app.go(.detail(.recovery))
                 }
                 if app.saliva == .reportReady {
-                    chip(icon: .drop, label: "HPA", value: "Strained", warn: true) {
+                    chip(icon: .drop, label: "HPA", value: "透支", warn: true) {
                         app.go(.report)
                     }
                 } else {
-                    chip(icon: .drop, label: "Saliva", value: salivaShort, warn: false) {
+                    chip(icon: .drop, label: "唾液", value: salivaShort, warn: false) {
                         app.go(.testing)
                     }
                 }
@@ -559,11 +559,11 @@ struct ContextStrip: View {
 
     private var salivaShort: String {
         switch app.saliva {
-        case .notScheduled: "not scheduled"
-        case .scheduled: "tomorrow"
+        case .notScheduled: "未安排"
+        case .scheduled: "明天"
         case .collecting: "\(app.points.filter { $0.done }.count)/5"
-        case .shipped: "at the lab"
-        case .reportReady: "ready"
+        case .shipped: "实验室中"
+        case .reportReady: "已出"
         }
     }
 
@@ -595,8 +595,8 @@ struct PlanHandoffCard: View {
             HStack(spacing: 9) {
                 IBadge(icon: .plan)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Three actions drafted").font(.system(size: 13, weight: .semibold))
-                    Text("Swipe to accept or skip, over in Plan")
+                    Text("已起草 3 条行动").font(.system(size: 13, weight: .semibold))
+                    Text("到「计划」里滑动卡片，接受或跳过")
                         .font(.system(size: 10.5)).foregroundStyle(.white.opacity(0.45))
                 }
                 Spacer()
@@ -628,7 +628,7 @@ struct PlanHandoffCard: View {
                 withAnimation(.spring(response: 0.32, dampingFraction: 0.84)) { app.tab = 2 }
             } label: {
                 HStack(spacing: 7) {
-                    Text("Review in Plan").font(.system(size: 12.5, weight: .semibold))
+                    Text("去计划里处理").font(.system(size: 12.5, weight: .semibold))
                     Icon(.arrowRight, size: 12, weight: 2.2, color: T.ink)
                 }
                 .foregroundStyle(T.ink)

@@ -11,7 +11,7 @@ struct AgentChips: View {
         VStack(alignment: .leading, spacing: 7) {
             HStack(spacing: 6) {
                 Image(systemName: "sparkle").font(.system(size: 9, weight: .bold))
-                Text("Ask Aira about\(subject)")
+                Text("问 Aira · \(subject)")
                     .font(.system(size: 9, weight: .bold)).tracking(1.2).textCase(.uppercase)
             }
             .foregroundStyle(T.onD3)
@@ -184,7 +184,7 @@ struct AskSheet: View {
                     HStack {
                         HStack(spacing: 6) {
                             Image(systemName: "sparkle").font(.system(size: 10, weight: .bold))
-                            Text("About: \(ctx.subject)").font(.system(size: 12, weight: .medium))
+                            Text("关于：\(ctx.subject)").font(.system(size: 12, weight: .medium))
                         }
                         .padding(.horizontal, 11).padding(.vertical, 6)
                         .background(Capsule().fill(.white.opacity(0.12)))
@@ -198,7 +198,7 @@ struct AskSheet: View {
                     }
                     .padding(.top, 8)
 
-                    Text("What would you like to know?")
+                    Text("你想了解什么？")
                         .font(.system(size: 24, weight: .semibold)).tracking(-0.6)
 
                     VStack(alignment: .leading, spacing: 9) {
@@ -238,7 +238,7 @@ struct AskSheet: View {
                     }
 
                     HStack(spacing: 10) {
-                        TextField("", text: $typed, prompt: Text("Ask something else…").foregroundStyle(T.onD3))
+                        TextField("", text: $typed, prompt: Text("问点别的……").foregroundStyle(T.onD3))
                             .textFieldStyle(.plain)
                             .font(.system(size: 14))
                             .foregroundStyle(.white)
@@ -258,7 +258,7 @@ struct AskSheet: View {
                         .disabled(typed.isEmpty)
                     }
 
-                    Text("Aira answers from the data you've synced. Not for medical diagnosis.")
+                    Text("Aira 基于你已同步的数据作答。不用于医疗诊断。")
                         .font(.system(size: 11)).foregroundStyle(T.onD3).padding(.bottom, 24)
                 }
                 .padding(.horizontal, 20)
@@ -272,7 +272,7 @@ struct AskSheet: View {
         guard !typed.isEmpty else { return }
         let q = typed
         withAnimation(.spring(response: 0.36, dampingFraction: 0.84)) {
-            let qa = AgentQA(q: q, a: "That needs data you haven't synced yet. I have sleep, HRV, resting heart rate and activity — happy to go deeper on those. For hormones or metabolism, I'd rather answer once saliva is back.")
+            let qa = AgentQA(q: q, a: "这需要你还没同步的数据。我手上有睡眠、HRV、静息心率和活动 —— 这些可以聊得很深。激素和代谢的问题，等唾液结果回来我再答。")
             custom.insert(qa, at: 0)
             opened.insert(qa.id)
             typed = ""
@@ -289,7 +289,7 @@ struct AskButton: View {
         Button { Haptic.tap(); action() } label: {
             HStack(spacing: 5) {
                 Image(systemName: "sparkle").font(.system(size: 10, weight: .bold))
-                Text("Ask Aira").font(.system(size: 11, weight: .medium))
+                Text("问 Aira").font(.system(size: 11, weight: .medium))
             }
             .padding(.horizontal, 10).padding(.vertical, 6)
             .background(Capsule().fill(.white.opacity(0.12)))

@@ -12,10 +12,10 @@ struct AnalyzingScreen: View {
     @State private var line = 0
 
     private let lines = [
-        "Reading 5 saliva time points",
-        "Aligning them with 30 days of sleep",
-        "Comparing against your own baseline",
-        "Separating what's known from what isn't"
+        "读取 5 个唾液时间点",
+        "与 30 天睡眠数据对齐",
+        "对照你自己的基线",
+        "区分已知与未知"
     ]
 
     var body: some View {
@@ -28,7 +28,7 @@ struct AnalyzingScreen: View {
 
                 TextSphere(word: "AIRA", count: 84, size: 260, energy: 0.55)
 
-                Text("Joint analysis")
+                Text("联合分析")
                     .font(.system(size: 22, weight: .semibold)).tracking(-0.5)
                     .foregroundStyle(.white)
                     .padding(.top, 26)
@@ -56,7 +56,7 @@ struct AnalyzingScreen: View {
 
                 Spacer()
 
-                Text("This takes a moment — it's reading both sides against each other,\nnot scoring them separately.")
+                Text("这需要一点时间 —— 它在把两侧互相对照着读，\n而不是分别打分。")
                     .font(.system(size: 11)).foregroundStyle(.white.opacity(0.34))
                     .multilineTextAlignment(.center).lineSpacing(3)
                     .padding(.bottom, 34)

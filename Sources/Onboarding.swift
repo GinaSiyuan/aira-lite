@@ -45,7 +45,7 @@ struct OnbShell<C: View>: View {
             .padding(.top, 8)
             .animation(.smooth(duration: 0.4), value: step)
 
-            Text(title).font(.system(size: 28, weight: .semibold, design: .serif)).tracking(-0.6)
+            Text(title).font(.serifZh(27))
                 .fixedSize(horizontal: false, vertical: true).padding(.top, 22)
             if !sub.isEmpty {
                 Text(sub).font(.system(size: 13.5)).foregroundStyle(T.ink2).lineSpacing(3.5)
@@ -88,7 +88,7 @@ struct WelcomeView: View {
                         .font(.system(size: 12, weight: .bold)).tracking(4)
                         .foregroundStyle(.white.opacity(0.9))
                     Spacer()
-                    Text("Early access")
+                    Text("抢先体验")
                         .font(.system(size: 10, weight: .semibold)).tracking(0.6)
                         .padding(.horizontal, 9).padding(.vertical, 5)
                         .background(Capsule().fill(.white.opacity(0.10)))
@@ -104,25 +104,22 @@ struct WelcomeView: View {
 
                 Spacer(minLength: 6)
 
-                Text("Stress isn't\na feeling.")
-                    .font(.system(size: 40, weight: .semibold, design: .serif))
-                    .tracking(-1.2)
+                Text("压力不是\n一种感觉。")
+                    .font(.serifZh(36))
                     .foregroundStyle(.white)
-                Text("It has a shape.")
-                    .font(.system(size: 40, weight: .regular, design: .serif))
-                    .italic()
-                    .tracking(-1.2)
+                Text("它有形状。")
+                    .font(.serifZh(36, .medium))
                     .foregroundStyle(T.lime)
 
-                Text("Aira reads your sleep, heart rate and salivary cortisol together — then names the state your body is in, and what still can't be known.")
+                Text("Aira 把睡眠、心率与唾液皮质醇放在一起解读 —— 说清你的身体正处于什么状态，以及哪些还无法断言。")
                     .font(.system(size: 12.5)).foregroundStyle(.white.opacity(0.58)).lineSpacing(3.5)
                     .padding(.top, 10)
 
                 Spacer(minLength: 8)
 
                 VStack(spacing: 13) {
-                    valueRow(index: 0, title: "Your wearables",
-                             sub: "Apple Health, Oura, WHOOP — last 30 days") {
+                    valueRow(index: 0, title: "你的可穿戴设备",
+                             sub: "Apple Health、Oura、WHOOP · 近 30 天") {
                         // 扇形散开，像随手摆在桌上
                         ZStack {
                             SourceMark(kind: .whoop, size: 30)
@@ -134,22 +131,22 @@ struct WelcomeView: View {
                         }
                         .frame(width: 88, alignment: .center)
                     }
-                    valueRow(index: 1, title: "A saliva sample",
-                             sub: "Five tubes in one day, at home") {
+                    valueRow(index: 1, title: "一次唾液采样",
+                             sub: "一天五管，在家完成") {
                         SampleKitMark(size: 40).rotationEffect(.degrees(-5))
                             .frame(width: 88, alignment: .center)
                     }
-                    valueRow(index: 2, title: "One joint read",
-                             sub: "Your state, your plan, and the open questions") {
+                    valueRow(index: 2, title: "一份联合解读",
+                             sub: "你的状态、你的计划，以及仍未知的问题") {
                         ReportMark(size: 40).rotationEffect(.degrees(4))
                             .frame(width: 88, alignment: .center)
                     }
                 }
 
-                CTA(title: "Get started") { Haptic.ok(); app.phase = .connect }
+                CTA(title: "开始使用") { Haptic.ok(); app.phase = .connect }
                     .padding(.top, 16)
                     .opacity(appear ? 1 : 0)
-                Text("Aira is not a medical device. For wellness guidance only.")
+                Text("Aira 不是医疗器械，仅用于健康生活指导。")
                     .font(.system(size: 10.5)).foregroundStyle(.white.opacity(0.32))
                     .padding(.top, 10).frame(maxWidth: .infinity, alignment: .center)
             }
@@ -184,7 +181,7 @@ struct WelcomeHero: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 8) {
                     Circle().fill(T.lime).frame(width: 6, height: 6)
-                    Text("CORTISOL · ONE DAY")
+                    Text("皮质醇 · 单日曲线")
                         .font(.system(size: 9, weight: .bold)).tracking(1.4)
                         .foregroundStyle(.white.opacity(0.55))
                     Spacer()
@@ -192,7 +189,7 @@ struct WelcomeHero: View {
                 }
                 CortisolSketch().frame(height: 70).padding(.top, 10)
                 HStack(spacing: 4) {
-                    ForEach(Array(["Depleted", "Balanced", "Activated", "Tense", "Over"].enumerated()), id: \.offset) { i, s in
+                    ForEach(Array(["耗竭", "平衡", "激活", "紧绷", "过载"].enumerated()), id: \.offset) { i, s in
                         VStack(spacing: 5) {
                             Capsule().fill(i == 3 ? T.lime : .white.opacity(0.16))
                                 .frame(height: 3)
@@ -210,7 +207,7 @@ struct WelcomeHero: View {
 
             VStack(alignment: .trailing, spacing: 7) {
                 floatChip("48", "ms", "HRV")
-                floatChip("6:31", "", "Sleep")
+                floatChip("6:31", "", "睡眠")
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
             .offset(y: 20)
@@ -287,9 +284,9 @@ struct ConnectView: View {
 
     var body: some View {
         OnbShell(step: 0, total: Self.onbTotal,
-                 title: "Connect your data",
-                 sub: "Read-only. Aira imports the last 30 days so your first read already has a baseline to compare against.",
-                 cta: app.healthGranted ? "Import last 30 days" : "Connect Apple Health",
+                 title: "连接你的数据",
+                 sub: "只读权限。Aira 会导入最近 30 天数据，让你的第一份解读一开始就有基线可对比。",
+                 cta: app.healthGranted ? "导入最近 30 天" : "连接 Apple Health",
                  onBack: { app.phase = .welcome },
                  onNext: {
                      if app.healthGranted { app.beginSync() }
@@ -300,7 +297,7 @@ struct ConnectView: View {
                     SourceMark(kind: .appleHealth, size: 48)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Apple Health").font(.system(size: 15, weight: .semibold))
-                        Text(app.healthGranted ? "Connected · 5 data types" : "Required — this is where the signal comes from")
+                        Text(app.healthGranted ? "已连接 · 5 类数据" : "必须连接 —— 信号的来源")
                             .font(.system(size: 11.5)).foregroundStyle(app.healthGranted ? T.ink2 : T.ink3)
                     }
                     Spacer(minLength: 0)
@@ -343,7 +340,7 @@ struct ConnectView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 9) {
-                    Text("Add a wearable (optional)")
+                    Text("添加可穿戴设备（可选）")
                         .font(.system(size: 12.5, weight: .semibold)).foregroundStyle(T.ink2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     HStack(spacing: 9) {
@@ -376,7 +373,7 @@ struct ConnectView: View {
 
                 HStack(alignment: .top, spacing: 9) {
                     Icon(.info, size: 13, weight: 1.8, color: T.ink3).padding(.top, 1)
-                    Text("No watch? iPhone's own sleep and step data works — Aira just marks the lower precision in every conclusion drawn from it.")
+                    Text("没有手表？iPhone 自带的睡眠和步数也可用 —— Aira 只是会在据此得出的每个结论里，标注精度较低。")
                         .font(.system(size: 11.5)).foregroundStyle(T.ink3).lineSpacing(3)
                 }
                 .padding(.top, 2)
@@ -393,11 +390,11 @@ struct ConnectView: View {
     }
 
     static let types: [(Ico, String, String)] = [
-        (.moon,  "Sleep analysis", "Duration, stages, awakenings"),
-        (.pulse, "Heart rate variability", "The core recovery signal"),
-        (.pulse, "Resting heart rate", "Read with HRV — never alone"),
-        (.steps, "Steps & activity", "The load side of the balance"),
-        (.breath,"Respiratory rate", "Side evidence for illness")
+        (.moon,  "睡眠分析", "时长、分期、觉醒次数"),
+        (.pulse, "心率变异性", "恢复状况的核心信号"),
+        (.pulse, "静息心率", "与 HRV 一起读，从不单看"),
+        (.steps, "步数与活动", "负荷侧的证据"),
+        (.breath,"呼吸频率", "疾病的旁证")
     ]
 }
 
@@ -405,10 +402,10 @@ struct ConnectView: View {
 
 struct SyncingView: View {
     @EnvironmentObject var app: App
-    private let items = ["Sleep analysis · 30 days",
-                         "Heart rate variability · 30 days",
-                         "Resting heart rate · 30 days",
-                         "Steps & activity · 30 days"]
+    private let items = ["睡眠分析 · 30 天",
+                         "心率变异性 · 30 天",
+                         "静息心率 · 30 天",
+                         "步数与活动 · 30 天"]
 
     var body: some View {
         ZStack {
@@ -418,8 +415,8 @@ struct SyncingView: View {
             VStack(spacing: 0) {
                 Spacer()
                 TextSphere(word: "AIRA", count: 58, size: 180, energy: 0.3)
-                Text("Reading your last 30 days")
-                    .font(.system(size: 21, weight: .semibold, design: .serif)).tracking(-0.4)
+                Text("正在读取你最近 30 天的数据")
+                    .font(.serifZh(21))
                     .foregroundStyle(.white).padding(.top, 18)
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -446,7 +443,7 @@ struct SyncingView: View {
 
                 NeonReveal(progress: app.syncProgress).padding(.horizontal, 28).padding(.top, 22)
                 Spacer()
-                Text("Data moves only between your device and Aira's encrypted store.")
+                Text("数据只在你的设备与 Aira 的加密存储之间流动。")
                     .font(.system(size: 11)).foregroundStyle(.white.opacity(0.34))
                     .padding(.bottom, 30)
             }
@@ -465,11 +462,11 @@ struct ProfileView: View {
 
     // 两步：基础信息一页收齐，训练习惯单独一页（有分支展开）
     private var titles: [String] {
-        ["A little about you", "Do you train?"]
+        ["先认识一下你", "你平时训练吗？"]
     }
     private var subs: [String] {
-        ["Name, age and sex at birth — they set which reference ranges your results are read against.",
-         "Training load changes how recovery data gets read — and what the plan dares to ask of you."]
+        ["称呼、年龄与出生性别 —— 它们决定你的结果对照哪一组参考区间。",
+         "训练负荷会改变恢复数据的解读方式 —— 也决定计划敢对你提出多少要求。"]
     }
 
     private var lastStep: Int { 1 }   // 两版一致：基础页 + 训练页
@@ -478,7 +475,7 @@ struct ProfileView: View {
     var body: some View {
         OnbShell(step: 1, total: ConnectView.onbTotal,
                  title: titles[app.profStep], sub: subs[app.profStep],
-                 cta: app.profStep < lastStep ? "Continue" : (lastStep == 0 ? "Start" : "Looks right"),
+                 cta: app.profStep < lastStep ? "继续" : (lastStep == 0 ? "开始" : "没问题"),
                  ctaEnabled: app.profStep != 0 || !app.nickname.trimmingCharacters(in: .whitespaces).isEmpty,
                  onBack: {
                      if app.profStep > 0 { withAnimation(.smooth) { app.profStep -= 1 } }
@@ -494,11 +491,11 @@ struct ProfileView: View {
                     // 基础三项同页：姓名 / 年龄标尺 / 生理性别
                     VStack(alignment: .leading, spacing: 20) {
                         VStack(alignment: .leading, spacing: 9) {
-                            FieldLabel("What should Aira call you?")
+                            FieldLabel("Aira 该怎么称呼你？")
                             TextField("", text: $app.nickname,
                                       prompt: Text("Chloe").foregroundStyle(T.ink3))
                                 .textFieldStyle(.plain)
-                                .font(.system(size: 22, weight: .semibold, design: .serif)).tracking(-0.5)
+                                .font(.serifZh(21))
                                 .focused($focus)
                                 .padding(.horizontal, 17).padding(.vertical, 15)
                                 .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(.white))
@@ -506,16 +503,16 @@ struct ProfileView: View {
                                     .strokeBorder(focus ? T.ink : T.hair, lineWidth: focus ? 1.5 : 1))
                         }
                         VStack(alignment: .leading, spacing: 9) {
-                            FieldLabel("Age", hint: "Reference ranges shift by decade")
-                            RulerPick(value: $app.age, range: 13...90, unit: "years old")
+                            FieldLabel("年龄", hint: "参考区间随年龄段变化")
+                            RulerPick(value: $app.age, range: 13...90, unit: "岁")
                         }
                         VStack(alignment: .leading, spacing: 9) {
-                            FieldLabel("Sex at birth", hint: "Cortisol and DHEA ranges differ")
-                            Segmented(options: ["Female", "Male", "Rather not say"], index: $app.sex)
+                            FieldLabel("出生性别", hint: "皮质醇与 DHEA 的区间不同")
+                            Segmented(options: ["女", "男", "不便透露"], index: $app.sex)
                             if app.sex == 2 {
                                 HStack(alignment: .top, spacing: 8) {
                                     Icon(.info, size: 12, weight: 1.9, color: T.ink3).padding(.top, 1)
-                                    Text("Aira will use the wider combined range — conclusions carry slightly larger uncertainty bands.")
+                                    Text("Aira 将使用更宽的合并区间 —— 结论会带稍大的不确定性。")
                                         .font(.system(size: 11.5)).foregroundStyle(T.ink3).lineSpacing(3)
                                 }
                                 .transition(.opacity)
@@ -527,18 +524,18 @@ struct ProfileView: View {
 
                 default:
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Sessions per week").font(.system(size: 13, weight: .semibold))
+                        Text("每周训练几次？").font(.system(size: 13, weight: .semibold))
                         HStack(spacing: 9) {
-                            freq("None", 0); freq("1–2", 1)
+                            freq("不练", 0); freq("1–2 次", 1)
                         }
                         HStack(spacing: 9) {
-                            freq("3–4", 2); freq("5+", 3)
+                            freq("3–4 次", 2); freq("5 次以上", 3)
                         }
                         if app.sessionBand > 0 {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("For how long?").font(.system(size: 13, weight: .semibold))
+                                Text("练了多久了？").font(.system(size: 13, weight: .semibold))
                                     .padding(.top, 8)
-                                RulerPick(value: $app.years, range: 0...30, unit: "years training")
+                                RulerPick(value: $app.years, range: 0...30, unit: "年")
                             }
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
@@ -694,25 +691,25 @@ struct MedicalView: View {
     @EnvironmentObject var app: App
 
     private let injuries: [(MedGlyph, String, String)] = [
-        (.back,     "Lower back", "Caps load on the exercise side"),
-        (.knee,     "Knee",       "Swaps running for low-impact work"),
-        (.shoulder, "Shoulder",   "Affects overhead and pressing volume"),
-        (.achilles, "Achilles",   "Rules out plyometrics and sprints")
+        (.back,     "下背部", "限制运动侧的负荷上限"),
+        (.knee,     "膝盖",   "用低冲击训练替代跑步"),
+        (.shoulder, "肩部",   "影响过头与推举的容量"),
+        (.achilles, "跟腱",   "排除爆发式动作与冲刺")
     ]
     private let meds: [(MedGlyph, String, String)] = [
-        (.hormone, "Corticosteroids",          "Directly raises measured cortisol"),
-        (.pill,    "Contraceptives / hormones","Shifts the reference range used"),
-        (.biotin,  "Biotin (vitamin B7)",      "Interferes with the saliva assay"),
-        (.capsule, "Antidepressants",          "Can flatten the morning rise"),
-        (.inhaler, "Inhaled steroids",         "Needs a mouth rinse before sampling")
+        (.hormone, "皮质类固醇",          "直接抬高测得的皮质醇"),
+        (.pill,    "避孕药 / 激素类","改变所使用的参考区间"),
+        (.biotin,  "生物素（维生素 B7）",      "干扰唾液检测"),
+        (.capsule, "抗抑郁药",          "可能抹平晨间上升"),
+        (.inhaler, "吸入性激素",         "采样前需要漱口")
     ]
 
     var body: some View {
         OnbShell(step: 2, total: ConnectView.onbTotal,
-                 title: "Anything we should know?",
-                 sub: "Each one changes how a result gets read. Skip whatever doesn't apply.",
-                 cta: "Continue",
-                 skip: ("None of these apply", {
+                 title: "有什么需要我们知道的吗？",
+                 sub: "每一项都会改变结果的解读方式。不适用的直接跳过。",
+                 cta: "继续",
+                 skip: ("都不适用", {
                      app.injuries = []; app.meds = []
                      #if LITE
                      app.phase = .main
@@ -729,15 +726,15 @@ struct MedicalView: View {
                      #endif
                  }) {
             VStack(alignment: .leading, spacing: 22) {
-                group("Injury history", rows: injuries, selection: $app.injuries)
-                group("Medication & supplements", rows: meds, selection: $app.meds)
+                group("伤病史", rows: injuries, selection: $app.injuries)
+                group("用药与补剂", rows: meds, selection: $app.meds)
 
-                if app.meds.contains("Biotin (vitamin B7)") {
+                if app.meds.contains("生物素（维生素 B7）") {
                     HStack(alignment: .top, spacing: 11) {
                         MedIcon(glyph: .biotin, size: 34, active: true)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("We'll move your sampling day").font(.system(size: 13, weight: .semibold))
-                            Text("Biotin has to be off for 48 h before the first tube or the assay reads high. Aira will schedule around it.")
+                            Text("我们会调整你的采样日").font(.system(size: 13, weight: .semibold))
+                            Text("首管前需停用生物素 48 小时，否则检测值会偏高。Aira 会自动绕开安排。")
                                 .font(.system(size: 11.5)).foregroundStyle(T.ink2).lineSpacing(3)
                         }
                     }
@@ -759,7 +756,7 @@ struct MedicalView: View {
                 Text(title).font(.system(size: 14, weight: .semibold))
                 Spacer()
                 if !selection.wrappedValue.isEmpty {
-                    Text("\(selection.wrappedValue.count) selected")
+                    Text("已选 \(selection.wrappedValue.count) 项")
                         .font(.system(size: 11, weight: .medium)).foregroundStyle(T.ink3)
                 }
             }

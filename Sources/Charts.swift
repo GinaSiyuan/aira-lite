@@ -73,14 +73,14 @@ struct SleepAxis: View {
                     .position(x: X(axis.lowerBound) + 12, y: yTop - 13)
                 Text("\(fmt(axis.upperBound))").font(.system(size: 8)).foregroundStyle(T.onD3)
                     .position(x: X(axis.upperBound) - 12, y: yTop - 13)
-                Text("Longest block \(hm(longest.len))")
+                Text("最长连续段 \(hm(longest.len))")
                     .font(.system(size: 8.5, weight: .medium)).foregroundStyle(.white)
                     .position(x: X(longest.start + longest.len / 2), y: yTop - 13)
 
                 // Asleep三角 + 单一标注
                 Triangle().fill(T.lime).frame(width: 9, height: 7)
                     .position(x: X(onset), y: yTop + bh + 8)
-                Text("Asleep \(fmt(onset)) · \(Int(((onset - baseOnset) * 60).rounded())) min later than usual")
+                Text("入睡 \(fmt(onset)) · 比平时晚 \(Int(((onset - baseOnset) * 60).rounded())) 分钟")
                     .font(.system(size: 8.5)).foregroundStyle(T.coral)
                     .position(x: min(w - 70, X(onset) + 62), y: yTop + bh + 22)
             }
@@ -130,7 +130,7 @@ struct Triangle: Shape {
 struct HPADeviation: View {
     var user: [Double] = Mock.hpaUser
     var balanced: [Double] = Mock.hpaBalanced
-    var labels: [String] = ["Wake", "+30m", "Pre-lunch", "16–17", "Bed"]
+    var labels: [String] = ["醒来", "+30分", "午餐前", "16–17", "睡前"]
 
     var body: some View {
         GeometryReader { geo in
@@ -193,7 +193,7 @@ struct HPADeviation: View {
             }
             Text("1.29").font(.system(size: 9, weight: .semibold)).foregroundStyle(.white)
                 .position(x: X(4) - 14, y: Y(user[4]) - 12)
-            Text("Decisive").font(.system(size: 8)).foregroundStyle(.white.opacity(0.5))
+            Text("决定点").font(.system(size: 8)).foregroundStyle(.white.opacity(0.5))
                 .position(x: X(4) - 8, y: h - 8)
         }
         .frame(height: 132)
@@ -213,7 +213,7 @@ struct DeviationLegend: View {
         VStack(spacing: 0) {
             HStack(spacing: 6) {
                 Rectangle().fill(.white.opacity(0.42)).frame(width: 14, height: 1.3)
-                Text("Dashed = Balanced reference shape").font(.system(size: 9.5)).foregroundStyle(T.onD3)
+                Text("虚线 = 「平衡」的参考形状").font(.system(size: 9.5)).foregroundStyle(T.onD3)
                 Spacer()
             }
             .padding(.bottom, 4)
@@ -242,7 +242,7 @@ struct DeviationLegend: View {
 
 struct StateStrip: View {
     var here: Int
-    var names = ["Depleted", "Balanced", "Activated", "Tense", "Overextended"]
+    var names = ["耗竭", "平衡", "激活", "紧绷", "过载"]
     var body: some View {
         HStack(spacing: 5) {
             ForEach(0..<5, id: \.self) { i in
@@ -318,13 +318,13 @@ struct DayRibbon: View {
                 }
                 .frame(height: h)
 
-                Text("Energy · self").font(.system(size: 8.5)).foregroundStyle(T.onD3)
+                Text("精力 · 自评").font(.system(size: 8.5)).foregroundStyle(T.onD3)
                     .position(x: pl + 26, y: 8)
-                Text("rated 1–2").font(.system(size: 8.5)).foregroundStyle(T.coral)
+                Text("自评 1–2").font(.system(size: 8.5)).foregroundStyle(T.coral)
                     .position(x: X(15), y: eY(2) + 16)
-                Text("Activity · sitting").font(.system(size: 8.5)).foregroundStyle(T.onD3)
+                Text("活动 · 久坐").font(.system(size: 8.5)).foregroundStyle(T.onD3)
                     .position(x: pl + 28, y: bandY - 8)
-                Text("2h40m sitting").font(.system(size: 8.5)).foregroundStyle(T.coral)
+                Text("久坐 2h40m").font(.system(size: 8.5)).foregroundStyle(T.coral)
                     .position(x: X(14.5), y: bandY + bandH + 22)
                 ForEach([8, 12, 16, 20], id: \.self) { t in
                     Text("\(t):00").font(.system(size: 8.5)).foregroundStyle(.white.opacity(0.3))
@@ -380,7 +380,7 @@ struct MiniLine: View {
                     }
                 }
                 if let b = baseline {
-                    Text("baseline \(baselineLabel)").font(.system(size: 8.5)).foregroundStyle(T.onD3)
+                    Text("基线 \(baselineLabel)").font(.system(size: 8.5)).foregroundStyle(T.onD3)
                         .position(x: w - 34, y: Y(b) - 7)
                 }
             }
@@ -426,8 +426,8 @@ struct DualTrack: View {
                     }
                 }
                 .frame(height: h)
-                Text("Device").font(.system(size: 8.5)).foregroundStyle(T.onD3).position(x: 14, y: 28)
-                Text("Self").font(.system(size: 8.5)).foregroundStyle(T.onD3).position(x: 14, y: 72)
+                Text("设备").font(.system(size: 8.5)).foregroundStyle(T.onD3).position(x: 14, y: 28)
+                Text("自评").font(.system(size: 8.5)).foregroundStyle(T.onD3).position(x: 14, y: 72)
                 ForEach(Array(xs.enumerated()), id: \.offset) { i, s in
                     Text(s).font(.system(size: 8.5)).foregroundStyle(T.onD3).position(x: X(i), y: h - 4)
                 }
@@ -497,9 +497,9 @@ struct SelfTrend: View {
                             .position(x: X(i), y: 26 + 35)
                     }
                 }
-                Text("Tense").font(.system(size: 9)).foregroundStyle(axis)
+                Text("紧绷").font(.system(size: 9)).foregroundStyle(axis)
                     .position(x: pl + 12, y: 14)
-                Text("Calm").font(.system(size: 9)).foregroundStyle(axis)
+                Text("平静").font(.system(size: 9)).foregroundStyle(axis)
                     .position(x: pl + 12, y: h - 18)
                 Text("10/01").font(.system(size: 9)).foregroundStyle(axis).position(x: pl + 14, y: h - 4)
                 Text("10/14").font(.system(size: 9)).foregroundStyle(axis).position(x: w - pl - 14, y: h - 4)
