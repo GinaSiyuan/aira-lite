@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Aira — Stress isn't a feeling. It has a shape.</title>
-<meta name="description" content="Aira Lite web demo — the core loop of an AI stress copilot: wearables + salivary cortisol, one joint read.">
+<title>Aira — 压力不是一种感觉，它有形状。</title>
+<meta name="description" content="Aira Lite 网页体验版 — AI 压力管理助手的核心流程：可穿戴数据 + 唾液皮质醇，一份联合解读。">
 <style>
 /* ============ Design tokens (mirrors Theme.swift) ============ */
 :root{
@@ -15,8 +15,9 @@
   --dark:#0B0B0C; --onD2:rgba(255,255,255,.58); --onD3:rgba(255,255,255,.34); --hairD:rgba(255,255,255,.12);
   --lime:#DCF55A; --lime2:#D6FF3C; --coral:#FF8A5B; --amber:#FFB85C; --sky:#7ACBFF; --violet:#B79BFF;
   --r-shell:30px; --r-card:22px; --r-sm:14px;
-  --serif:"New York","Georgia","Iowan Old Style","Times New Roman",serif;
-  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  /* 苹果字体栈：拉丁用 SF/New York，中文自动落到苹方/宋体 */
+  --serif:ui-serif,"New York","Songti SC","Noto Serif SC","STSong","Georgia",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -33,9 +34,9 @@ body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);overflow:hidden
          box-shadow:0 0 0 12px #1c1c1f,0 0 0 14px #2c2c30,0 40px 100px rgba(0,0,0,.6);
          }
   #aside{display:block;max-width:300px;color:#8b8b95}
-  #aside h1{font-family:var(--serif);font-weight:600;font-size:34px;letter-spacing:-1px;color:#ececf2;line-height:1.14}
-  #aside h1 em{font-style:italic;color:var(--lime);font-weight:400}
-  #aside p{font-size:13px;line-height:1.65;margin-top:16px}
+  #aside h1{font-family:var(--serif);font-weight:600;font-size:32px;letter-spacing:.02em;color:#ececf2;line-height:1.3}
+  #aside h1 em{font-style:normal;color:var(--lime);font-weight:500}
+  #aside p{font-size:13px;line-height:1.8;margin-top:16px}
   #aside .k{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.6px;color:#6d6d78;
             border:1px solid #2a2a30;border-radius:99px;padding:5px 10px;margin-bottom:18px}
   #aside .hint{margin-top:22px;font-size:11.5px;color:#5f5f6a}
@@ -53,8 +54,10 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 button:active{transform:scale(.97)}
 input{font-family:inherit;border:0;outline:none;background:none}
 
-.serif{font-family:var(--serif)}
-.num{font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:-.035em}
+.serif{font-family:var(--serif);letter-spacing:.01em}
+.num{font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:-.035em;font-family:var(--sans)}
+/* 中文排版：标题不收字距，正文行高放宽 */
+.zh-loose{line-height:1.75}
 
 /* CTA capsule: text left, knob right */
 .cta{display:flex;align-items:center;gap:14px;width:100%;background:var(--lime);border-radius:99px;
@@ -127,8 +130,8 @@ input{font-family:inherit;border:0;outline:none;background:none}
 .onb-bar{flex:1;height:3px;background:var(--hair);border-radius:99px;overflow:hidden}
 .onb-bar i{display:block;height:100%;background:var(--ink);border-radius:99px;transition:width .4s cubic-bezier(.3,.9,.3,1)}
 .onb-step{font-size:11px;font-weight:600;color:var(--ink3);font-variant-numeric:tabular-nums}
-.onb h2{font-family:var(--serif);font-size:28px;font-weight:600;letter-spacing:-.6px;margin-top:22px;line-height:1.18}
-.onb .sub{font-size:13.5px;color:var(--ink2);line-height:1.55;margin-top:8px}
+.onb h2{font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.01em;margin-top:22px;line-height:1.32}
+.onb .sub{font-size:13.5px;color:var(--ink2);line-height:1.75;margin-top:9px}
 .onb .body{flex:1;overflow-y:auto;scrollbar-width:none;padding:20px 0 10px;margin:0 -4px;padding-left:4px;padding-right:4px}
 .onb .body::-webkit-scrollbar{display:none}
 .onb .foot{padding:10px 0 max(20px, env(safe-area-inset-bottom))}
@@ -155,8 +158,8 @@ input{font-family:inherit;border:0;outline:none;background:none}
 /* Qualifier (caveat) */
 .qualifier{margin-top:12px;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,.05);
            border:1px solid rgba(255,255,255,.09)}
-.qualifier .h{font-size:9px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--sky)}
-.qualifier .b{font-size:12px;color:#fff;line-height:1.5;margin-top:5px}
+.qualifier .h{font-size:9.5px;font-weight:700;letter-spacing:2px;color:var(--sky)}
+.qualifier .b{font-size:12px;color:#fff;line-height:1.7;margin-top:6px}
 .qualifier .act{display:inline-flex;gap:6px;align-items:center;color:var(--sky);font-size:11.5px;
                 font-weight:500;margin-top:8px;padding-top:8px;border-top:1px solid var(--hairD);width:100%}
 
@@ -184,7 +187,7 @@ input{font-family:inherit;border:0;outline:none;background:none}
 .tabbar .aira .orb .unread{position:absolute;top:1px;right:1px;width:8px;height:8px;border-radius:50%;background:var(--coral)}
 
 /* Agent thread */
-.bubble{max-width:calc(100% - 44px);padding:11px 15px;border-radius:19px;color:#fff;font-size:15px;line-height:1.45;
+.bubble{max-width:calc(100% - 44px);padding:11px 15px;border-radius:19px;color:#fff;font-size:15px;line-height:1.62;
         width:fit-content}
 .bubble.lead{font-weight:600}
 .bubble.user{margin-left:auto;background:var(--lime);color:var(--ink);border-radius:19px 19px 5px 19px}
@@ -315,12 +318,12 @@ input{font-family:inherit;border:0;outline:none;background:none}
 <body>
 <div id="stage">
   <div id="aside">
-    <div class="k">AIRA · LITE WEB DEMO</div>
-    <h1>Stress isn't a&nbsp;feeling. <em>It has a shape.</em></h1>
-    <p>An interactive walkthrough of Aira's core loop — connect your wearables, get a first read,
-       run a one-day salivary cortisol test, and receive one joint read with a plan.</p>
-    <p class="hint">Tap through the flow like a real user, or press <b>DEMO ▸</b> on the phone's right edge
-       to auto-play all 17 steps. All data is mock. Aira is not a medical device.</p>
+    <div class="k">AIRA · LITE 网页体验版</div>
+    <h1>压力不是一种感觉。<em>它有形状。</em></h1>
+    <p>Aira 核心流程的可交互演示 —— 连接可穿戴设备、获得第一份解读、完成一天的唾液皮质醇检测，
+       最终得到一份联合解读与行动计划。</p>
+    <p class="hint">像真实用户一样逐屏点击体验，或按手机右缘的 <b>DEMO ▸</b> 自动播放全部 17 步。
+       数据均为模拟。Aira 不是医疗器械。</p>
   </div>
   <div id="phone">
     <div id="screen"></div>
