@@ -42,101 +42,78 @@ function ic(name, size=16, w=1.8, color='currentColor', style=''){
 
 /* ================= Mock data (Model.swift) ================= */
 const Mock = {
-  sleepBase: 7.4667,
-  hpaUser: [4.20, 5.53, 2.33, 1.69, 1.29],
-  hpaBalanced: [4.00, 6.20, 1.48, 0.79, 0.46],
   selfCheck: [2.1, 2.8, 3.1, 3.6, 4.2, 3.4, null, 2.2, 2.9, 3.8, 4.1, 3.3, 2.4, 1.8],
-  days: [
-    {date:'10/01',wd:'周三',sleep:'7:22',sd:-6, wk:1,am:7, longest:'4:40',onset:'23:35',od:-5, rec:44,rd:-3, hrv:50,rhr:57,steps:'10,210'},
-    {date:'10/02',wd:'周四',sleep:'7:10',sd:-18,wk:1,am:10,longest:'4:05',onset:'23:45',od:5,  rec:46,rd:-1, hrv:49,rhr:57,steps:'9,640'},
-    {date:'10/03',wd:'周五',sleep:'6:48',sd:-40,wk:2,am:16,longest:'3:20',onset:'00:02',od:22, rec:50,rd:3,  hrv:47,rhr:58,steps:'8,980'},
-    {date:'10/04',wd:'周六',sleep:'7:35',sd:7,  wk:1,am:8, longest:'4:55',onset:'23:50',od:10, rec:43,rd:-4, hrv:51,rhr:56,steps:'6,320'},
-    {date:'10/05',wd:'周日',sleep:'7:04',sd:-24,wk:2,am:13,longest:'3:45',onset:'23:58',od:18, rec:47,rd:0,  hrv:48,rhr:58,steps:'7,450'},
-    {date:'10/06',wd:'周一',sleep:'6:58',sd:-30,wk:2,am:15,longest:'3:30',onset:'00:00',od:20, rec:49,rd:2,  hrv:48,rhr:58,steps:'9,120'},
-    {date:'10/07',wd:'周二',sleep:'6:50',sd:-38,wk:2,am:17,longest:'3:10',onset:'00:05',od:25, rec:52,rd:5,  hrv:46,rhr:59,steps:'8,700'},
-    {date:'10/08',wd:'周三',sleep:'7:06',sd:-22,wk:1,am:9, longest:'4:10',onset:'23:50',od:10, rec:51,rd:4,  hrv:47,rhr:58,steps:'9,140'},
-    {date:'10/09',wd:'周四',sleep:'6:54',sd:-34,wk:2,am:18,longest:'3:05',onset:'00:05',od:25, rec:55,rd:8,  hrv:45,rhr:59,steps:'7,820'},
-    {date:'10/10',wd:'周五',sleep:'—',  sd:0,  wk:0,am:0, longest:'—',  onset:'—',  od:0,  rec:0, rd:0,  hrv:0, rhr:0, steps:'—'},
-    {date:'10/11',wd:'周六',sleep:'6:12',sd:-76,wk:4,am:51,longest:'1:40',onset:'00:40',od:60, rec:68,rd:21, hrv:38,rhr:63,steps:'5,410'},
-    {date:'10/12',wd:'周日',sleep:'6:36',sd:-52,wk:3,am:35,longest:'2:20',onset:'00:20',od:40, rec:61,rd:14, hrv:41,rhr:61,steps:'8,900'},
-    {date:'10/13',wd:'周一',sleep:'6:24',sd:-64,wk:3,am:42,longest:'2:00',onset:'00:30',od:50, rec:64,rd:17, hrv:40,rhr:62,steps:'8,260'},
-    {date:'10/14',wd:'周二',sleep:'6:31',sd:-57,wk:2,am:26,longest:'2:45',onset:'00:15',od:35, rec:60,rd:13, hrv:42,rhr:61,steps:'6,180'},
-  ],
-  hm(s){ const p=s.split(':').map(Number); return p.length===2 ? p[0]+p[1]/60 : 0; },
-  recent(n){ return this.days.slice(-n); },
-  avg(n,f){ const v=this.recent(n).filter(d=>d.sleep!=='—').map(f); return v.reduce((a,b)=>a+b,0)/v.length; },
-  avgSleepText(n){ const h=this.avg(n,d=>this.hm(d.sleep)); const m=Math.round(h*60);
-    return `${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`; },
 };
-const RANGES = [ {t:'7天',days:7,base:'前 28 天基线',grain:'按日'},
-                 {t:'14天',days:14,base:'前 14 天',grain:'按日'},
-                 {t:'30天',days:14,base:'前 90 天基线',grain:'按日'} ];
-const STATES = ['耗竭','平衡','激活','紧绷','过载'];
-
 /* ================= State (App in Model.swift) ================= */
 const S = {
-  phase:'welcome', tab:0, profStep:0,
+  phase:'welcome', entered:null, tab:0, profStep:0,
   nickname:'', age:32, sex:0, sessionBand:1, years:2,
-  injuries:new Set(), meds:new Set(),
   healthGranted:false, devices:new Set(), syncedItems:0,
-  saliva:0, // 0 未安排 1 已安排 2 采集中 3 已寄出 4 报告已出
+  saliva:0, // 0 未安排 1 采样日 3 已寄出 4 T0 已出
+  reopenT0:false, reopenFR:false,
   points:[
-    {name:'C1 · 醒后 30 分钟', when:'06:45', hint:'留在床上，起身活动前先取第一管', done:false},
-    {name:'C2 · 醒后 45 分钟', when:'07:15', hint:'C1 后 30 分钟 —— 这一对决定 CAR', done:false},
-    {name:'C3 · 午餐前',       when:'11:30', hint:'进食前采样，避免食物干扰', done:false},
-    {name:'C4 · 16–17 点',     when:'16:30', hint:'午后低谷', done:false},
-    {name:'C5 · 睡前',         when:'22:30', hint:'决定性的一管 —— 它决定状态分组', done:false},
+    {name:'醒来',        when:'06:45', hint:'睁眼后先别起身，留在床上取这一管', done:false},
+    {name:'醒后 30 分钟', when:'07:15', hint:'和上一管连起来，看早上压力激素升没升起来', done:false},
+    {name:'午饭前',      when:'11:30', hint:'吃饭前取，食物会干扰读数', done:false},
+    {name:'下午',        when:'15:00', hint:'饭后至少 1 小时再取', done:false},
+    {name:'睡前',        when:'23:30', hint:'这一管也用来看身体几点准备好入睡', done:false},
   ],
-  activePoint:null, stepIndex:0, retestScheduled:false,
-  sent:[], unread:2,
-  dayIndex:Mock.days.length-1, range:0,
+  stepIndex:0,
+  sent:[], unread:1,
   selfSelected:13, loggedToday:false, feel:2,
   sheet:null, sheetArg:null,
-  deckExpanded:false, reportChapter:0,
-  arranged:[], planSeg:0,
-  deviceRecs:[
-    {tag:'活动',col:'var(--sky)',title:'每小时站立 2 分钟',
-     because:'你从 13:10 到 15:50 连续坐了 2 小时 40 分 —— 正好压在精力低谷上。',
-     evidence:['活动 · 7天','14:00 自评'],constraint:'工作日 · 今天下午就开始',
-     timeline:'几天内可感知',impact:null,saliva:false,state:0,done:0},
-    {tag:'睡眠',col:'var(--violet)',title:'22:30 放下手机',
-     because:'近 5 天入睡点中位数是 00:30 —— 比你的基线晚了 50 分钟。',
-     evidence:['入睡点 · 5天','基线 28天'],constraint:'每天 · 先试一周',
-     timeline:'入睡点通常 1–2 周内前移',impact:null,saliva:false,state:0,done:0},
-    {tag:'活动',col:'var(--sky)',title:'下午快走 20 分钟',
-     because:'这周只有 2 次运动，而周六是你睡得最碎的一夜。',
-     evidence:['运动 · 7天','睡眠 10/12'],constraint:'每周 3 次 · 不加强度',
-     timeline:'一周内可感知',impact:null,saliva:false,state:0,done:0},
-  ],
-  reportRecs:[
-    {tag:'生活方式',col:'var(--sky)',title:'固定起床时间（±30 分钟）',
-     because:'唯一同时作用于两端的杠杆 —— 晨间上升与夜间关机。定住起床时间，入睡点会自己前移。',
-     evidence:['CAR 32%','入睡点 · 5天','AUCg 33.3'],constraint:'每天 · 优先级高于补剂和运动',
-     timeline:'约 2 周有感 · 6 周完整效果',impact:9.1,saliva:true,state:0,done:0},
-    {tag:'呼吸练习',col:'var(--lime)',title:'睡前 10 分钟缓慢呼吸',
-     because:'你的夜间皮质醇一直降不下来（睡前 1.29，平衡值 0.4）—— 这个练习正好打在这个点上。',
-     evidence:['睡前皮质醇 1.29','HRV · 14天'],constraint:'每周 5 次 · 晚间不安排其他任务',
-     timeline:'约 2 周有感',impact:8.4,saliva:true,state:0,done:0},
-    {tag:'营养',col:'var(--amber)',title:'午餐碳水控制在 40 g 以内',
-     because:'14:00–16:00 是你皮质醇最低的窗口 —— 午餐碳水过重会加深这个低谷。',
-     evidence:['16:30 皮质醇 1.69','14:00 自评'],constraint:'工作日 · 针对午后低谷',
-     timeline:'约 1 周可感知',impact:7.2,saliva:true,state:0,done:0},
-  ],
+  plan:{acc:new Set(), skip:new Set(), day:0, done:new Set()}, deckOpen:false,
 };
-const stage = () => S.saliva===4 ? S.reportRecs : S.deviceRecs;
-const deck  = () => stage().filter(r=>r.state===0);
-const accepted = () => [...S.deviceRecs,...S.reportRecs].filter(r=>r.state===1);
 const nick = () => S.nickname.trim() || 'Chloe';
 const donePts = () => S.points.filter(p=>p.done).length;
-const BIOTIN = '生物素（维生素 B7）';
+
+/* 主界面的「今天」在 T0 出具之后；四周后复测 */
+const TODAY = {label:'10月23日 周五', retest:'11月19日', daysLeft:27};
+const WEEK = ['周五','周六','周日','周一','周二','周三','周四'].map((w,i)=>({w,date:23+i}));
+const ALLDAYS=[0,1,2,3,4,5,6], WORKDAYS=[0,3,4,5,6];
+/* 四周目标：由 T0 报告推出，11/19 复测验收 */
+const TARGETS=[
+  {id:'lat',   icon:'moon',    title:'躺下半小时内睡着',      now:'38 分钟',      goal:'20 分钟以内',      why:'睡前压力激素还没退下去'},
+  {id:'tense', icon:'pulse',   title:'白天紧绷少半小时',      now:'每天近 2 小时', goal:'1 小时 20 分以内', why:'压力激素白天退不下去'},
+  {id:'debt',  icon:'recover', title:'睡眠债还到 2 小时以内', now:'6 小时',       goal:'2 小时以内',       why:'修复类激素偏低，睡够是最直接的补法'},
+];
+/* 推荐活动：按影响排序，每条都带唾液 / 手表证据（why this） */
+const ACTS=[
+  {id:'wind', target:'lat', icon:'moon', tag:'入睡', col:'#B79BFF', impact:9.2, saliva:true,
+   title:'23:00 后放下工作和手机', how:'不回工作消息，把灯调暗，做点放松的事', when:'每晚 23:00', time:'23:00', days:ALLDAYS,
+   because:'你的睡前皮质醇是参考上限的 2 倍多，30 晚里有 26 晚躺下半小时以上才睡着。生物钟本身是准时的——要先让压力激素在睡前退下去。',
+   evidence:['睡前皮质醇 1.3 · 参考 ≤0.6','入睡 38 分钟 · 30 晚中位','褪黑素 22:05 · 准时'], onset:'约 2 周，入睡用时开始缩短',
+   why3:['入睡是你离目标最远的一项','唾液直接指向睡前这一段','每晚只要提前收手机']},
+  {id:'early', target:'debt', icon:'clock', tag:'睡眠债', col:'#7ACBFF', impact:8.6, saliva:true,
+   title:'提前 30 分钟上床', how:'00:15 前躺下，周末也别晚于 01:00', when:'每晚 00:15', time:'00:15', days:ALLDAYS,
+   because:'近 7 晚欠了 6 小时觉，修复类激素（DHEA、睾酮）相对皮质醇都偏低。睡够，是补修复余力最直接的办法。',
+   evidence:['睡眠债 6 小时 · 近 7 晚','DHEA/皮质醇 0.19 · 偏低','HRV 每周 −1.8 毫秒'], onset:'约 1 周睡眠债开始下降，修复激素到复测再看',
+   why3:['睡眠债一周就攒了 6 小时','修复激素偏低，睡够最直接','只是早一点躺下']},
+  {id:'walk', target:'tense', icon:'walk', tag:'白天紧绷', col:'#FFB85C', impact:7.8, saliva:true,
+   title:'下午离开工位走 15 分钟', how:'15:00 前后，你白天最紧张的时段', when:'工作日 15:00', time:'15:00', days:WORKDAYS,
+   because:'你白天的紧绷集中在 14–17 点，下午那管皮质醇也没按时降下来，而那段时间你正好连坐 2 个多小时。起身走一走，把这段紧绷打断。',
+   evidence:['紧绷集中在 14–17 点','下午皮质醇 1.9 · 偏高','连续久坐 2 小时 40 分'], onset:'约 1 周，下午的紧绷时长会变短',
+   why3:['正好卡在你最紧张的时段','手表和唾液都指向下午','需要从工位离开，稍难坚持']},
+  {id:'breath', target:'lat', icon:'meditate', tag:'入睡', col:'#B79BFF', impact:7.1, saliva:false,
+   title:'睡前 10 分钟缓慢呼吸', how:'躺下后，呼气比吸气长一倍', when:'工作日 23:50', time:'23:50', days:WORKDAYS,
+   because:'和「23:00 后放下工作和手机」搭配用：躺下后你的心率比平时高，慢呼气能让它更快降下来。',
+   evidence:['睡前心率比平时高','入睡 38 分钟'], onset:'当晚就能感到，2 周看入睡用时',
+   why3:['和「放下工作和手机」一起用效果更好','只有手表证据，没有唾液直接支撑','需要每晚记得做']},
+];
+const targetOf = id => TARGETS.find(t=>t.id===id);
+const actsFor = id => ACTS.filter(a=>a.target===id && S.plan.acc.has(a.id));
+const timeKey = t => { const [h,m]=t.split(':').map(Number); return (h<5?h+24:h)*60+m; };
+const dayItems = d => ACTS.filter(a=>S.plan.acc.has(a.id)&&a.days.includes(d))
+  .map(a=>({key:a.id,title:a.title,time:a.time,icon:a.icon,col:a.col,how:a.how,tag:a.tag}))
+  .sort((x,y)=>timeKey(x.time)-timeKey(y.time));
 
 function reset(){
-  Object.assign(S,{phase:'welcome',tab:0,profStep:0,nickname:'',healthGranted:false,syncedItems:0,
-    saliva:0,activePoint:null,stepIndex:0,retestScheduled:false,sent:[],unread:2,
-    dayIndex:Mock.days.length-1,range:0,loggedToday:false,sheet:null,reportChapter:0,arranged:[],planSeg:0});
-  S.injuries.clear(); S.meds.clear(); S.devices.clear();
+  Object.assign(S,{phase:'welcome',entered:null,tab:0,profStep:0,nickname:'',healthGranted:false,syncedItems:0,
+    saliva:0,reopenT0:false,reopenFR:false,stepIndex:0,sent:[],typing:null,fresh:false,unread:1,
+    loggedToday:false,sheet:null});
+  S.devices.clear();
   S.points.forEach(p=>p.done=false);
-  [...S.deviceRecs,...S.reportRecs].forEach(r=>{r.state=0;r.done=0;});
+  S.plan.acc.clear(); S.plan.skip.clear(); S.plan.done.clear(); S.plan.day=0; S.deckOpen=false;
 }
 
 /* ================= Tiny chart builders (SVG) ================= */
@@ -159,10 +136,6 @@ function cortisolSketch(w=300,h=70){
     <circle r="9" fill="rgba(220,245,90,.25)" style="offset-path:path('${p1}');animation:dotmove 4.6s ease-in-out infinite alternate"></circle>
     <circle r="4" fill="#fff" style="offset-path:path('${p1}');animation:dotmove 4.6s ease-in-out infinite alternate"></circle>
     <style>@keyframes dotmove{from{offset-distance:0%}to{offset-distance:100%}}</style></svg>`;
-}
-function stateStrip(here){
-  return `<div class="statestrip">`+STATES.map((n,i)=>
-    `<div class="st ${i===here?'here':''}"><i></i><span>${n}</span></div>`).join('')+`</div>`;
 }
 function comb(count, filled, h=26, ghostFrom=null){
   const on=Math.round(count*filled);
@@ -209,111 +182,6 @@ function face(level, size=24, color='#6B6B6E', lw=1.7){
 }
 const faceNames=['平静','还好','有点紧','紧绷','很紧绷'];
 
-function hpaDeviation(w=312,h=150){
-  const u=Mock.hpaUser,b=Mock.hpaBalanced,max=6.6;
-  const pl=8,pr=30,pt=10,pb=28;
-  const X=i=>pl+(w-pl-pr)*i/4, Y=v=>pt+(h-pt-pb)*(1-v/max);
-  const up=u.map((v,i)=>[X(i),Y(v)]), bp=b.map((v,i)=>[X(i),Y(v)]);
-  const pu=smoothPath(up), pb2=smoothPath(bp);
-  const area=(i0,i1,col)=>{
-    const rev=bp.slice(i0,i1+1).reverse();
-    let d2=smoothPath(up.slice(i0,i1+1));
-    const revd=smoothPath(rev);
-    return `<path d="${d2} L${rev[0][0].toFixed(1)} ${rev[0][1].toFixed(1)} ${revd.slice(revd.indexOf('C')>0?revd.indexOf('C'):1)} Z" fill="${col}" opacity=".32"/>`;
-  };
-  const labels=['醒来','+30分','午餐前','16–17','睡前'];
-  let s=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">`;
-  s+=area(0,1,'var(--sky)')+area(1,4,'var(--coral)');
-  s+=`<path d="${pb2}" stroke="rgba(255,255,255,.45)" stroke-width="1.3" stroke-dasharray="3 3" fill="none"/>`;
-  s+=`<path d="${pu}" stroke="var(--amber)" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
-  u.forEach((v,i)=>{ s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="3.4" fill="var(--amber)"/>`; });
-  s+=`<circle cx="${X(4)}" cy="${Y(u[4])}" r="5.4" fill="#fff"/>`;
-  s+=`<text x="${X(4)-2}" y="${Y(u[4])-11}" fill="#fff" font-size="11" font-weight="600" text-anchor="end">1.29</text>`;
-  labels.forEach((l,i)=>{ s+=`<text x="${X(i)}" y="${h-12}" fill="rgba(255,255,255,.4)" font-size="9"
-      text-anchor="${i===0?'start':i===4?'end':'middle'}" ${i===4?'font-weight="700" fill="#fff"':''}>${l}</text>`; });
-  s+=`<text x="${X(4)}" y="${h-1}" fill="rgba(255,255,255,.35)" font-size="8" text-anchor="end">决定点</text>`;
-  return s+'</svg>';
-}
-function fiveTubesCurve(w=300,h=96){
-  const v=[0.52,0.92,0.42,0.22,0.12], labels=['醒来','+30分','午餐前','16–17点','睡前'];
-  const pl=10,pr=10,pt=12,pb=24;
-  const X=i=>pl+(w-pl-pr)*i/4, Y=x=>pt+(h-pt-pb)*(1-x);
-  let s=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">
-    <path d="${smoothPath(v.map((x,i)=>[X(i),Y(x)]))}" stroke="var(--lime)" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-  v.forEach((x,i)=>{ s+=`<circle cx="${X(i)}" cy="${Y(x)}" r="4" fill="#151514" stroke="var(--lime)" stroke-width="2"/>
-    <text x="${X(i)}" y="${h-8}" fill="rgba(255,255,255,.45)" font-size="8.6" text-anchor="${i===0?'start':i===4?'end':'middle'}">${labels[i]}</text>`;});
-  return s+'</svg>';
-}
-function sleepAxis(day,w=312,h=92){
-  const total=Mock.hm(day.sleep), longest=Mock.hm(day.longest), n=Math.max(1,day.wk);
-  const segs=[]; segs.push({len:longest,sleep:true,main:true});
-  const rest=Math.max(0.2,total-longest), per=rest/n, gap=(day.am/n)/60;
-  for(let i=0;i<n;i++){ segs.push({len:gap,sleep:false}); segs.push({len:per,sleep:true}); }
-  const span=segs.reduce((a,s)=>a+s.len,0);
-  const pl=2,pr=2,bt=24,bh=34;
-  let x=pl, s=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">`;
-  s+=`<text x="${pl}" y="12" fill="rgba(255,255,255,.35)" font-size="9">22:30</text>
-      <text x="${w-pr}" y="12" fill="rgba(255,255,255,.35)" font-size="9" text-anchor="end">07:59</text>
-      <text x="${w/2}" y="12" fill="rgba(255,255,255,.75)" font-size="9.5" font-weight="600" text-anchor="middle">最长连续段 ${day.longest}</text>`;
-  let mainX=0,mainW=0;
-  segs.forEach(seg=>{
-    const sw=(w-pl-pr)*seg.len/span;
-    if(seg.sleep){
-      const stripes=Math.max(1,Math.round(sw/14));
-      for(let k=0;k<stripes;k++){
-        const op=[0.95,0.5,0.75,0.35][k%4];
-        s+=`<rect x="${(x+k*sw/stripes).toFixed(1)}" y="${bt}" width="${(sw/stripes-1.6).toFixed(1)}" height="${bh}" rx="3" fill="rgba(220,245,90,${op*0.8})"/>`;
-      }
-      if(seg.main){mainX=x;mainW=sw;}
-    }
-    x+=sw;
-  });
-  s+=`<rect x="${(mainX-3).toFixed(1)}" y="${bt-4}" width="${(mainW+6).toFixed(1)}" height="${bh+8}" rx="9" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1.4"/>`;
-  s+=`<path d="M${pl+4} ${bt-6} v${bh+14}" stroke="var(--coral)" stroke-width="1.6" stroke-dasharray="3 3"/>
-      <circle cx="${pl+4}" cy="${bt+bh+8}" r="3.4" fill="var(--coral)"/>
-      <text x="${pl+14}" y="${h-4}" fill="var(--coral)" font-size="9.4">入睡 ${day.onset} · 比平时晚 ${day.od} 分钟</text>`;
-  return s+'</svg>';
-}
-function stressTide(level,w=312,h=86){
-  const waves=[{a:0.9,f:1.7,op:1,sw:2.2,col:'var(--lime)'},{a:0.55,f:2.6,op:.5,sw:1.4,col:'var(--lime)'},
-               {a:0.4,f:3.4,op:.35,sw:1.2,col:'#fff'},{a:0.3,f:2.1,op:.3,sw:1.2,col:'#fff'}];
-  let s=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">`;
-  waves.forEach((wv,wi)=>{
-    const pts=[]; const amp=(8+level*22)*wv.a;
-    for(let i=0;i<=40;i++){ const x=w*i/40;
-      pts.push([x, h/2 + Math.sin(i/40*Math.PI*2*wv.f + wi*1.7)*amp*(0.6+0.4*Math.sin(i/40*Math.PI)) ]); }
-    s+=`<path d="${smoothPath(pts)}" stroke="${wv.col}" stroke-width="${wv.sw}" opacity="${wv.op}" fill="none"/>`;
-  });
-  return s+'</svg>';
-}
-function sleepScrubber(){
-  const n=Math.min(RANGES[S.range].days, Mock.days.length);
-  const idx=[...Array(n).keys()].map(i=>Mock.days.length-n+i);
-  const w=352,hh=132, pl=26,pr=14,top=36,bot=26;
-  const lo=4.5,hi=9.5;
-  const X=i=>pl+(w-pl-pr)*i/Math.max(1,n-1), Y=v=>top+(hh-top-bot)*(1-(v-lo)/(hi-lo));
-  const vals=idx.map(i=>Mock.days[i].sleep==='—'?0:Mock.hm(Mock.days[i].sleep));
-  let sel=idx.indexOf(S.dayIndex); if(sel<0) sel=n-1;
-  const d=Mock.days[idx[sel]];
-  let s=`<svg width="100%" viewBox="0 0 ${w} ${hh}" style="display:block">`;
-  [5,7,9].forEach(g=>{ s+=`<path d="M${pl} ${Y(g)}H${w-pr}" stroke="var(--hair)" stroke-width="1"/>
-    <text x="10" y="${Y(g)+3}" fill="var(--ink3)" font-size="9">${g}h</text>`;});
-  s+=`<path d="M${pl} ${Y(Mock.sleepBase)}H${w-pr}" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 3"/>`;
-  const pts=vals.map((v,i)=>v>0?[X(i),Y(v)]:null).filter(Boolean);
-  s+=`<path d="${smoothPath(pts)}" stroke="var(--ink)" stroke-width="2" fill="none"/>`;
-  vals.forEach((v,i)=>{ if(v===0) s+=`<circle cx="${X(i)}" cy="${Y(6.8)}" r="3" fill="none" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="1.5 1.5"/>`;});
-  s+=`<path d="M${X(sel)} ${top-6}V${hh-bot+4}" stroke="rgba(16,16,17,.18)" stroke-width="1"/>`;
-  s+=`<circle cx="${X(sel)}" cy="${Y(Math.max(lo+0.1,vals[sel]>0?vals[sel]:6.8))}" r="6" fill="#fff" stroke="var(--ink)" stroke-width="2"/>`;
-  idx.forEach((di,i)=>{ if(S.range===0||i%2===0)
-    s+=`<text x="${X(i)}" y="${hh-6}" fill="${i===sel?'var(--ink)':'var(--ink3)'}" font-size="9"
-        ${i===sel?'font-weight="600"':''} text-anchor="middle">${Mock.days[di].date.slice(3)}</text>`;});
-  s+='</svg>';
-  return `<div style="position:relative" id="scrub" data-n="${n}">
-    <div style="position:absolute;left:26px;top:0">
-      <div style="font-size:14px;font-weight:600;color:var(--ink)">${d.sleep==='—'?'该日无数据':'睡眠 '+d.sleep}</div>
-      <div style="font-size:10.5px;color:var(--ink3);margin-top:2px">${d.sleep==='—'?`${d.wd} ${d.date}`:`${d.wd} ${d.date} · 入睡 ${d.onset} · 醒 ${d.wk} 次`}</div>
-    </div>${s}</div>`;
-}
 function selfTrend(){
   const vals=Mock.selfCheck, n=vals.length;
   const w=352,hh=120,pl=14,pr=14,top=18,bot=24;
@@ -321,8 +189,8 @@ function selfTrend(){
   let s=`<svg width="100%" viewBox="0 0 ${w} ${hh}" style="display:block">`;
   s+=`<text x="${pl}" y="12" fill="var(--ink3)" font-size="9">紧绷</text>
       <text x="${pl}" y="${hh-2}" fill="var(--ink3)" font-size="9">平静</text>
-      <text x="${w-pr}" y="${hh-2}" fill="var(--ink3)" font-size="9" text-anchor="end">10/14</text>
-      <text x="${pl+34}" y="${hh-2}" fill="var(--ink3)" font-size="9">10/01</text>`;
+      <text x="${w-pr}" y="${hh-2}" fill="var(--ink3)" font-size="9" text-anchor="end">10/23</text>
+      <text x="${pl+34}" y="${hh-2}" fill="var(--ink3)" font-size="9">10/10</text>`;
   const pts=vals.map((v,i)=>v!=null?[X(i),Y(v)]:null);
   let seg=[]; const segs=[];
   pts.forEach(p=>{ if(p) seg.push(p); else if(seg.length){segs.push(seg);seg=[];} });
@@ -339,36 +207,6 @@ function selfTrend(){
       ${face(v-1,17,'#3c3c40',1.5)}</button>`;});
   return `<div style="position:relative">${s}${faces}</div>`;
 }
-function dayRibbon(w=312,h=96){
-  const act=[[7,.62],[8,.78],[9,.3],[10,.22],[11,.18],[12,.2],[13,.08],[14,.06],[15,.07],[16,.16],[17,.26],[18,.7],[19,.55],[20,.3],[21,.12]];
-  const pl=6,pr=6,base=h-30;
-  const X=hr=>pl+(w-pl-pr)*(hr-7)/14;
-  let s=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">`;
-  s+=`<rect x="${X(13.17)}" y="14" width="${X(15.83)-X(13.17)}" height="${base-14}" rx="6" fill="rgba(255,138,91,.14)" stroke="rgba(255,138,91,.5)" stroke-width="1" stroke-dasharray="3 3"/>`;
-  act.forEach(([hr,v])=>{ const bw=(w-pl-pr)/15-3;
-    s+=`<rect x="${X(hr)-bw/2}" y="${base-v*58}" width="${bw}" height="${v*58}" rx="3" fill="rgba(220,245,90,${0.25+v*0.65})"/>`;});
-  const en=[[8,5],[10,4],[12,4],[14,2],[16,2],[18,3],[20,3]];
-  const Ye=v=>base-8-(v-1)/4*46;
-  s+=`<path d="${smoothPath(en.map(([hr,v])=>[X(hr),Ye(v)]))}" stroke="#fff" stroke-width="1.6" opacity=".7" fill="none"/>`;
-  s+=`<circle cx="${X(14)}" cy="${Ye(2)}" r="3.4" fill="var(--coral)"/>
-      <text x="${X(14)+7}" y="${Ye(2)+3}" fill="var(--coral)" font-size="9">自评 2 分</text>`;
-  [7,12,17,21].forEach(hr=>{ s+=`<text x="${X(hr)}" y="${h-10}" fill="rgba(255,255,255,.35)" font-size="9" text-anchor="middle">${hr}:00</text>`;});
-  s+=`<text x="${X(14.5)}" y="10" fill="rgba(255,138,91,.9)" font-size="9" text-anchor="middle">久坐 2 小时 40 分</text>`;
-  return s+'</svg>';
-}
-function devRow(name,value,pos,bandLo,bandHi){
-  const inBand=pos>=bandLo&&pos<=bandHi, c=inBand?'var(--lime)':'var(--coral)';
-  return `<div class="row" style="gap:12px;padding:9px 0">
-    <div style="width:76px;font-size:12px;color:var(--onD2)">${name}</div>
-    <div style="flex:1;position:relative;height:10px">
-      <div style="position:absolute;inset:2px 0;border-radius:99px;background:rgba(255,255,255,.08)"></div>
-      <div style="position:absolute;top:2px;bottom:2px;left:${bandLo*100}%;width:${(bandHi-bandLo)*100}%;border-radius:99px;background:rgba(255,255,255,.16)"></div>
-      <div style="position:absolute;top:0.5px;left:calc(${pos*100}% - 4.5px);width:9px;height:9px;border-radius:50%;
-           background:${c};box-shadow:0 0 5px ${c}"></div>
-    </div>
-    <div style="width:58px;text-align:right;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums">${value}</div></div>`;
-}
-
 /* ================= Shared UI bits ================= */
 function cardHead(icon,title,sub,chip=null,chipTone='warn',trailing=''){
   const tones={good:'var(--lime)',warn:'var(--coral)',off:'var(--onD3)',sky:'var(--sky)'};
@@ -390,65 +228,51 @@ function cta(title,action,extra=''){
   return `<button class="cta ${extra}" ${action}><span class="t">${title}</span>
     <span class="knob">${ic('arrowRight',15,2.2,'#fff')}</span></button>`;
 }
-function statTrio(items){
-  return `<div><div class="hair-d" style="margin:14px 0 13px"></div><div class="row" style="align-items:flex-start;gap:8px">`+
-    items.map(it=>`<div style="flex:1"><div class="num" style="font-size:16px">${it.v}</div>
-      <div style="font-size:10px;color:var(--onD3);margin-top:3px">${it.k}</div></div>`).join('')+`</div></div>`;
-}
 function sectionLabel(t){ return `<div class="sectionlabel">${t}</div>`; }
 
 /* ================= Cards shared between Recap / Home / Agent ================= */
-function recoveryCardHTML(){
-  const day=Mock.days[Mock.days.length-2];
-  return `<div class="fog warm"><div class="bg"></div><div class="pad">
-    ${cardHead('recover','恢复负荷',`${RANGES[S.range].t}窗口 · 对比${RANGES[S.range].base}`)}
-    <div class="row" style="align-items:flex-end;gap:10px;margin-top:14px">
-      <div class="num" style="font-size:46px;line-height:1">${day.rec}</div>
-      <div style="flex:1"><div style="font-size:11px;color:var(--onD3)">满分 100</div>
-        <div style="font-size:12.5px;font-weight:600;color:var(--coral)">负荷偏高</div></div>
-      <div style="text-align:right"><div style="font-size:10.5px;color:var(--onD3)">对比基线</div>
-        <div class="num" style="font-size:16px;color:var(--coral)">+${day.rd}</div></div></div>
-    <div style="margin-top:10px;position:relative">${stressTide(day.rec/100)}
-      <div style="position:absolute;left:0;bottom:0;font-size:9.5px;color:var(--onD3)">基线 47</div></div>
-    <div class="hair-d" style="margin-top:12px"></div>
-    ${devRow('睡眠',day.sleep,(Mock.hm(day.sleep)-5.5)/2.5,0.58,0.95)}
-    ${devRow('心率变异性',day.hrv+' ms',(day.hrv-34)/22,0.45,0.9)}
-    ${devRow('静息心率',day.rhr+' bpm',(day.rhr-54)/12,0.08,0.58)}
-  </div></div>`;
-}
-function nightCardHTML(day,compact=false){
-  const mins=h=>{const m=Math.round(h*60);return `${Math.floor(m/60)}h${String(m%60).padStart(2,'0')}m`;};
-  const deep=mins(Mock.hm(day.sleep)*0.20), rem=mins(Mock.hm(day.sleep)*0.25);
-  return `<div class="fog warm"><div class="bg"></div><div class="pad">
-    ${cardHead('moon','昨夜',`${day.date} · Apple Watch`, day.wk>=3?'碎片化':'连续', day.wk>=3?'warn':'good')}
-    <div class="row" style="justify-content:space-between;align-items:baseline;margin-top:13px">
-      <span class="num" style="font-size:36px">${day.sleep}</span>
-      <span style="font-size:12.5px;font-weight:600;color:var(--coral)">↓ ${Math.abs(day.sd)} 分钟</span></div>
-    <div style="font-size:10.5px;color:var(--onD3);margin-top:4px">基线 7:28 · 前 28 天 · 已剔除 10/10</div>
-    <div style="margin-top:12px">${sleepAxis(day)}</div>
-    ${statTrio([{v:deep,k:'深睡 20%'},{v:rem,k:'REM 25%'},{v:`${day.wk} 次 · ${day.am}分`,k:'觉醒'}])}
-  </div></div>`;
-}
-
 /* ================= Screens ================= */
 const $screen=document.getElementById('screen');
 const $sheet=document.getElementById('sheet');
 const $veil=document.getElementById('sheetveil');
 
+let lastKey=null;
 function render(){
   let html='';
   switch(S.phase){
     case 'welcome': html=vWelcome(); break;
     case 'connect': html=vConnect(); break;
-    case 'syncing': html=vSyncing(); break;
-    case 'recap':   html=''; break;   // 首读报告由 #frhost 的 iframe（first-read.html）承载
+    case 'syncing': html=vLoading('sync'); break;
+    case 'frintro': html=vIntro('fr'); break;
     case 'profile': html=vProfile(); break;
+    case 'saliva':  html=vSaliva(); break;
+    case 'collect': html=vCollect(); break;
+    case 'waiting': html=vWaiting(); break;
+    case 'analyzing': html=vLoading('analyze'); break;
+    case 't0intro': html=vIntro('t0'); break;
     case 'main':    html=vMain(); break;
+    // firstread / t0：报告页由 #frhost / #t0host 里的 iframe 承载
   }
+  const key=S.phase+':'+S.tab, prev=$screen.querySelector('.scroll');
+  const keepTop=(key===lastKey&&prev)?prev.scrollTop:null;
   $screen.innerHTML=html;
-  // 计划 tab / 首读报告由常驻 iframe 原型页承载，状态不随切换重置
-  document.getElementById('planhost').classList.toggle('show', S.phase==='main'&&S.tab===2);
-  document.getElementById('frhost').classList.toggle('show', S.phase==='recap');
+  if(keepTop!==null){
+    const v=$screen.querySelector('.view'); if(v) v.style.animation='none';
+    const sc=$screen.querySelector('.scroll'); if(sc) sc.scrollTop=keepTop;
+  }
+  lastKey=key;
+  const fh=document.getElementById('frhost'), frOpen=S.phase==='firstread'&&S.reopenFR;
+  fh.classList.toggle('show', S.phase==='firstread'); fh.classList.toggle('reopen', frOpen);
+  try{ const fb=document.getElementById('frframe').contentDocument.body; fb.classList.toggle('closable', frOpen); fb.dataset.cta=frOpen?'回到首页':'继续'; }catch(e){}
+  const t0=document.getElementById('t0host');
+  t0.classList.toggle('show', S.phase==='t0');
+  t0.classList.toggle('reopen', S.phase==='t0' && S.reopenT0);
+  try{ document.getElementById('t0frame').contentDocument.body.classList.toggle('closable', S.phase==='t0' && S.reopenT0); }catch(e){}
+  if(S.phase!==S.entered){
+    S.entered=S.phase;
+    if(S.phase==='firstread') reportGo('frframe',0);
+    if(S.phase==='t0') reportGo('t0frame',0);
+  }
   wireScreen();
   renderDemo();
   if(S.phase==='main'&&S.tab===1){
@@ -456,6 +280,25 @@ function render(){
     if(sc) sc.scrollTop=sc.scrollHeight;
   }
 }
+let toastT=null;
+function toast(msg){
+  const t=document.getElementById('toast'); if(!t) return;
+  t.innerHTML=`${ic('check',12,2.6,'var(--ink)')}<span>${msg}</span>`;
+  t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),1600);
+}
+function celebrate(d,n){
+  const c=document.getElementById('cele'); if(!c) return;
+  const conf=[...Array(26)].map((_,i)=>{ const a=i/26*Math.PI*2+Math.random()*.3, r=90+Math.random()*70;
+    return `<i style="--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;--r:${Math.random()*360}deg;background:${['#DCF55A','#FFB85C','#7ACBFF','#B79BFF'][i%4]};animation-delay:${.15+Math.random()*.1}s"></i>`; }).join('');
+  c.innerHTML=`<div class="cb">
+    <div class="burst">${conf}</div>
+    <svg width="104" height="104" viewBox="0 0 104 104"><circle class="cr" cx="52" cy="52" r="46"/><path class="cm" d="M33 53 L46 66 L72 39"/></svg>
+    <div class="t1">${d===0?'今天':WEEK[d].w}的 ${n} 件事，全部完成</div>
+    <div class="t2">Well done · 本轮第 1 周</div></div>`;
+  c.classList.add('show'); clearTimeout(celeT); celeT=setTimeout(()=>c.classList.remove('show'),2600);
+}
+let celeT=null;
+function reportGo(id,i){ try{ document.getElementById(id).contentWindow.goTo(i); }catch(e){} }
 
 /* ---- 1 Welcome ---- */
 function vWelcome(){
@@ -466,17 +309,18 @@ function vWelcome(){
       <span style="font-size:12px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,.9)">A I R A</span>
       <span style="font-size:10px;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,.75);
             padding:5px 9px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14)">抢先体验</span></div>
-    <div style="flex:1 0 10px;max-height:26px"></div>
+    <div style="flex:1 0 10px"></div>
     <div class="appearup" style="position:relative;padding-right:56px">
       <div class="glass" style="border-radius:20px;padding:14px">
         <div class="row" style="gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>
-          <span style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.55)">皮质醇 · 单日曲线</span>
+          <span style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.55)">压力激素 · 一天的形状</span>
           <span style="margin-left:auto;font-size:9px;color:rgba(255,255,255,.35)">ng/mL</span></div>
         <div style="margin-top:10px">${cortisolSketch()}</div>
-        <div class="row" style="gap:4px;margin-top:10px">
-          ${STATES.map((s,i)=>`<div style="flex:1;text-align:center">
-            <div style="height:3px;border-radius:99px;background:${i===3?'var(--lime)':'rgba(255,255,255,.16)'}"></div>
-            <div style="font-size:8.5px;margin-top:5px;color:${i===3?'#fff':'rgba(255,255,255,.3)'};${i===3?'font-weight:700':''}">${s}</div></div>`).join('')}</div>
+        <div class="row" style="justify-content:space-between;margin-top:8px">
+          ${['醒来','+30 分','午饭前','下午','睡前'].map(t=>`<span style="font-size:8.5px;color:rgba(255,255,255,.4)">${t}</span>`).join('')}</div>
+        <div class="row" style="gap:12px;margin-top:9px;font-size:9px;color:rgba(255,255,255,.5)">
+          <span class="row" style="gap:5px"><i style="width:12px;height:2px;border-radius:2px;background:var(--lime)"></i>你的一天</span>
+          <span class="row" style="gap:5px"><i style="width:12px;border-top:1.4px dashed rgba(255,255,255,.4)"></i>该有的形状</span></div>
       </div>
       <div style="position:absolute;right:0;top:20px;display:flex;flex-direction:column;gap:7px;align-items:flex-end">
         <div class="glass" style="border-radius:14px;padding:7px 10px;color:#fff">
@@ -489,12 +333,12 @@ function vWelcome(){
             <span style="color:var(--coral);font-size:9px">↓</span></div>
           <div style="font-size:9px;color:rgba(255,255,255,.45)">睡眠</div></div></div>
     </div>
-    <div style="flex:1 0 10px;max-height:28px"></div>
+    <div style="flex:1 0 10px"></div>
     <div class="serif appearup" style="font-size:34px;font-weight:600;color:#fff;line-height:1.3">压力不是<br>一种感觉。</div>
     <div class="serif appearup" style="font-size:34px;font-weight:500;color:var(--lime);line-height:1.35">它有形状。</div>
     <p class="appearup zh-loose" style="font-size:12.5px;color:rgba(255,255,255,.58);margin-top:10px">
-      Aira 把睡眠、心率与唾液皮质醇放在一起解读 —— 说清你的身体正处于什么状态，以及哪些还无法断言。</p>
-    <div style="flex:1 0 8px;max-height:22px"></div>
+      Aira 把手表数据和一天的唾液放在一起读——告诉你身体现在在哪，接下来四周该做什么。</p>
+    <div style="flex:1 0 8px"></div>
     <div style="display:flex;flex-direction:column;gap:13px">
       ${[['你的可穿戴设备','Apple Health、Oura、WHOOP · 近 30 天',
           `<span style="position:relative;width:88px;height:36px;display:inline-block">
@@ -505,7 +349,7 @@ function vWelcome(){
          ['一次唾液采样','一天五管，在家完成',
           `<span style="width:88px;display:flex;justify-content:center">
             <span style="width:40px;height:40px;border-radius:10px;background:#f2f4ea;display:flex;align-items:center;justify-content:center;transform:rotate(-5deg);box-shadow:0 3px 8px rgba(0,0,0,.25)">${ic('drop',22,1.8,'#7a8f3a')}</span></span>`],
-         ['一份联合解读','你的状态、你的计划，以及仍未知的问题',
+         ['一份联合解读','你的状态，和接下来四周的计划',
           `<span style="width:88px;display:flex;justify-content:center">
             <span style="width:40px;height:40px;border-radius:10px;background:#f4f2ec;display:flex;align-items:center;justify-content:center;transform:rotate(4deg);box-shadow:0 3px 8px rgba(0,0,0,.25)">${ic('plan',22,1.6,'#5d6b2f')}</span></span>`]
        ].map((r,i)=>`<div class="row appearup" style="gap:14px;animation-delay:${0.18+i*0.09}s">${r[2]}
@@ -525,22 +369,22 @@ function onbTop(step,total,backAct){
     <span class="onb-step">${step+1}/${total}</span></div>`;
 }
 function vConnect(){
-  const types=[['moon','睡眠分析','时长、分期、觉醒次数'],
-    ['pulse','心率变异性','恢复状况的核心信号'],
-    ['pulse','静息心率','与 HRV 一起读，从不单看'],
-    ['steps','步数与活动','负荷侧的证据'],
-    ['breath','呼吸频率','疾病的旁证']];
+  const types=[['moon','睡眠','几点睡、睡多久、睡得断不断'],
+    ['pulse','心率变异性（HRV）','睡觉时身体放松得怎么样'],
+    ['pulse','心率','坐着不动时能不能降下来'],
+    ['steps','步数与运动','动了多少、什么时候动'],
+    ['breath','呼吸与腕温','身体有没有在生病']];
   const wearables=[['appicon_oura','Oura Ring'],['appicon_whoop','WHOOP'],['appicon_garmin','Garmin']];
   return `<div class="view" style="background:var(--page)"><div class="onb">
     ${onbTop(0,2,'data-act="phase" data-v="welcome"')}
     <h2>连接你的数据</h2>
-    <div class="sub">只读权限。Aira 会导入最近 30 天数据，让你的第一份解读一开始就有基线可对比。</div>
+    <div class="sub">Aira 读取你最近 30 天的 Apple Health，马上给你第一份解读。</div>
     <div class="body">
       <button class="wcard ${S.healthGranted?'on':''}" data-act="grant" style="display:flex;align-items:center;gap:13px;width:100%;padding:15px;text-align:left">
         <img src="Assets/appicon_health.png" style="width:48px;border-radius:12px">
         <div style="flex:1"><div style="font-size:15px;font-weight:600">Apple Health</div>
           <div style="font-size:11.5px;color:${S.healthGranted?'var(--ink2)':'var(--ink3)'};margin-top:2px">
-            ${S.healthGranted?'已连接 · 5 类数据':'必须连接 —— 信号的来源'}</div></div>
+            ${S.healthGranted?'已连接 · 5 类数据':'只读，不会改动你的数据'}</div></div>
         ${S.healthGranted?`<span style="width:28px;height:28px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center">${ic('check',15,2.4,'var(--ink)')}</span>`:''}
       </button>
       ${S.healthGranted?`<div class="wcard fadein" style="margin-top:14px;padding:4px 0">
@@ -557,79 +401,103 @@ function vConnect(){
           <span style="font-size:10.5px;color:${S.devices.has(name)?'var(--ink)':'var(--ink3)'};${S.devices.has(name)?'font-weight:600':''}">${name}</span></button>`).join('')}</div>
       <div class="row" style="gap:9px;align-items:flex-start;margin-top:16px">
         ${ic('info',13,1.8,'var(--ink3)','margin-top:2px')}
-        <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">没有手表？iPhone 自带的睡眠和步数也可用 —— Aira 只是会在据此得出的每个结论里，标注精度较低。</span></div>
+        <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">没有手表也可以，iPhone 自带的睡眠和步数也能读，只是结论会粗一些。</span></div>
     </div>
     <div class="foot">${cta(S.healthGranted?'导入最近 30 天':'连接 Apple Health','data-act="connectnext"')}</div>
   </div></div>`;
 }
 
-/* ---- 3 Syncing ---- */
-function vSyncing(){
-  const items=['睡眠分析 · 30 天','心率变异性 · 30 天','静息心率 · 30 天','步数与活动 · 30 天'];
+/* ---- 两次报告前的加载：同一个组件 ---- */
+const LOADS={
+  sync:{phase:'syncing', next:'frintro', kicker:'首读 · 读取 Apple Health', title:'正在读取你最近 30 天的数据',
+    steps:['睡眠 · 30 晚','心率变异性 · 30 晚','心率 · 30 天','步数与运动 · 30 天','整理成你的首读'],
+    note:'数据只在你的设备和 Aira 的加密存储之间流动。'},
+  analyze:{phase:'analyzing', next:'t0intro', kicker:'T0 报告 · 唾液 × 手表', title:'正在把唾液和手表数据放在一起读',
+    steps:['读取 5 管唾液','和 30 天手表数据对齐','对照参考区间','算出压力负荷和恢复状态','整理成你的 T0 报告'],
+    note:'唾液和手表数据要放在一起读，需要一点时间。'},
+};
+let loadTimer=null;
+function vLoading(kind){
+  const L=LOADS[kind], n=L.steps.length;
   return `<div class="view"><div class="fogscreen warm"></div>
-  <div style="position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:center;height:100%;padding:0 26px;color:#fff">
-    ${textSphere(180,52)}
-    <div class="serif" style="font-size:21px;font-weight:600;text-align:center;margin-top:18px">正在读取你最近 30 天的数据</div>
-    <div class="glass" style="border-radius:22px;padding:18px;margin-top:24px;display:flex;flex-direction:column;gap:12px">
-      ${items.map((s,i)=>`<div class="row" style="gap:10px">
-        <span id="sync-dot-${i}" style="width:16px;height:16px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
-          ${i<S.syncedItems?'background:var(--lime)':'border:1.4px solid rgba(255,255,255,.2)'}">
-          ${i<S.syncedItems?ic('check',9,2.6,'var(--ink)'):''}</span>
-        <span id="sync-txt-${i}" style="font-size:13px;color:${i<S.syncedItems?'#fff':'rgba(255,255,255,.35)'}">${s}</span></div>`).join('')}
-    </div>
-    <div id="syncbar" style="margin:22px 28px 0">${neonBar(S.syncedItems/4*100)}</div>
-    <div style="position:absolute;bottom:max(30px, env(safe-area-inset-bottom));left:0;right:0;text-align:center;
-         font-size:11px;color:rgba(255,255,255,.34)">数据只在你的设备与 Aira 的加密存储之间流动。</div>
+  <div style="position:relative;display:flex;flex-direction:column;height:100%;padding:0 26px;color:#fff;
+       padding-top:max(26px, env(safe-area-inset-top));padding-bottom:max(24px, env(safe-area-inset-bottom))">
+    <div class="row" style="gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:rgba(255,255,255,.55)">${L.kicker}</span></div>
+    <div style="flex:1 0 10px"></div>
+    ${textSphere(170,50)}
+    <div style="font-size:20px;font-weight:650;text-align:center;margin-top:18px">${L.title}</div>
+    <div class="glass" style="border-radius:22px;padding:6px 18px;margin-top:22px">
+      ${L.steps.map((t,i)=>`<div class="row ldrow" id="ld-row-${i}" style="gap:11px;padding:10px 0;${i?'border-top:1px solid rgba(255,255,255,.08)':''}">
+        <span class="lddot" id="ld-dot-${i}"></span>
+        <span id="ld-txt-${i}" style="font-size:13px;color:rgba(255,255,255,.35);transition:color .3s">${t}</span></div>`).join('')}</div>
+    <div class="row" style="gap:12px;margin-top:20px">
+      <div id="ld-bar" style="flex:1">${neonBar(0)}</div>
+      <span id="ld-pct" class="num" style="font-size:11px;color:rgba(255,255,255,.5);width:32px;text-align:right">0%</span></div>
+    <div style="flex:1 0 10px"></div>
+    <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.34)">${L.note}</div>
   </div></div>`;
 }
-function beginSync(){
-  S.phase='syncing'; S.syncedItems=0; render();
-  let i=0;
-  const t=setInterval(()=>{
-    i++; S.syncedItems=i;
-    for(let k=0;k<4;k++){
-      const d=document.getElementById('sync-dot-'+k), x=document.getElementById('sync-txt-'+k);
-      if(!d) return;
-      if(k<i){ d.style.border='none'; d.style.background='var(--lime)'; d.innerHTML=ic('check',9,2.6,'var(--ink)'); x.style.color='#fff'; }
+function runLoading(kind,onDone){
+  const L=LOADS[kind], n=L.steps.length;
+  clearInterval(loadTimer); S.phase=L.phase; render();
+  let p=0;
+  const paint=()=>{
+    for(let i=0;i<n;i++){
+      const d=document.getElementById('ld-dot-'+i), t=document.getElementById('ld-txt-'+i); if(!d) return;
+      const lo=i/n*100, hi=(i+1)/n*100, done=p>=hi, now=p>=lo&&!done;
+      d.className='lddot'+(done?' done':now?' now':''); d.innerHTML=done?ic('check',9,2.6,'var(--ink)'):'';
+      t.style.color=done?'#fff':now?'rgba(255,255,255,.85)':'rgba(255,255,255,.35)';
     }
-    const b=document.getElementById('syncbar'); if(b)b.innerHTML=neonBar(i/4*100);
-    if(i>=4){ clearInterval(t); setTimeout(()=>{ if(S.phase==='syncing'){S.phase='recap';render();} },520); }
-  },620);
+    const b=document.getElementById('ld-bar'); if(b) b.innerHTML=neonBar(p);
+    const c=document.getElementById('ld-pct'); if(c) c.textContent=p+'%';
+  };
+  paint();
+  loadTimer=setInterval(()=>{
+    if(S.phase!==L.phase){ clearInterval(loadTimer); return; }
+    p=Math.min(100,p+1); paint();
+    if(p>=100){ clearInterval(loadTimer);
+      setTimeout(()=>{ if(S.phase===L.phase){ if(onDone) onDone(); S.phase=L.next; render(); } },520); }
+  },42);
+}
+function beginSync(){ S.syncedItems=0; runLoading('sync'); }
+function deliverReport(){
+  S.points.forEach(p=>p.done=true);
+  if(S.sheet) closeSheetNow();
+  runLoading('analyze',()=>{ S.saliva=4; S.reopenT0=false; });
 }
 
-/* ---- 4 First read (recap) ---- */
-function vRecap(){
-  const day=Mock.days[12];
-  return `<div class="view" style="background:var(--page)">
-  <div class="scroll" style="padding:0 20px;padding-top:max(18px, env(safe-area-inset-top))">
-    ${sectionLabel('来自已同步数据 · 10月7日 – 13日')}
-    <div class="serif" style="font-size:27px;font-weight:600;line-height:1.35;margin-top:8px">数据里已经<br>能看出一些东西了</div>
-    <div class="zh-loose" style="font-size:13.5px;color:var(--ink2);margin-top:7px">不用等唾液 —— 最近 7 天的睡眠和心率，已经能说出一部分。</div>
-    <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px;padding-bottom:12px">
-      ${recoveryCardHTML()}
-      ${nightCardHTML(day)}
-      <div class="fog warm"><div class="bg"></div><div class="pad">
-        ${cardHead('spark','Aira 的第一个判断','设备数据 × 你自己的话')}
-        <div style="font-size:19px;font-weight:600;line-height:1.5;margin-top:12px">不是睡少了 —— 是睡碎了。</div>
-        <div class="zh-loose" style="font-size:13.5px;color:var(--onD2);margin-top:8px">总时长比基线少 64 分钟，但更关键的是整夜断成 5 段，最长一段只有 2 小时。深睡需要长段连续累积 —— 这正对上你醒来仍然疲惫。</div>
-        ${qualifier('我只能说到这里','睡眠和心率只能显示恢复负荷升高了 —— 说不了为什么。夜间照护和工作冲刺落在同一个窗口里，数据分不开它们。')}
-      </div></div>
-      <div class="fog flat"><div class="bg"></div><div class="pad">
-        ${cardHead('drop','唾液能补上什么','三个设备数据答不了的问题')}
-        <div style="display:flex;flex-direction:column;gap:13px;margin-top:13px">
-        ${[['是「启动不了」，还是单纯没睡够','清晨两个点之间的上升幅度（CAR）能把它们区分开'],
-           ['晚上到底有多难「关机」','睡前那一管，是五种状态唯一能分开的点'],
-           ['是消耗太多，还是修复太少','DHEA 与睾酮/皮质醇比值，指向完全不同的干预']]
-          .map((p,i)=>`<div class="row" style="gap:11px;align-items:flex-start">
-            <span style="font-size:10px;font-weight:700;color:var(--lime);width:18px;padding-top:3px">0${i+1}</span>
-            <div><div style="font-size:13.5px;font-weight:600;line-height:1.5">${p[0]}</div>
-              <div class="zh-loose" style="font-size:12px;color:var(--onD2);margin-top:3px">${p[1]}</div></div></div>`).join('')}
-        </div></div></div>
-    </div></div>
-  <div style="padding:10px 20px max(20px, env(safe-area-inset-bottom))">
-    ${cta('继续','data-act="phase" data-v="profile"')}
-    <button class="ghost-link" data-act="skiphome">跳过设置，直接进首页</button></div>
-  </div>`;
+/* ---- 两次报告的总览首屏：同一个组件 ---- */
+const INTROS={
+  fr:{kicker:'首读 · 9月15日 – 10月14日', l1:'30 天的数据，', l2:'读出了 5 件事。',
+      sub:'全部来自你的 Apple Health。一页一件，每页一张图。', to:'firstread',
+      heads:[['睡眠','工作日总是睡不够'],['睡眠','一到周末，作息就往后漂'],['白天','白天越来越难放松下来'],
+             ['夜里','夜里的恢复一周比一周差'],['运动','运动有规律，量还差一点']]},
+  t0:{kicker:'T0 报告 · 唾液 10月16日 × 手表 30 天', l1:'加上一天的唾液，', l2:'读出了 5 件事。',
+      sub:'每一页都把唾液和手表数据画在同一张图里。', to:'t0',
+      heads:[['位置','你落进了「高负荷」'],['唾液','唾液里，5 个信号偏离'],['压力','压力激素白天退不下去'],
+             ['恢复','身体在消耗，修复跟不上'],['睡眠','入睡难，不怪生物钟']]},
+};
+function vIntro(k){
+  const I=INTROS[k];
+  return `<div class="view"><div class="fogscreen warm"></div>
+  <div style="position:relative;display:flex;flex-direction:column;height:100%;padding:0 22px;color:#fff;
+       padding-top:max(26px, env(safe-area-inset-top));padding-bottom:max(18px, env(safe-area-inset-bottom))">
+    <div class="row" style="gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:rgba(255,255,255,.55)">${I.kicker}</span></div>
+    <div style="flex:1 0 12px"></div>
+    <div class="serif appearup" style="font-size:34px;font-weight:600;line-height:1.3">${I.l1}</div>
+    <div class="serif appearup" style="font-size:34px;font-weight:500;line-height:1.35;color:var(--lime)">${I.l2}</div>
+    <div class="zh-loose appearup" style="font-size:13px;color:rgba(255,255,255,.58);margin-top:10px">${I.sub}</div>
+    <div style="flex:1 0 12px"></div>
+    <div class="glass" style="border-radius:22px;padding:4px 16px">
+      ${I.heads.map(([tag,t],i)=>`<div class="row appearup" style="gap:12px;padding:13px 0;${i?'border-top:1px solid rgba(255,255,255,.1)':''};animation-delay:${.15+i*.07}s">
+        <span class="num" style="font-size:11px;color:rgba(255,255,255,.4);width:18px">0${i+1}</span>
+        <span style="flex:1;font-size:14.5px;font-weight:600">${t}</span>
+        <span style="font-size:10px;color:rgba(255,255,255,.45)">${tag}</span></div>`).join('')}</div>
+    <div style="flex:1 0 12px"></div>
+    ${cta('开始看',`data-act="phase" data-v="${I.to}"`)}
+  </div></div>`;
 }
 
 /* ---- 5 About you (2 steps) ---- */
@@ -641,13 +509,13 @@ function ruler(valKey,val,min,max,unit){
 function vProfile(){
   const step=S.profStep;
   const title=step===0?'先认识一下你':'你平时训练吗？';
-  const sub=step===0?'称呼、年龄与出生性别 —— 它们决定你的结果对照哪一组参考区间。'
-                    :'训练负荷会改变恢复数据的解读方式 —— 也决定计划敢对你提出多少要求。';
+  const sub=step===0?'年龄和性别不同，唾液里激素的正常范围也不同。'
+                    :'练得多的人，恢复数据要换一种读法；计划也会照着你的习惯来排。';
   let body='';
   if(step===0){
     body=`<div style="display:flex;flex-direction:column;gap:20px;padding-top:6px">
       <div><div class="row" style="gap:7px;margin-bottom:9px"><span style="font-size:14px;font-weight:600">Aira 该怎么称呼你？</span></div>
-        <input id="nick" class="serif" value="${S.nickname.replace(/"/g,'&quot;')}" placeholder="Chloe"
+        <input id="nick" value="${S.nickname.replace(/"/g,'&quot;')}" placeholder="Chloe"
           style="width:100%;background:#fff;border:1px solid var(--hair);border-radius:18px;padding:15px 17px;
                  font-size:21px;font-weight:600"></div>
       <div><div class="row" style="gap:7px;margin-bottom:9px"><span style="font-size:14px;font-weight:600">年龄</span>
@@ -658,7 +526,7 @@ function vProfile(){
         <div class="seg">${['女','男','不便透露'].map((o,i)=>
           `<button class="${S.sex===i?'on':''}" data-act="sex" data-v="${i}">${o}</button>`).join('')}</div>
         ${S.sex===2?`<div class="row" style="gap:8px;align-items:flex-start;margin-top:10px">${ic('info',12,1.9,'var(--ink3)','margin-top:3px')}
-          <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">Aira 将使用更宽的合并区间 —— 结论会带稍大的不确定性。</span></div>`:''}
+          <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">Aira 会用更宽的参考范围，结论会粗一些。</span></div>`:''}
       </div></div>`;
   } else {
     const freqs=[['不练','moon'],['1–2 次','run'],['3–4 次','run'],['5 次以上','run']];
@@ -675,49 +543,79 @@ function vProfile(){
     </div>`;
   }
   return `<div class="view" style="background:var(--page)"><div class="onb">
-    ${onbTop(1,2, step===0?'data-act="phase" data-v="recap"':'data-act="profstep" data-v="0"')}
+    ${onbTop(1,2, step===0?'data-act="phase" data-v="firstread"':'data-act="profstep" data-v="0"')}
     <h2>${title}</h2><div class="sub">${sub}</div>
     <div class="body">${body}</div>
-    <div class="foot">${cta(step===0?'继续':'没问题', step===0?'data-act="profstep" data-v="1"':'data-act="finishonb"')}</div>
+    <div class="foot">${cta('继续', step===0?'data-act="profstep" data-v="1"':'data-act="finishonb"')}</div>
   </div></div>`;
 }
 
-/* ---- 6 Health background ---- */
-const INJURIES=[['〰','下背部','限制运动侧的负荷上限'],
-  ['⌐','膝盖','用低冲击训练替代跑步'],
-  ['⌙','肩部','影响过头与推举的容量'],
-  ['∟','跟腱','排除爆发式动作与冲刺']];
-const MEDS=[['⚗','皮质类固醇','直接抬高测得的皮质醇'],
-  ['◑','避孕药 / 激素类','改变所使用的参考区间'],
-  ['B7','生物素（维生素 B7）','干扰唾液检测'],
-  ['▭','抗抑郁药','可能抹平晨间上升'],
-  ['≋','吸入性激素','采样前需要漱口']];
-function medGroup(title,rows,set,act){
-  return `<div><div class="row" style="margin-bottom:9px"><span style="font-size:14px;font-weight:600">${title}</span>
-    ${set.size?`<span style="margin-left:auto;font-size:11px;color:var(--ink3)">已选 ${set.size} 项</span>`:''}</div>
-   <div class="rowlist">${rows.map(r=>{
-     const on=set.has(r[1]);
-     return `<button class="rowitem ${on?'on':''}" data-act="${act}" data-v="${r[1]}">
-       <span class="ric" style="font-size:${r[0].length>1?'12px':'17px'};font-weight:700;color:${r[0]==='B7'?'var(--amber)':'var(--ink)'}">${r[0]}</span>
-       <span class="rt"><span class="a" style="display:block">${r[1]}</span><span class="b" style="display:block;margin-top:1px">${r[2]}</span></span>
-       <span class="box">${on?ic('check',11,2.6,'#fff'):''}</span></button>`;}).join('')}</div></div>`;
+/* ---- 唾液检测：指引 → 采样日 → 寄出等待（onboarding 主线） ---- */
+function salTop(k){
+  return `<div class="row" style="gap:8px;padding-top:max(20px, env(safe-area-inset-top))">
+    <span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>
+    <span style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3)">${k}</span></div>`;
 }
-function vMedical(){
-  return `<div class="view" style="background:var(--page)"><div class="onb">
-    ${onbTop(2,3,'data-act="phase" data-v="profile"')}
-    <h2>有什么需要我们知道的吗？</h2>
-    <div class="sub">每一项都会改变结果的解读方式。不适用的直接跳过。</div>
-    <div class="body"><div style="display:flex;flex-direction:column;gap:22px">
-      ${medGroup('伤病史',INJURIES,S.injuries,'injury')}
-      ${medGroup('用药与补剂',MEDS,S.meds,'med')}
-      ${S.meds.has(BIOTIN)?`<div class="fadein row" style="gap:11px;align-items:flex-start;padding:14px;
-          border-radius:17px;background:rgba(220,245,90,.45)">
-        <span style="width:34px;height:34px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--amber);flex:none">B7</span>
-        <div><div style="font-size:13px;font-weight:600">我们会调整你的采样日</div>
-          <div class="zh-loose" style="font-size:11.5px;color:var(--ink2);margin-top:3px">首管前需停用生物素 48 小时，否则检测值会偏高。Aira 会自动绕开安排。</div></div></div>`:''}
-    </div></div>
-    <div class="foot">${cta('继续','data-act="finishonb"')}
-      <button class="ghost-link" data-act="noneapply">都不适用</button></div>
+function fiveTubes(w=312,h=118){
+  const X=t=>22+(t-6)/18*(w-44), Y=v=>16+(1-v/8)*(h-46);
+  const curve=[[6,4.4],[6.75,5.6],[7.25,7.2],[8.5,6.2],[11.5,3.9],[15,2.3],[19,1.2],[23.5,.5]];
+  const tubes=[[6.75,5.6,'醒来'],[7.25,7.2,'+30 分'],[11.5,3.9,'午饭前'],[15,2.3,'下午'],[23.5,.5,'睡前']];
+  let s=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">`;
+  [6,12,18,24].forEach(t=>{ s+=`<text x="${X(t)}" y="${h-4}" fill="rgba(255,255,255,.34)" font-size="9" text-anchor="${t===6?'start':t===24?'end':'middle'}">${String(t%24).padStart(2,'0')}:00</text>`; });
+  s+=`<path d="${smoothPath(curve.map(([t,v])=>[X(t),Y(v)]))}" stroke="rgba(255,255,255,.38)" stroke-width="1.6" fill="none" stroke-dasharray="3 4"/>`;
+  tubes.forEach(([t,v,l],i)=>{
+    s+=`<circle cx="${X(t)}" cy="${Y(v)}" r="5.5" fill="var(--lime)" stroke="#151514" stroke-width="2"/>`;
+    s+=`<text x="${X(t)+(i===0?-6:i===1?8:0)}" y="${Y(v)+(i===4?-11:i<2?-10:18)}" fill="#fff" font-size="10" font-weight="600" text-anchor="${i===0?'end':i===1?'start':'middle'}">${l}</text>`;
+  });
+  return s+'</svg>';
+}
+function vSaliva(){
+  const avoid=['前一天开始停用生物素（维生素 B7）','每管前 30 分钟不吃东西、不喝咖啡','每管前 10 分钟不刷牙','醒来后先别运动，第一管在床上取'];
+  return `<div class="view" style="background:var(--page)">
+  <div class="scroll" style="padding:0 20px 20px">
+    ${salTop('唾液检测')}
+    <div style="font-size:26px;font-weight:650;line-height:1.35;margin-top:12px">原因，藏在一天的唾液里</div>
+    <div class="zh-loose" style="font-size:13.5px;color:var(--ink2);margin-top:8px">手表看到了现象。压力激素有没有按时退下去、修复还剩多少、生物钟准不准——要从唾液里看。</div>
+    <div class="fog cool" style="margin-top:16px"><div class="bg"></div><div class="pad">
+      ${cardHead('drop','一天五管','在家完成 · 寄回实验室','每管 2 分钟','sky')}
+      <div style="margin-top:12px">${fiveTubes()}</div>
+      <div class="zh-loose" style="font-size:12px;color:var(--onD2);margin-top:8px">压力激素本该早上高、晚上低。五个时间点连起来，就是你一天的形状。</div></div></div>
+    <div class="fog flat" style="margin-top:12px"><div class="bg"></div><div class="pad">
+      ${cardHead('info','采样当天避开','都会让结果不准')}
+      <div style="display:flex;flex-direction:column;gap:11px;margin-top:12px">
+      ${avoid.map(t=>`<div class="row" style="gap:10px;align-items:flex-start">
+        <span style="width:18px;height:18px;border-radius:50%;background:rgba(255,138,91,.16);display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px">${ic('close',9,2.4,'var(--coral)')}</span>
+        <span class="zh-loose" style="font-size:13px;color:var(--onD2)">${t}</span></div>`).join('')}</div></div></div>
+  </div>
+  <div style="padding:10px 20px max(20px, env(safe-area-inset-bottom))">${cta('安排在明天','data-act="schedule"')}</div></div>`;
+}
+function vCollect(){
+  return `<div class="view" style="background:var(--page)">
+  <div class="scroll" style="padding:0 20px 20px">
+    ${salTop('采样日 · 10月16日')}
+    <div style="font-size:26px;font-weight:650;line-height:1.35;margin-top:12px">明天采五管</div>
+    <div class="zh-loose" style="font-size:13.5px;color:var(--ink2);margin-top:8px">五管的步骤都一样。先跟着走一遍，到点照做就行，每个时间点前后 15 分钟内都有效。</div>
+    <div style="margin-top:16px;border-top:1px solid var(--hair)">
+    ${S.points.map(p=>`<div class="row" style="gap:12px;padding:13px 2px;border-bottom:1px solid var(--hair)">
+      <span class="num" style="font-size:13px;width:44px;flex:none">${p.when}</span>
+      <span style="flex:1"><span style="display:block;font-size:14px;font-weight:600">${p.name}</span>
+        <span style="display:block;font-size:11.5px;color:var(--ink3);margin-top:2px">${p.hint}</span></span></div>`).join('')}</div>
+  </div>
+  <div style="padding:10px 20px max(20px, env(safe-area-inset-bottom))">${cta('看一遍采样步骤','data-act="guide"')}</div></div>`;
+}
+function vWaiting(){
+  const steps=[['五管全部采好',1],['已寄出 · 10月16日',1],['实验室处理中',0],['和 30 天手表数据一起解读',0]];
+  return `<div class="view"><div class="fogscreen"></div>
+  <div style="position:relative;display:flex;flex-direction:column;justify-content:center;height:100%;padding:0 26px;color:#fff">
+    ${textSphere(160,46)}
+    <div style="font-size:22px;font-weight:600;text-align:center;margin-top:20px">样本在路上了</div>
+    <div class="zh-loose" style="font-size:13px;color:rgba(255,255,255,.6);text-align:center;margin-top:8px">结果通常 5–7 个工作日。出来后，Aira 会把它和这 30 天的手表数据放在一起读。</div>
+    <div class="glass" style="border-radius:22px;padding:18px;margin-top:22px;display:flex;flex-direction:column;gap:12px">
+      ${steps.map(([t,d])=>`<div class="row" style="gap:10px">
+        <span style="width:16px;height:16px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+          ${d?'background:var(--lime)':'border:1.4px solid rgba(255,255,255,.22)'}">${d?ic('check',9,2.6,'var(--ink)'):''}</span>
+        <span style="font-size:13px;color:${d?'#fff':'rgba(255,255,255,.4)'}">${t}</span></div>`).join('')}</div>
+    <div style="margin-top:24px">${cta('演示：报告已出','data-act="fastforward"')}</div>
   </div></div>`;
 }
 
@@ -726,7 +624,7 @@ function vMain(){
   let inner='';
   if(S.tab===0) inner=vHome();
   else if(S.tab===1) inner=vAgent();
-  else inner='';   // 计划页内容在 #planhost 的 iframe 里（plan.html）
+  else inner=vPlan();
   return `<div class="view" style="background:var(--page)">
     ${S.tab===1?'<div class="fogscreen"></div>':''}
     <div style="position:relative;flex:1;display:flex;flex-direction:column;min-height:0">${inner}</div>
@@ -743,127 +641,98 @@ function tabbar(){
   </div></div>`;
 }
 
-/* ---- Home tab ---- */
+/* ---- Home tab：首读入口 · T0 入口 · 状态自查 ---- */
+function scoreRing(score,color,size=96){
+  const C=size/2, r=C-3, N=48, f=v=>v.toFixed(1);
+  let s=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;margin:0 auto">`;
+  for(let i=0;i<N;i++){
+    const a=(-90+i*360/N)*Math.PI/180, on=i<Math.round(N*score/100);
+    s+=`<line x1="${f(C+Math.cos(a)*(r-size*.1))}" y1="${f(C+Math.sin(a)*(r-size*.1))}" x2="${f(C+Math.cos(a)*r)}" y2="${f(C+Math.sin(a)*r)}"
+      stroke="${on?color:'rgba(255,255,255,.13)'}" stroke-width="${(size/36).toFixed(1)}" stroke-linecap="round"/>`;
+  }
+  return s+`<text x="${C}" y="${C+size*.1}" text-anchor="middle" font-size="${Math.round(size*.28)}" font-weight="650" fill="#fff">${score}</text></svg>`;
+}
+function reportEntry(act,fog,icon,title,sub,chip,body){
+  return `<button data-act="${act}" style="display:block;width:100%;text-align:left">
+    <div class="fog ${fog}"><div class="bg"></div><div class="pad" style="padding:18px">
+      ${cardHead(icon,title,sub,chip?chip[0]:null,chip?chip[1]:'good')}
+      ${body}
+      <div class="row" style="gap:6px;margin-top:14px;color:var(--lime);font-size:12.5px;font-weight:600">
+        看报告 ${ic('arrowRight',12,2,'var(--lime)')}</div></div></div></button>`;
+}
 function vHome(){
-  const day=Mock.days[S.dayIndex], isToday=S.dayIndex===Mock.days.length-1, hasData=day.sleep!=='—';
+  const fr=INTROS.fr, t0=INTROS.t0;
   return `<div class="scroll" style="padding:0 16px 110px;padding-top:max(14px, env(safe-area-inset-top))">
-    <div class="shell">
-      <div class="row" style="padding:0 4px;gap:12px">
-        <div style="flex:1"><div style="font-size:12.5px;color:var(--ink3)">10月14日 周二</div>
-          <div style="font-size:21px;font-weight:600;margin-top:3px">早上好，${nick()}</div></div>
-        <img src="Assets/avatar.jpg" style="width:48px;height:48px;border-radius:50%;object-fit:cover;
-             border:2px solid rgba(255,255,255,.9);box-shadow:0 3px 8px rgba(0,0,0,.25)"></div>
-      <div class="fog warm" style="border-radius:24px;margin-top:16px"><div class="bg"></div><div class="pad" style="padding:18px">
-        <div class="row" style="align-items:flex-start">
-          <div class="cardhead" style="flex:1"><div class="ibadge">${ic('recover',16,1.7,'#fff')}</div>
-            <div class="tt"><div class="a" style="font-size:16px;font-weight:500">恢复负荷</div>
-              <div class="b">近期 · 7 天窗口</div></div></div>
-          <div style="text-align:right"><span class="num" style="font-size:19px">47</span>
-            <span style="font-size:11px;color:var(--onD2)"> / 基线</span>
-            <div style="font-size:10px;color:var(--onD3)">前 28 天</div></div></div>
-        <div class="row" style="align-items:baseline;gap:5px;margin-top:10px">
-          <span class="num" style="font-size:42px">${day.rec||60}</span>
-          <span style="font-size:15px;color:var(--onD2)">/ 100</span>
-          <span style="margin-left:auto;font-size:12.5px;font-weight:600;color:${(day.rec||60)>=58?'var(--coral)':'var(--lime)'}">
-            ${(day.rec||60)>=58?'负荷偏高':(day.rec||60)>=45?'轻度积累':'恢复良好'}</span></div>
-        <div class="row" style="justify-content:space-between;margin-top:8px;font-size:11px;color:var(--onD3)"><span>0</span><span>100</span></div>
-        <div style="margin-top:6px">${comb(34,(day.rec||60)/100,30)}</div>
-        <div class="row" style="gap:8px;margin-top:20px;align-items:flex-start">
-          ${[[Mock.avgSleepText(7),'','睡眠 · 7天均值'],[Math.round(Mock.avg(7,d=>d.hrv)),'ms','HRV · 7天均值'],
-             [Math.round(Mock.avg(7,d=>d.rhr)),'bpm','静息心率 · 7天均值']].map(x=>`<div style="flex:1">
-            <span class="num" style="font-size:24px">${x[0]}</span>
-            ${x[1]?`<span style="font-size:12px;color:var(--onD2)"> ${x[1]}</span>`:''}
-            <div style="font-size:10.5px;color:var(--onD3);margin-top:3px">${x[2]}</div></div>`).join('')}</div>
-      </div></div>
-      <div class="row" style="gap:5px;margin-top:18px;padding:0 4px">
-        ${RANGES.map((r,i)=>`<button data-act="range" data-v="${i}" style="padding:7px 13px;border-radius:99px;font-size:12px;
-          ${S.range===i?'background:var(--ink);color:#fff;font-weight:600':'background:var(--hair2);color:var(--ink2)'}">${r.t}</button>`).join('')}
-        <span style="margin-left:auto;font-size:10.5px;color:var(--ink3)">${RANGES[S.range].grain}</span></div>
-      <div style="margin-top:8px">${sleepScrubber()}</div>
-      <div style="margin-top:14px">
-        <div class="row" style="padding:0 4px">
-          <div style="flex:1"><div style="font-size:13.5px;font-weight:600">你的感受</div>
-            <div style="font-size:10.5px;color:var(--ink3);margin-top:1px">${S.loggedToday?`今天已记录 ·「${faceNames[S.feel]}」`:'今天还没打卡'}</div></div>
-          <button data-act="sheet" data-v="checkin" style="display:flex;align-items:center;gap:6px;padding:8px 12px;
-            border-radius:99px;background:var(--ink);color:#fff;font-size:12px;font-weight:600">
-            ${ic(S.loggedToday?'refresh':'plus',12,2.2,'#fff')} ${S.loggedToday?'修改':'打卡'}</button></div>
-        <div style="margin-top:2px">${selfTrend()}</div></div>
+    <div class="row" style="padding:0 4px;gap:12px">
+      <div style="flex:1"><div style="font-size:12.5px;color:var(--ink3)">${TODAY.label}</div>
+        <div style="font-size:21px;font-weight:600;margin-top:3px">早上好，${nick()}</div></div>
+      <img src="Assets/avatar.jpg" style="width:48px;height:48px;border-radius:50%;object-fit:cover;
+           border:2px solid rgba(255,255,255,.9);box-shadow:0 3px 8px rgba(0,0,0,.25)"></div>
+    <div style="padding:0 4px;margin-top:22px">${sectionLabel('你的报告')}</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+      ${reportEntry('openfr','cool','moon','首读报告','Apple Health · 9月15日 – 10月14日',['5 件事','sky'],
+        `<div style="font-size:17px;font-weight:650;line-height:1.45;margin-top:12px">30 天的数据，读出了 5 件事</div>
+         <div style="margin-top:8px">${fr.heads.map(([tag,t],i)=>`<div class="row" style="gap:10px;padding:7px 0;${i?'border-top:1px solid var(--hairD)':''}">
+           <span class="num" style="font-size:10px;color:var(--onD3);width:16px">0${i+1}</span>
+           <span style="flex:1;font-size:13px;color:rgba(255,255,255,.88)">${t}</span>
+           <span style="font-size:9.5px;color:var(--onD3)">${tag}</span></div>`).join('')}</div>`)}
+      ${reportEntry('opent0','warm','drop','T0 报告','唾液 10月16日 × 手表 30 天',['高负荷','warn'],
+        `<div class="row" style="gap:16px;align-items:center;margin-top:14px">
+           <div style="text-align:center">${scoreRing(72,'#FFB85C',78)}<div style="font-size:10.5px;color:var(--onD2);margin-top:4px">压力负荷</div></div>
+           <div style="text-align:center">${scoreRing(44,'#DCF55A',78)}<div style="font-size:10.5px;color:var(--onD2);margin-top:4px">恢复状态</div></div>
+           <div style="flex:1;font-size:13.5px;font-weight:600;line-height:1.55">你落进了<br>「高负荷」</div></div>
+         <div style="margin-top:10px">${t0.heads.slice(1,4).map(([tag,t],i)=>`<div class="row" style="gap:10px;padding:7px 0;border-top:1px solid var(--hairD)">
+           <span class="num" style="font-size:10px;color:var(--onD3);width:16px">0${i+2}</span>
+           <span style="flex:1;font-size:13px;color:rgba(255,255,255,.88)">${t}</span>
+           <span style="font-size:9.5px;color:var(--onD3)">${tag}</span></div>`).join('')}</div>
+         <div style="font-size:11px;color:var(--onD3);margin-top:8px">${TODAY.retest}复测 · 还有 ${TODAY.daysLeft} 天</div>`)}
     </div>
-    <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px;padding:0 4px">
-      ${hasData?nightCardHTML(day):`<div class="fog flat"><div class="bg"></div><div class="pad">
-        ${cardHead('info','该日无数据',`${day.date} · ${day.wd}`,'已剔除','off')}
-        <div style="font-size:14px;margin-top:13px">没戴手表，或没有同步。</div>
-        <div class="zh-loose" style="font-size:12.5px;color:var(--onD2);margin-top:6px">已从 7 天均值中剔除 —— 所以「7 天均值」实际基于 6 天。</div></div></div>`}
-      ${isToday&&hasData?`<div class="fog warm"><div class="bg"></div><div class="pad">
-        ${cardHead('clock','昨天','活动 × 精力 · 10/13','午后低谷','warn')}
-        <div style="font-size:15px;font-weight:600;line-height:1.6;margin-top:12px">昨天的久坐时段，<br>正好压在你的精力低点上。</div>
-        <div style="margin-top:8px">${dayRibbon()}</div>
-        ${statTrio([{v:'8,260',k:'步数'},{v:'13:10',k:'开始久坐'},{v:'自评 2 分',k:'14:00 的精力'}])}</div></div>`:''}
-      <button data-act="sheet" data-v="testing" style="text-align:left;width:100%">
-        <div class="fog flat"><div class="bg"></div><div class="pad">
-          ${cardHead('drop',salivaTitle(),'第一次唾液检测', S.saliva===2?donePts()+'/5':null, 'good',
-             `<span style="color:var(--onD3)">${ic('chevron',13,2,'currentColor')}</span>`)}
-          <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:11px">${salivaSub()}</div>
-          ${S.saliva===2||S.saliva===3?`<div style="margin-top:12px">${comb(5,donePts()/5,18)}</div>`:''}
-        </div></div></button>
-    </div></div>`;
-}
-function salivaTitle(){
-  return ['唾液检测 · 未安排','唾液检测 · 明早开始','唾液检测 · 采集中','已寄出 · 实验室处理中','唾液报告已出'][S.saliva];
-}
-function salivaSub(){
-  return ['我们仍说不清恢复负荷为什么升高。唾液皮质醇能区分：是 HPA 轴的问题，还是单纯欠睡。',
-    '醒后 30 分钟内取第一管。今晚开始停用生物素补剂。',
-    `下一管 ${(S.points.find(p=>!p.done)||{}).when||''} · ${(S.points.find(p=>!p.done)||{}).name||''}`,
-    '结果通常需要 5–7 个工作日，之后 Aira 会把它和这几周的睡眠放在一起解读。',
-    'HPA 轴：透支。早上启动不了，晚上关不掉。'][S.saliva];
+    <div style="padding:0 4px;margin-top:24px">${sectionLabel('状态自查')}</div>
+    <div style="margin-top:10px;padding:16px;border-radius:22px;background:#fff;border:1px solid var(--hair)">
+      <div class="row">
+        <div style="flex:1"><div style="font-size:15px;font-weight:600">${S.loggedToday?`今天：${faceNames[S.feel]}`:'今天感觉怎么样？'}</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:2px">${S.loggedToday?'已记录 · 可以随时改':'手表测不了感受，一天记一次，Aira 会拿它对照你的数据'}</div></div>
+        <button data-act="sheet" data-v="checkin" style="display:flex;align-items:center;gap:6px;padding:8px 12px;flex:none;
+          border-radius:99px;background:var(--ink);color:#fff;font-size:12px;font-weight:600">
+          ${ic(S.loggedToday?'refresh':'plus',12,2.2,'#fff')} ${S.loggedToday?'修改':'记录'}</button></div>
+      <div style="margin-top:6px">${selfTrend()}</div></div>
+  </div>`;
 }
 
 /* ---- Agent tab ---- */
 function vAgent(){
-  const stageLine=['追踪中 · 恢复负荷 7 天','追踪中 · 明天开始采集',
-    `追踪中 · 已采 ${donePts()}/5`,'追踪中 · 等待实验室','追踪中 · 报告与计划'][S.saliva];
-  const thread=buildThread();
-  const primary = S.saliva===0 ? (S.sent.includes('安排在明天')?null:'安排在明天')
-                : S.saliva===4 ? (S.sent.includes('打开完整报告')?null:'打开完整报告') : null;
-  const ctxAll = S.saliva===0?['为什么是唾液？','我的睡眠哪里有问题？','带我看首页']
-    : S.saliva<=2?['采样日要避免什么？','错过时间点怎么办？','进度如何？']
-    : S.saliva===3?['要等多久？','等待期间我能做什么？']
-    : ['「透支」是什么意思？','为什么是这三件事？'];
-  const ctx=ctxAll.filter(c=>!S.sent.includes(c));
+  const asks=['「高负荷」是什么意思？','为什么先从睡前开始？','白天紧绷怎么缓解？','什么时候复测？','运动要不要加量？']
+    .filter(c=>!S.sent.includes(c));
   return `<div style="display:flex;flex-direction:column;height:100%;color:#fff">
     <div style="text-align:center;padding-top:max(14px, env(safe-area-inset-top));position:relative;flex:none">
       <div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.10);
         border:1px solid rgba(255,255,255,.18);margin:6px auto 0;display:flex;align-items:center;justify-content:center;position:relative">
         <span style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--lime);filter:blur(7px)"></span>
         ${ic('spark',20,1.9,'var(--lime)')}</div>
-      <div class="row" style="justify-content:center;gap:4px;margin-top:5px">
-        <span style="font-size:13.5px;font-weight:600">Aira</span>${ic('chevron',9,2.2,'rgba(255,255,255,.4)')}</div>
-      <div style="font-size:10.5px;color:rgba(255,255,255,.42);margin-top:2px">${stageLine}</div>
-      <button data-act="sheet" data-v="testing" style="position:absolute;right:16px;top:max(22px, env(safe-area-inset-top));
+      <div style="font-size:13.5px;font-weight:600;margin-top:5px">Aira</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,.42);margin-top:2px">第 1 周 / 4 · ${TODAY.retest}复测</div>
+      <button data-act="opent0" aria-label="T0 报告" style="position:absolute;right:16px;top:max(22px, env(safe-area-inset-top));
         width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.10);display:flex;align-items:center;justify-content:center">
         ${ic('drop',16,1.9,'rgba(255,255,255,.8)')}</button></div>
     <div style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:10px 16px;flex:none">
-      ${ctxChip('recover','恢复','60 · 偏高',true)}
-      ${ctxChip('moon','睡眠','6:31 ↓64分',true)}
-      ${ctxChip('pulse','HRV','42 ms',false)}
-      ${S.saliva===4?ctxChip('drop','HPA','透支',true):ctxChip('drop','唾液',['未安排','明天','已采 '+donePts()+'/5','实验室中','已出'][S.saliva],false)}
+      ${ctxChip('pulse','压力负荷','72',true)}
+      ${ctxChip('recover','恢复状态','44',true)}
+      ${ctxChip('moon','入睡','38 分',true)}
+      ${ctxChip('clock','白天紧绷','近 2 小时',true)}
     </div>
-    <div id="threadscroll" class="scroll" style="padding:4px 14px 10px">
-      ${thread}
-    </div>
+    <div id="threadscroll" class="scroll" style="padding:4px 14px 10px">${buildThread()}</div>
     <div style="flex:none;padding:8px 0 90px">
-      ${(primary||ctx.length)?`<div style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:0 16px 8px">
-        ${primary?`<button class="replychip" data-act="send" data-v="${primary}" style="background:var(--lime);color:var(--ink);font-weight:600;flex:none">
-          ${ic('spark',11,2.2,'var(--ink)')} ${primary}</button>`:''}
-        ${ctx.map(c=>`<button class="replychip glass" data-act="send" data-v="${c}" style="flex:none;font-size:12.5px">${c}</button>`).join('')}
-      </div>`:''}
+      <div style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:0 16px 8px">
+        <button class="replychip" data-act="opent0" style="background:var(--lime);color:var(--ink);font-weight:600;flex:none">
+          ${ic('drop',11,2.2,'var(--ink)')} 打开 T0 报告</button>
+        ${asks.map(c=>`<button class="replychip glass" data-act="send" data-v="${c}" style="flex:none;font-size:12.5px">${c}</button>`).join('')}
+      </div>
       <div class="row" style="gap:10px;padding:0 16px">
         <button data-act="sheet" data-v="checkin" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.10);
           display:flex;align-items:center;justify-content:center;flex:none">${ic('plus',17,2,'rgba(255,255,255,.75)')}</button>
         <div class="row" style="flex:1;gap:8px;padding:5px 5px 5px 15px;border-radius:99px;background:rgba(255,255,255,.09);
              border:1px solid rgba(255,255,255,.13)">
-          <input id="composer" placeholder="发消息" style="flex:1;color:#fff;font-size:15px;min-width:0">
+          <input id="composer" placeholder="问问 Aira" style="flex:1;color:#fff;font-size:15px;min-width:0">
           <button data-act="composer" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.10);
             display:flex;align-items:center;justify-content:center;flex:none">${ic('arrowUp',14,2.4,'rgba(255,255,255,.3)')}</button>
         </div></div></div>
@@ -873,230 +742,183 @@ function ctxChip(icon,label,value,warn){
   return `<span class="ctxchip glass">${ic(icon,12,2,warn?'var(--amber)':'var(--lime)')}
     <span>${label}</span><b>${value}</b></span>`;
 }
-function bub(t,lead=false,grouped=false){
-  return `<div class="bubble glass ${lead?'lead':''}" style="border-radius:${grouped?'19px 19px 19px 5px':'19px'};margin-top:${grouped?'3px':'14px'}">${t}</div>`;
+function bub(t,lead=false,grouped=false,delay=null){
+  return `<div class="bubble glass ${lead?'lead':''} ${delay!=null?'fresh':''}" style="border-radius:${grouped?'19px 19px 19px 5px':'19px'};margin-top:${grouped?'3px':'14px'}${delay!=null?';animation-delay:'+delay+'s':''}">${t}</div>`;
 }
-function userBub(t){ return `<div class="bubble user" style="margin-top:14px">${t}</div>`; }
+function userBub(t,fresh=false){ return `<div class="bubble user ${fresh?'fresh':''}" style="margin-top:14px">${t}</div>`; }
+/* 开场摘要在上，用户问答按发送顺序依次追加在下 */
 function buildThread(){
-  let out=`<div class="stagemark" style="margin-top:8px">10月14日 周二</div>`;
-  out+=bub('你的数据进来了。我看了最近 7 天。');
-  out+=`<div style="margin:10px 28px 0 2px">${nightCardHTML(Mock.days[12],true)}</div>`;
-  out+=bub('不是睡少了 —— 是睡碎了。',true);
-  out+=bub('总时长比基线少 64 分钟，但整夜断成 5 段，最长一段只有 2 小时。深睡需要长段连续累积 —— 这正对上你醒来仍然疲惫。',false,true);
-  if(S.saliva===0){
-    out+=`<div style="margin-right:34px">${qualifier('我只能说到这里','睡眠和心率只能显示恢复负荷升高了 —— 说不了为什么。夜间照护和工作冲刺落在同一个窗口里，数据分不开它们。')}</div>`;
-    out+=bub('唾液皮质醇能把它们分开 —— 晨间上升会告诉我们：这是 HPA 轴本身的问题，还是单纯的睡眠欠债。');
-  }
-  for(const s of S.sent) out+=exchange(s);
-  if(S.saliva>=1&&S.saliva<4){
-    out+=`<div class="stagemark" style="margin-top:18px">采集</div>`;
-    if(S.saliva===1){
-      out+=bub('已安排在明天。醒后 30 分钟内取第一管 —— 我会在你平时的起床时间提醒你。');
-      out+=bub('今晚开始停用生物素（维生素 B7）补剂 —— 它会干扰检测。',false,true);
-    } else if(S.saliva===2){
-      const nx=S.points.find(p=>!p.done);
-      out+=bub(`已完成 ${donePts()} 管。下一管：${nx?nx.name:''}，${nx?nx.when:''}。`);
-    } else {
-      out+=bub('五管全部收齐并寄出了。结果通常需要 5–7 个工作日。');
-      out+=bub('等待期间我会继续盯着你的睡眠。如果入睡点稳定下来，我们就能分清哪些变化来自干预本身。',false,true);
-    }
-  }
-  if(S.saliva===4){
-    out+=`<div class="stagemark" style="margin-top:18px">报告</div>`;
-    if(!S.sent.includes('打开完整报告')){
-      out+=`<div class="glass" style="border-radius:24px;padding:18px 10px;margin-top:10px;text-align:center">
-        ${textSphere(150,40)}
-        <div class="shiny" style="font-size:12.5px;margin-top:10px">正在把你的唾液结果与 30 天可穿戴数据做联合分析</div>
-        <div style="margin:12px 28px 0">${neonBar(62)}</div></div>`;
-    }
-    out+=bub('报告出来了。');
-    out+=bub('你的状态是「透支」—— 该启动时启动不了，该停下时停不下来。',true,true);
-    out+=`<button data-act="sheet" data-v="report" style="display:block;width:calc(100% - 28px);margin:10px 28px 0 0;text-align:left">
-      <div class="glass" style="border-radius:22px;padding:16px;color:#fff">
-        <div class="cardhead"><div class="ibadge">${ic('breath',16,1.7,'#fff')}</div>
-          <div class="tt"><div class="a">HPA 轴</div><div class="b">唾液 · 10/15</div></div>
-          ${chipEl('调节变慢','warn')}</div>
-        <div class="row" style="gap:7px;align-items:baseline;margin-top:11px">
-          <span style="font-size:24px;font-weight:600;color:var(--amber)">紧绷</span>
-          <span style="font-size:12.5px;color:rgba(255,255,255,.55)">透支</span></div>
-        <div style="margin-top:8px">${hpaDeviation(300,120)}</div>
-        <div class="hair-d" style="margin:12px 0"></div>${stateStrip(3)}</div></button>`;
-    out+=bub('该出现的晨间上升没有出现（CAR 32%，预期 >50%），下午和晚上也始终没降下来（AUCg 33.3，平衡值 22.0）。两端都和你说的对得上。');
-    out+=`<div style="margin-right:34px">${qualifier('只有一天','只采了一天。单日数据上「平衡」与「透支」会重叠 —— 补采「醒后 +30 分钟」和「睡前」两个点来确认。')}</div>`;
-    out+=bub('我起草了三条行动，按影响力排序。第一条同时作用于两端。');
-    out+=`<div class="glass" style="border-radius:22px;padding:15px;margin:10px 28px 0 0;color:#fff">
-      <div class="cardhead"><div class="ibadge">${ic('plan',16,1.7,'#fff')}</div>
-        <div class="tt"><div class="a">已起草 3 条行动</div><div class="b">到「计划」里滑动卡片，接受或跳过</div></div></div>
-      <div style="display:flex;flex-direction:column;gap:7px;margin-top:11px">
-        ${S.reportRecs.map(r=>`<div class="row" style="gap:9px;padding:8px 11px;border-radius:11px;background:rgba(255,255,255,.07)">
-          <span class="num" style="font-size:12px;width:26px;color:${r.col}">${r.impact}</span>
-          <span style="font-size:12.5px;font-weight:500;color:rgba(255,255,255,.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</span>
-          ${r.state===1?ic('check',11,2.6,'var(--lime)'):''}</div>`).join('')}</div>
-      <button data-act="tab" data-v="2" style="display:flex;align-items:center;justify-content:center;gap:7px;width:100%;
-        margin-top:12px;padding:11px;border-radius:99px;background:var(--lime);color:var(--ink);font-size:12.5px;font-weight:600">
-        去计划里处理 ${ic('arrowRight',12,2.2,'var(--ink)')}</button></div>`;
-  }
+  let out=`<div class="stagemark" style="margin-top:8px">10月22日 · T0 报告</div>`;
+  out+=bub('你的 T0 报告出来了。');
+  out+=bub('一句话：你落进了「高负荷」——压力高，恢复差。',true,true);
+  out+=`<button data-act="opent0" style="display:block;width:calc(100% - 28px);margin:10px 28px 0 0;text-align:left">
+    <div class="glass" style="border-radius:22px;padding:16px;color:#fff">
+      <div class="cardhead"><div class="ibadge">${ic('drop',16,1.7,'#fff')}</div>
+        <div class="tt"><div class="a">T0 报告</div><div class="b">唾液 10/16 × 手表 30 天</div></div>${chipEl('高负荷','warn')}</div>
+      <div class="row" style="justify-content:space-around;margin-top:12px">
+        ${[[72,'#FFB85C','压力负荷'],[44,'#DCF55A','恢复状态']].map(([v,c,n])=>`<div style="text-align:center">${scoreRing(v,c,74)}
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">${n}</div></div>`).join('')}</div>
+      <div class="row" style="justify-content:flex-end;gap:5px;margin-top:10px;font-size:12px;font-weight:600;color:var(--lime)">
+        看完整报告 ${ic('arrowRight',11,2.2,'var(--lime)')}</div></div></button>`;
+  out+=bub('最该先动的是睡前那一小时。压力激素到睡前还没退下去，所以你躺下半小时都睡不着。');
+  out+=bub('我在计划里放了三个四周目标，每个都配了活动，你挑着加。',false,true);
+  out+=`<button data-act="tab" data-v="2" class="row" style="gap:7px;margin:10px 0 0;padding:11px 16px;border-radius:99px;
+    background:var(--lime);color:var(--ink);font-size:12.5px;font-weight:600">去计划看看 ${ic('arrowRight',12,2.2,'var(--ink)')}</button>`;
+  if(S.sent.length||S.typing) out+=`<div class="stagemark" style="margin-top:20px">今天</div>`;
+  S.sent.forEach((s,i)=>{ out+=exchange(s, i===S.sent.length-1 && S.fresh); });
+  if(S.typing) out+=userBub(S.typing,true)+`<div class="bubble glass typing" style="margin-top:14px"><i></i><i></i><i></i></div>`;
   return out;
 }
-function exchange(s){
+const AIRA_QA={
+  '「高负荷」是什么意思？':['压力负荷和恢复状态两条轴交出来的位置：压力在高处，恢复在低处。','身体一边在扛，一边没缓过来——这时候最不该做的就是继续加码。'],
+  '为什么先从睡前开始？':['三个问题里，入睡难最直接，也最好撬动。','压力激素在睡前退下去，入睡会变快，睡眠债也跟着少——一件事同时推两个目标。'],
+  '白天紧绷怎么缓解？':['你白天最紧张的是下午 14–17 点。那个时段起身走 15 分钟，比熬到下班再运动更管用。','我已经把它放进推荐活动了。'],
+  '什么时候复测？':[`${TODAY.retest}，和这次一样的五个时间点。`,'到时候同样的图再画一次，看你的位置有没有往「有压力但扛得住」挪。'],
+  '运动要不要加量？':['先别加。你的运动本来就规律，量也只差一点。','现在身体在「高负荷」，加强度只会让恢复更吃紧。等复测回到「扛得住」再说。'],
+};
+function airaReply(s){
+  if(AIRA_QA[s]) return AIRA_QA[s];
+  if(/睡|醒|失眠|困/.test(s)) return AIRA_QA['为什么先从睡前开始？'];
+  if(/运动|练|跑|健身|走路/.test(s)) return AIRA_QA['运动要不要加量？'];
+  if(/压力|紧|焦虑|累|烦/.test(s)) return ['这个月白天紧绷越来越长，修复类激素也偏低——累是真实的，不是你想多了。','先从睡前一小时和下午走动开始，这两件最容易见效。'];
+  if(/复测|唾液|检测|报告/.test(s)) return AIRA_QA['什么时候复测？'];
+  if(/计划|目标|怎么做|开始/.test(s)) return ['计划里有三个四周目标：入睡、白天紧绷、睡眠债。每个都配了活动，从你最愿意做的那条开始就行。'];
+  return ['记下了。按你现在的数据，最值得先动的还是睡前那一小时——想聊具体怎么做，直接问我就好。'];
+}
+function exchange(s,fresh=false){
   let out=userBub(s);
-  const A={
-    '安排在明天':['好了。明天 06:45 第一管 —— 我会提醒你。分步指引就在「采集」里。'],
-    '为什么是唾液？':['唾液是测量游离皮质醇唯一方便的途径 —— 血液里的大部分皮质醇被蛋白结合着，反映不了当下的调节状态。而且唾液一天能采 5 次，血液做不到。',
-      '皮质醇有很强的昼夜节律 —— 同一个人早晚能差 10 倍。单次读数说明不了什么，一整天的形状才说明问题。'],
-    '我的睡眠哪里有问题？':['时长少了 64 分钟，但碎片化更关键：3 次觉醒共 42 分钟，而你的基线是 1.2 次、13 分钟。最长连续段只有 2 小时 —— 深睡累积不起来。'],
-    '带我看首页':['好。首页按天组织 —— 你可以往回拖着看这一周。'],
-    '采样日要避免什么？':['三件事：采样前 30 分钟不进食不喝咖啡，前 10 分钟不刷牙，醒来后先别运动。时间点比精确更重要 —— 前后 15 分钟内都有效。'],
-    '错过时间点怎么办？':['在标签上写实际时刻，不要写计划时刻。我按真实时间计算 CAR —— 标错了反而没法比。'],
-    '进度如何？':[`已完成 ${donePts()}/5。下一管 ${(S.points.find(p=>!p.done)||{}).when||'—'}。`],
-    '要等多久？':['5–7 个工作日。结果一到我马上告诉你。'],
-    '等待期间我能做什么？':['先固定起床时间。它不依赖唾液结果，而且等报告落地后，也方便我们归因哪些变化来自干预。'],
-    '「透支」是什么意思？':['该启动时启动不了，该停下时停不下来。早晨那端意味着身体没有进入就绪状态；夜晚那端意味着持续警觉 —— 这会让入睡更难。'],
-    '为什么是这三件事？':['固定起床时间权重最高（9.1），而且是唯一同时作用于两端的 —— 定住起床时间，入睡点会自己前移。另外两条分别针对夜晚那端和午后低谷。',
-      '这一轮不给补剂建议 —— 现有数据还撑不起那个判断。'],
-    '打开完整报告':['打开了。第三章整章都在讲这一轮还无法断言的事。'],
-  };
-  const rs=A[s]||['这需要你还没同步的数据。我手上有睡眠、HRV、静息心率和活动 —— 这些可以聊得很深。激素和代谢的问题，我更想等唾液结果。'];
-  rs.forEach((r,i)=>out+=bub(r,false,i>0));
+  airaReply(s).forEach((r,i)=>{ out+=bub(r,false,i>0,fresh?i*.35:null); });
   return out;
 }
 function send(s){
-  if(S.sent.includes(s)) return;
-  S.sent.push(s); S.unread=0;
-  if(s==='安排在明天'&&S.saliva<1) S.saliva=1;
-  if(s==='打开完整报告'){ render(); openSheet('report'); return; }
-  if(s==='带我看首页'){ S.tab=0; }
-  render();
+  if(S.sent.includes(s)||S.typing) return;
+  S.typing=s; S.fresh=false; S.unread=0; render();
+  setTimeout(()=>{ S.typing=null; S.sent.push(s); S.fresh=true; render(); S.fresh=false; },1100);
 }
 
-/* ---- Plan tab ---- */
+/* ---- Plan tab：本轮目标 → 推荐（滑卡） → 本周 ---- */
+function dayRing(frac,sel,has){
+  const r=17, c=2*Math.PI*r;
+  return `<svg width="40" height="40" viewBox="0 0 40 40" style="position:absolute;inset:0">
+    <circle cx="20" cy="20" r="${r}" fill="none" stroke="${sel?'rgba(255,255,255,.18)':'var(--hair)'}" stroke-width="2.4"/>
+    ${has&&frac>0?`<circle cx="20" cy="20" r="${r}" fill="none" stroke="var(--lime)" stroke-width="2.4" stroke-linecap="round"
+      stroke-dasharray="${(c*frac).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 20 20)"/>`:''}</svg>`;
+}
 function vPlan(){
-  const hasReport=S.saliva===4;
-  const dims=[['睡眠',true],['HRV',true],['静息心率',true],['活动',true],['皮质醇',hasReport],['DHEA',hasReport]];
-  const accAll=accepted();
-  const LIBW=[['walk','快走','低强度 · 最合适','#E9F4C6'],['run','跑步','中高强度','#F7DFE4'],
-    ['bike','骑行','中等强度','#DCE7F3'],['strength','力量','高负荷','#F2EADA'],
-    ['swim','游泳','全身 · 低冲击','#DCEFE5'],['rope','跳绳','高强度 · 短时','#E8E3F4']];
-  const LIBR=[['meditate','呼吸练习','睡前 · 最合适','#E9F4C6'],['stretch','拉伸','久坐之后','#DCEFE5'],
-    ['walk','散步','下午','#DCE7F3'],['coffee','咖啡','14:00 之前','#F2EADA'],
-    ['dance','跳舞','动起来就好','#F7DFE4'],['read','阅读','代替刷手机','#E8E3F4']];
-  const lib=S.planSeg===0?LIBW:LIBR;
+  const items=dayItems(S.plan.day), D=WEEK[S.plan.day];
+  const wk=WEEK.map((_,i)=>dayItems(i)), tot=wk.reduce((s,a)=>s+a.length,0);
+  const dn=wk.reduce((s,a,i)=>s+a.filter(x=>S.plan.done.has(i+'-'+x.key)).length,0);
+  const anim=S._dayAnim; S._dayAnim=false;
+  const met=[['入睡','38','20','分'],['白天紧绷','2','1.3','时'],['睡眠债','6','2','时']];
   return `<div class="scroll" style="padding:0 20px 110px;padding-top:max(14px, env(safe-area-inset-top))">
     <div class="row" style="align-items:flex-start;padding-top:14px">
-      <div style="flex:1"><div style="font-size:12.5px;color:var(--ink3)">${hasReport?'唾液生物标志物 × 设备数据':'来自最近 7 天的设备数据'}</div>
+      <div style="flex:1"><div style="font-size:12.5px;color:var(--ink3)">第 1 周 / 4 · ${TODAY.retest}复测</div>
         <div style="font-size:23px;font-weight:600;margin-top:3px">你的计划</div></div>
       <img src="Assets/avatar.jpg" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.2)"></div>
-    <div style="margin-top:15px;padding:13px;border-radius:18px;background:rgba(243,243,241,.7)">
-      <div class="row"><span style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:var(--ink3)">AIRA 现在看得见</span>
-        <span style="margin-left:auto;font-size:10.5px;font-weight:600;color:${hasReport?'var(--ink)':'var(--ink2)'}">${dims.filter(d=>d[1]).length} / 6 个信号</span></div>
-      <div class="row" style="gap:5px;margin-top:10px">
-        ${dims.map(d=>`<span style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 2px;
-          border-radius:99px;background:${d[1]?'#fff':'var(--hair2)'};${d[1]?'border:1px solid var(--hair)':''};
-          font-size:9.5px;color:${d[1]?'var(--ink)':'var(--ink3)'};${d[1]?'font-weight:600':''};white-space:nowrap">
-          ${d[1]?'<span style="width:5px;height:5px;border-radius:50%;background:var(--lime)"></span>':ic('lock',8,2.2,'var(--ink3)')}${d[0]}</span>`).join('')}</div>
-      <div class="zh-loose" style="font-size:10.5px;color:var(--ink3);margin-top:10px">
-        ${hasReport?'唾液结果 10/21 已返回 —— 下面的建议已带上生物标志物证据。':'目前只基于设备数据。唾液会补上两个激素信号 —— 以及更锋利的建议。'}</div></div>
-    <div style="margin-top:15px">
-      ${hasReport?`<div class="fog cool"><div class="bg"></div><div class="pad">
-        ${cardHead('breath','本轮目标','来自报告 · 第 01 章','紧绷','warn')}
-        <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:11px">从「晚上关不掉」这一端开始。</div>
-        <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:7px">这一端更容易撬动 —— 固定起床时间会把入睡点往前拉，早晨那端通常随之好转。反过来几乎不成立。</div>
-      </div></div>`
-      :`<div class="fog flat"><div class="bg"></div><div class="pad">
-        ${cardHead('clock','完整计划等唾液结果','有几件事无论如何都值得做','检测进行中','off')}
-        <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:12px">唾液结果回来之前，我分不清早晨和夜晚哪一端更要紧 —— 而两者的干预完全不同。下面这些建议只依赖你已有的设备数据。</div>
-        <button data-act="sheet" data-v="testing" class="row" style="gap:7px;margin-top:12px;color:var(--lime);font-size:12px;font-weight:600">
-          安排采集 ${ic('arrowRight',12,2,'var(--lime)')}</button></div></div>`}</div>
-    <div class="row" style="margin-top:15px">
-      ${sectionLabel(hasReport?'按影响力排序 · 来自报告':'今天适合你 · 来自设备数据')}
-      ${deck().length?`<span style="margin-left:auto;font-size:10.5px;font-weight:600;color:var(--ink3)">待处理 ${deck().length} 条</span>`:''}</div>
-    <div style="margin-top:8px">${deckHTML()}</div>
-    ${accAll.length||S.arranged.length?`<div style="margin-top:18px">${sectionLabel(`已在计划中 · ${accAll.length+S.arranged.length} 项`)}
-      <div style="display:flex;flex-direction:column;gap:9px;margin-top:9px">
-      ${accAll.map((r,i)=>`<div class="row" style="gap:12px;padding:13px;border-radius:20px;background:#fff;border:1px solid var(--hair)">
-        <span style="width:44px;height:44px;border-radius:13px;background:${r.col.replace('var(--sky)','rgba(122,203,255,.3)').replace('var(--lime)','rgba(220,245,90,.4)').replace('var(--amber)','rgba(255,184,92,.3)').replace('var(--violet)','rgba(183,155,255,.3)')};
-          display:flex;align-items:center;justify-content:center;flex:none">${ic(r.saliva?'drop':'spark',18,2,'var(--ink)')}</span>
-        <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
-          <div style="font-size:11px;color:var(--ink3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.constraint}</div></div>
-        <span style="display:flex;gap:3px">${[...Array(7)].map((_,k)=>`<i style="width:4px;height:16px;border-radius:99px;background:${k<r.done?'var(--ink)':'var(--hair)'}"></i>`).join('')}</span></div>`).join('')}
-      ${S.arranged.map(a=>`<div class="row" style="gap:13px;padding:13px;border-radius:20px;background:#fff;border:1px solid var(--hair)">
-        <span style="width:50px;height:50px;border-radius:14px;background:${a.tint};display:flex;align-items:center;justify-content:center;flex:none">${ic(a.icon,24,1.7,'rgba(16,16,17,.8)')}</span>
-        <div style="flex:1"><div style="font-size:15px;font-weight:600">${a.name}</div>
-          <div style="font-size:11.5px;color:var(--ink3);margin-top:2px">${a.time} · ${a.minutes} 分钟</div></div>
-        <span style="display:flex;gap:3px">${[...Array(7)].map((_,k)=>`<i style="width:4px;height:16px;border-radius:99px;background:${k<a.done?'var(--ink)':'var(--hair)'}"></i>`).join('')}</span></div>`).join('')}
-      </div></div>`:''}
-    <div style="margin-top:18px">${sectionLabel('自己安排')}</div>
-    <div class="row" style="gap:6px;margin-top:9px">
-      ${['训练','放松'].map((s,i)=>`<button data-act="planseg" data-v="${i}" class="row" style="gap:6px;padding:10px 15px;border-radius:99px;
-        ${S.planSeg===i?'background:var(--ink);color:#fff;font-weight:600':'background:#fff;border:1px solid var(--hair);color:var(--ink2)'};font-size:13px">
-        ${ic(i===0?'run':'meditate',15,1.9,S.planSeg===i?'#fff':'var(--ink2)')} ${s}</button>`).join('')}</div>
-    ${S.planSeg===0?`<div class="row" style="gap:9px;align-items:flex-start;margin-top:12px;padding:13px;border-radius:15px;background:rgba(220,245,90,.4)">
-      ${ic('spark',13,2,'var(--ink)','margin-top:2px')}<span class="zh-loose" style="font-size:12.5px;color:var(--ink2)">恢复负荷目前偏高。这周不要加强度 —— 两个低强度选项更合适。</span></div>`:''}
-    <div style="display:flex;gap:11px;overflow-x:auto;scrollbar-width:none;margin:12px -20px 0;padding:0 20px 4px">
-      ${lib.map(a=>{ const sel=S.arranged.some(x=>x.name===a[1]);
-        return `<button class="acttile ${sel?'sel':''}" data-act="arrange" data-v="${a[1]}" data-icon="${a[0]}" data-sub="${a[2]}" data-tint="${a[3]}"
-          style="background:${a[3]}"><span class="ai">${ic(a[0],26,1.6,'rgba(16,16,17,.8)')}</span>
-          <span><span class="at" style="display:block">${a[1]}</span><span class="as" style="display:block;margin-top:2px">${a[2]}</span></span></button>`;}).join('')}</div>
-    ${hasReport?`<div class="fog flat" style="margin-top:14px"><div class="bg"></div><div class="pad">
-      <div style="font-size:10.5px;font-weight:600;letter-spacing:2px;color:var(--onD3)">本轮不做</div>
-      <div style="display:flex;flex-direction:column;gap:11px;margin-top:11px">
-      ${['补剂 —— 现有数据撑不起这个判断','加大强度 —— 恢复负荷已经偏高',
-         '咖啡因 —— 采样时未核实，下一轮再说'].map(s=>`<div class="row" style="gap:8px;align-items:flex-start">
-         ${ic('minus',11,2,'var(--onD3)','margin-top:4px')}<span class="zh-loose" style="font-size:12.5px;color:var(--onD2)">${s}</span></div>`).join('')}
-      </div></div></div>`:''}
-    <button data-act="sheet" data-v="ask" class="row" style="gap:9px;width:100%;margin-top:14px;padding:15px 16px;
+
+    <div class="fog cool" style="margin-top:15px"><div class="bg"></div><div class="pad">
+      ${cardHead('spark','本轮目标','来自 T0 报告 · 四周后复测','高负荷','warn')}
+      <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:12px">先把睡前那一端稳住</div>
+      <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:6px">压力激素在睡前退下去，入睡和睡眠债都会跟着好。</div>
+      <div class="row" style="margin-top:14px;border-top:1px solid var(--hairD)">
+        ${met.map(([k,a,b,u],i)=>`<div style="flex:1;padding:11px 0 0 ${i?'12px':'0'};${i?'border-left:1px solid var(--hairD)':''}">
+          <div style="font-size:10px;color:var(--onD3)">${k}</div>
+          <div class="num" style="font-size:15px;margin-top:4px"><span style="color:#FFD9A0">${a}</span><span style="color:var(--onD3);font-size:11px"> → </span><span style="color:#E7FA9A">${b}</span><span style="font-size:10px;color:var(--onD3)"> ${u}</span></div></div>`).join('')}</div>
+    </div></div>
+
+    <div class="row" style="margin-top:24px">${sectionLabel('推荐给你 · 按影响分排序')}
+      ${deck().length?`<span style="margin-left:auto;font-size:10.5px;font-weight:600;color:var(--ink3)">还有 ${deck().length} 条</span>`:''}</div>
+    <div style="font-size:11.5px;color:var(--ink3);margin-top:4px;line-height:1.55">影响分（满分 10）= 这件事能把你往四周目标推多远。离目标越远、证据越直接、越容易做到，分越高。</div>
+    <div style="margin-top:10px">${deckHTML()}</div>
+
+    <div class="row" style="margin-top:26px">${sectionLabel('本周')}
+      ${tot?`<span style="margin-left:auto;font-size:11px;color:var(--ink3)">本周完成 <b class="num" style="color:var(--ink)">${dn}</b> / ${tot}</span>`:''}</div>
+    <div class="wkcard">
+      <div class="wkstrip">
+      ${WEEK.map((d,i)=>{ const its=wk[i], n=its.filter(x=>S.plan.done.has(i+'-'+x.key)).length, sel=S.plan.day===i, full=its.length&&n===its.length;
+        return `<button class="wkday ${sel?'sel':''} ${full?'full':''}" data-act="pday" data-v="${i}">
+          <span class="w">${i===0?'今天':d.w.replace('周','')}</span>
+          <span class="c">${dayRing(its.length?n/its.length:0,sel,its.length)}<b>${full&&!sel?ic('check',14,2.8,'var(--ink)'):d.date}</b></span></button>`;}).join('')}
+      </div>
+      ${(()=>{ const n=items.filter(x=>S.plan.done.has(S.plan.day+'-'+x.key)).length, full=items.length&&n===items.length;
+        return `<div class="dayhead ${full?'full':''}">
+          <div class="row"><b>${full?(S.plan.day===0?'今天':D.w)+'全部完成':(S.plan.day===0?'今天':D.w)+' · 10月'+D.date+'日'}</b>
+            ${items.length?`<span class="num">${n} / ${items.length}</span>`:''}</div>
+</div>`; })()}
+      <div class="tklist ${anim?'fadein':''}">
+      ${items.length?items.map(x=>{ const key=S.plan.day+'-'+x.key, d=S.plan.done.has(key);
+        return `<button class="tk ${d?'done':''}" data-act="pdone" data-v="${key}">
+          <span class="ck">${ic('check',12,2.8,'var(--ink)')}</span>
+          <span class="tx"><b>${x.title}</b><small><span class="num">${x.time}</span> · ${x.tag}</small></span>
+          <span class="ico" style="background:${x.col}2e">${ic(x.icon,16,1.8,'var(--ink)')}</span></button>`;}).join('')
+      :`<div class="tlempty">${S.plan.acc.size?'这天没有安排，歇一歇。':'右滑上面的推荐，这里会排好每天做什么。'}</div>`}
+      </div>
+    </div>
+    <button data-act="tab" data-v="1" class="row" style="gap:9px;width:100%;margin-top:22px;padding:15px 16px;
       border-radius:18px;background:#fff;border:1px solid var(--hair);text-align:left">
-      ${ic('ask',15,2,'var(--ink)')}<span style="flex:1;font-size:14px;font-weight:500">问问这份计划</span>
+      ${ic('ask',15,2,'var(--ink)')}<span style="flex:1;font-size:14px;font-weight:500">和 Aira 聊聊这份计划</span>
       ${ic('chevron',12,2,'var(--ink3)')}</button>
   </div>`;
+}
+function impactMeter(r){
+  return `<div style="display:flex;align-items:baseline;gap:2px"><span class="num" style="font-size:24px;color:${r.col}">${r.impact}</span><span style="font-size:10px;color:var(--onD3)">/10</span></div>
+    <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--onD3);margin-top:1px">影响分</div>`; }
+const deck=()=>ACTS.filter(a=>!S.plan.acc.has(a.id)&&!S.plan.skip.has(a.id)).sort((x,y)=>y.impact-x.impact);
+function recCard(r,open){
+  const t=targetOf(r.target);
+  return `<div class="fog ${r.saliva?'cool':'flat'}" style="border-radius:22px"><div class="bg"></div><div class="pad" style="padding:18px">
+    <div class="row" style="gap:12px;align-items:flex-start">
+      <div style="width:54px;flex:none">${impactMeter(r)}</div>
+      <div style="flex:1;min-width:0"><div class="row" style="gap:6px">
+          <span style="font-size:9.5px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:99px;background:${r.col};color:var(--ink)">${r.tag}</span>
+          ${r.saliva?`<span class="row" style="gap:3px">${ic('drop',9,2.2,'var(--lime)')}<span style="font-size:8.5px;font-weight:700;letter-spacing:1px;color:var(--lime)">唾液证据</span></span>`:''}</div>
+        <div style="font-size:17px;font-weight:600;line-height:1.45;margin-top:6px">${r.title}</div>
+        <div style="font-size:11px;color:var(--onD3);margin-top:2px">${r.when} · 为了「${t.title}」</div></div></div>
+    <div class="row" style="gap:8px;align-items:flex-start;margin-top:12px">
+      ${ic('spark',12,2,'var(--lime)','margin-top:3px')}
+      <span class="zh-loose" style="font-size:12.5px;color:var(--onD2);${open?'':'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden'}">${r.because}</span></div>
+    ${open?`<div class="fadein" style="margin-top:12px"><div class="hair-d"></div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--onD3);margin-top:10px">为什么是 ${r.impact} 分</div>
+      <div style="margin-top:6px">${r.why3.map(t=>`<div class="row" style="gap:7px;padding:3px 0;font-size:12px;color:rgba(255,255,255,.8)">${ic('check',10,2.4,r.col)}${t}</div>`).join('')}</div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--onD3);margin-top:12px">依据</div>
+      <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px">${r.evidence.map(e=>`<span class="evchip"><span class="d"></span>${e}</span>`).join('')}</div>
+      <div class="row" style="gap:7px;margin-top:10px">${ic('clock',11,2,'var(--onD3)')}<span style="font-size:11px;color:var(--onD2)">${r.onset}</span></div></div>`:''}
+    <div class="row" style="margin-top:10px">
+      <span style="font-size:10.5px;color:var(--onD3);flex:1">${r.how}</span>
+      <button data-act="deckopen" class="row" style="gap:4px;color:var(--lime);font-size:11px;font-weight:600;padding:4px 0 4px 10px">
+        ${open?'收起':'为什么'} ${ic('chevron',8,2.4,'var(--lime)',`transform:rotate(${open?'-90deg':'90deg'})`)}</button></div>
+  </div></div>`;
 }
 function deckHTML(){
   const d=deck();
   if(!d.length){
-    return `<div style="text-align:center;padding:26px;border-radius:22px;background:#fff;border:1px solid var(--hair)">
+    return `<div style="text-align:center;padding:24px;border-radius:22px;background:#fff;border:1px solid var(--hair)">
       <span style="width:44px;height:44px;border-radius:50%;background:rgba(220,245,90,.5);display:inline-flex;align-items:center;justify-content:center">${ic('check',18,2.4,'var(--ink)')}</span>
-      <div style="font-size:14.5px;font-weight:600;margin-top:10px">全部处理完</div>
-      <div style="font-size:11.5px;color:var(--ink3);margin-top:3px">${accepted().length} 条已进计划${stage().filter(r=>r.state===2).length?` · ${stage().filter(r=>r.state===2).length} 条已跳过`:''}</div>
-      ${stage().filter(r=>r.state===2).length?`<button data-act="restoreskipped" style="margin-top:10px;font-size:12px;font-weight:600;
-        padding:8px 14px;border-radius:99px;background:#fff;border:1px solid var(--hair)">回看跳过的</button>`:''}</div>`;
+      <div style="font-size:14.5px;font-weight:600;margin-top:10px">推荐都看完了</div>
+      <div style="font-size:11.5px;color:var(--ink3);margin-top:3px">${S.plan.acc.size} 条已加入${S.plan.skip.size?` · ${S.plan.skip.size} 条跳过`:''}</div>
+      ${S.plan.skip.size?`<button data-act="restoreskipped" style="margin-top:10px;font-size:12px;font-weight:600;padding:8px 14px;border-radius:99px;background:#fff;border:1px solid var(--hair)">回看跳过的</button>`:''}</div>`;
   }
   const under=d.slice(1,3).map((r,i)=>`<div style="position:absolute;inset:0;transform:rotate(${i===0?2.4:-2}deg) translate(${i===0?7:-8}px, ${(i+1)*9}px);
-      opacity:${1-(i+1)*0.16};z-index:${2-i};pointer-events:none">${recCard(r,false)}</div>`).join('');
+      opacity:${1-(i+1)*0.18};z-index:${2-i};pointer-events:none">${recCard(r,false)}</div>`).join('');
   return `<div class="deckwrap" style="padding-bottom:${Math.min(d.length-1,2)*10+4}px">
-    <div style="position:relative">
-      ${under}
-      <div id="topcard" class="deckcard" style="position:relative;z-index:3">${recCard(d[0],S.deckExpanded)}
-        <div id="swipehints" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;
-             padding:0 12px;pointer-events:none;opacity:0;transition:opacity .15s">
-          <span style="padding:7px 10px;border-radius:99px;background:rgba(0,0,0,.45);color:#fff;font-size:11px;font-weight:700">‹ 跳过</span>
-          <span style="padding:7px 10px;border-radius:99px;background:var(--lime);color:var(--ink);font-size:11px;font-weight:700">收进计划 ›</span>
-        </div></div></div>
-    <div class="deck-dots">${stage().map(r=>`<i class="${r.state===1?'acc':r.state===2?'skp':''}"></i>`).join('')}</div>
-    <div style="text-align:center;font-size:10px;color:var(--ink3);margin-top:8px">向右拖 → 收进计划 · 向左拖 ← 跳过 · 点「为什么」看证据</div></div>`;
+    <div style="position:relative">${under}
+      <div id="topcard" class="deckcard" style="position:relative;z-index:3">${recCard(d[0],S.deckOpen)}
+        <div id="swipehints" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 12px;pointer-events:none;opacity:0;transition:opacity .15s">
+          <span style="padding:7px 10px;border-radius:99px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:700">‹ 跳过</span>
+          <span style="padding:7px 10px;border-radius:99px;background:var(--lime);color:var(--ink);font-size:11px;font-weight:700">加入计划 ›</span></div></div></div>
+    <div class="deck-dots">${[...ACTS].sort((x,y)=>y.impact-x.impact).map(r=>`<i class="${S.plan.acc.has(r.id)?'acc':S.plan.skip.has(r.id)?'skp':''}"></i>`).join('')}</div>
+    <div style="text-align:center;font-size:10px;color:var(--ink3);margin-top:8px">右滑加入 · 左滑跳过 · 点「为什么」看依据</div></div>`;
 }
-function recCard(r,expanded){
-  return `<div class="fog ${r.saliva?'cool':'flat'}" style="border-radius:22px"><div class="bg"></div><div class="pad" style="padding:18px">
-    <div class="row" style="gap:10px;align-items:flex-start">
-      ${r.impact?`<div style="width:44px;text-align:center"><div class="num" style="font-size:20px;color:${r.col}">${r.impact}</div>
-        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--onD3);margin-top:1px">影响力</div></div>`:''}
-      <div style="flex:1"><div class="row" style="gap:6px">
-          <span style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;padding:3px 8px;
-            border-radius:99px;background:${r.col};color:var(--ink)">${r.tag}</span>
-          ${r.saliva?`<span class="row" style="gap:3px">${ic('drop',9,2.2,'var(--lime)')}<span style="font-size:8.5px;font-weight:700;letter-spacing:1px;color:var(--lime)">生物标志物</span></span>`:''}</div>
-        <div style="font-size:17px;font-weight:600;line-height:1.45;margin-top:6px">${r.title}</div></div></div>
-    <div class="row" style="gap:8px;align-items:flex-start;margin-top:12px">
-      ${ic('spark',12,2,'var(--lime)','margin-top:3px')}
-      <span class="zh-loose" style="font-size:12.5px;color:var(--onD2);${expanded?'':'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden'}">${r.because}</span></div>
-    ${expanded?`<div class="fadein" style="margin-top:12px"><div class="hair-d"></div>
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--onD3);margin-top:10px">依据</div>
-      <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px">${r.evidence.map(e=>`<span class="evchip"><span class="d"></span>${e}</span>`).join('')}</div>
-      <div class="row" style="gap:7px;margin-top:10px">${ic('clock',11,2,'var(--onD3)')}
-        <span style="font-size:11px;color:var(--onD2)">${r.timeline}</span></div></div>`:''}
-    <div class="row" style="margin-top:9px">
-      <span style="font-size:10.5px;color:var(--onD3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.constraint}</span>
-      <button data-act="deckexpand" class="row" style="gap:4px;color:var(--lime);font-size:10.5px;font-weight:600;padding:4px 0 4px 10px">
-        ${expanded?'收起':'为什么'} ${ic('chevron',8,2.4,'var(--lime)',`transform:rotate(${expanded?'-90deg':'90deg'})`)}</button></div>
-  </div></div>`;
+function flyOff(card,dir,cb){
+  card.style.transition='transform .28s ease-out, opacity .28s';
+  card.style.transform=`translateX(${dir*480}px) rotate(${dir*18}deg)`;
+  card.style.opacity='0';
+  setTimeout(cb,250);
+}
+function deckDecide(dir){
+  const d=deck()[0], card=document.getElementById('topcard'); if(!d) return;
+  const done=()=>{ (dir>0?S.plan.acc:S.plan.skip).add(d.id); S.deckOpen=false; render(); toast(dir>0?'已加入本周计划':'已跳过'); };
+  card?flyOff(card,dir,done):done();
 }
 
 /* ================= Sheets ================= */
@@ -1105,21 +927,16 @@ function openSheet(kind,arg=null){
   $sheet.innerHTML=sheetHTML(kind);
   $veil.classList.add('open');
   requestAnimationFrame(()=>requestAnimationFrame(()=>$sheet.classList.add('open')));
-  wireSheet();
 }
 function closeSheet(cb){
   $sheet.classList.remove('open'); $veil.classList.remove('open');
   const k=S.sheet; S.sheet=null;
   setTimeout(()=>{ $sheet.innerHTML=''; if(cb)cb(k); },420);
 }
-function refreshSheet(){ if(S.sheet){ $sheet.innerHTML=sheetHTML(S.sheet); wireSheet(); } }
+function refreshSheet(){ if(S.sheet){ $sheet.innerHTML=sheetHTML(S.sheet); } }
 function sheetHTML(kind){
-  if(kind==='testing') return shTesting();
   if(kind==='guidance') return shGuidance();
-  if(kind==='report') return shReport();
   if(kind==='checkin') return shCheckin();
-  if(kind==='ask') return shAsk();
-  if(kind==='arrange') return shArrange();
   return '';
 }
 function sheetHead(title){
@@ -1129,77 +946,14 @@ function sheetHead(title){
       display:flex;align-items:center;justify-content:center">${ic('close',12,2.3,'var(--ink2)')}</button></div>`;
 }
 
-/* -- Testing (saliva collection) -- */
-function shTesting(){
-  const status=['未安排','已安排 · 明天早上',`采集中 · ${donePts()} / 5`,'已寄出 · 实验室处理中','报告已出'][S.saliva];
-  let body='';
-  if(S.saliva===0){
-    body=`<div class="fog cool"><div class="bg"></div><div class="pad">
-      ${cardHead('drop','五管，一天','在家完成 · 寄回实验室','约 15 分钟','sky')}
-      <div style="font-size:17px;font-weight:600;margin-top:14px">为什么是五个时间点</div>
-      <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:6px">同一个人一天内的皮质醇可以相差 10 倍。形状本身，就是测量结果。</div>
-      <div style="margin-top:10px">${fiveTubesCurve()}</div></div></div>
-    <div class="fog flat"><div class="bg"></div><div class="pad">
-      ${cardHead('info','采样日注意避开','四件事 —— 都会让检测失真')}
-      <div style="display:flex;flex-direction:column;gap:11px;margin-top:12px">
-      ${['前 24 小时停用生物素（维生素 B7）','前 30 分钟不进食、不喝咖啡',
-         '前 10 分钟不刷牙 —— 牙龈出血会污染样本',
-         '醒来后先别运动 —— 第一管在醒后 30 分钟内'].map(s=>`<div class="row" style="gap:10px;align-items:flex-start">
-        <span style="width:18px;height:18px;border-radius:50%;background:rgba(255,138,91,.16);display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px">${ic('close',9,2.4,'var(--coral)')}</span>
-        <span class="zh-loose" style="font-size:13px;color:var(--onD2)">${s}</span></div>`).join('')}</div></div></div>
-    ${cta('安排在明天','data-act="schedule"')}`;
-  } else if(S.saliva===1||S.saliva===2){
-    body=`<div class="fog warm"><div class="bg"></div><div class="pad">
-      ${cardHead('drop','今天的五管','10月15日',`${donePts()} / 5`,'good')}
-      <div style="margin-top:14px">${comb(5,donePts()/5,22)}</div>
-      <div style="font-size:11px;color:var(--onD3);margin-top:8px">在每个时间点采样 —— 前后 15 分钟内都有效。</div></div></div>
-    <div style="display:flex;flex-direction:column;gap:9px">
-    ${S.points.map((p,i)=>`<button data-act="point" data-v="${i}" class="row" style="gap:12px;padding:14px;border-radius:17px;
-        background:#fff;border:1px solid ${p.done?'rgba(220,245,90,.9)':'var(--hair)'};text-align:left;width:100%">
-      <span style="width:42px;height:42px;border-radius:50%;background:${p.done?'var(--lime)':'var(--hair2)'};
-        display:flex;align-items:center;justify-content:center;flex:none">
-        ${p.done?ic('check',14,2.4,'var(--ink)'):`<span class="num" style="font-size:9.5px;color:var(--ink2)">${p.when}</span>`}</span>
-      <span style="flex:1"><span style="display:block;font-size:14px;font-weight:600">${p.name}</span>
-        <span style="display:block;font-size:11.5px;color:var(--ink3);margin-top:2px">${p.hint}</span></span>
-      ${p.done?'<span style="font-size:11.5px;color:var(--ink3)">完成</span>':ic('chevron',12,2.2,'var(--ink3)')}</button>`).join('')}</div>
-    <button class="ghost-link" data-act="fastforward">演示：直接跳到报告</button>`;
-  } else if(S.saliva===3){
-    body=`<div class="fog flat"><div class="bg"></div><div class="pad">
-      ${cardHead('plan','已寄出','10/15 · 18:20','处理中','off')}
-      <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
-      ${[['五管全部采集完成',1],['已寄出',1],['实验室处理中',0],['报告生成',0]].map(s=>`<div class="row" style="gap:10px">
-        <span style="width:16px;height:16px;border-radius:50%;${s[1]?'background:var(--lime)':'border:1.4px solid rgba(255,255,255,.2)'};
-          display:flex;align-items:center;justify-content:center;flex:none">${s[1]?ic('check',9,2.6,'var(--ink)'):''}</span>
-        <span style="font-size:13px;color:${s[1]?'#fff':'var(--onD3)'}">${s[0]}</span></div>`).join('')}</div>
-      <div class="zh-loose" style="font-size:12px;color:var(--onD2);margin-top:14px">结果通常 5–7 个工作日送达。Aira 会把它和这几周的睡眠放在一起解读。</div></div></div>
-    ${cta('演示：报告已出','data-act="fastforward"')}`;
-  } else {
-    body=`<div class="fog cool"><div class="bg"></div><div class="pad">
-      ${cardHead('plan','报告已出','采样 10/15 · 出具 10/21','紧绷','warn')}
-      <div style="font-size:19px;font-weight:600;margin-top:13px">HPA 轴：紧绷</div>
-      <div class="zh-loose" style="font-size:13.5px;color:var(--onD2);margin-top:7px">早上启动不了，晚上关不掉 —— 和你说的「醒来疲惫、入睡变晚」对得上。</div></div></div>
-    ${cta('打开完整报告','data-act="openreport"')}
-    ${S.retestScheduled?`<div class="row" style="gap:8px;padding:12px;border-radius:14px;background:rgba(220,245,90,.35)">
-      <span style="width:22px;height:22px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;flex:none">${ic('check',13,2.4,'var(--ink)')}</span>
-      <span style="font-size:12.5px;font-weight:500;color:var(--ink2)">已安排复测 · 10/24 + 10/25，相同时间点</span></div>`
-    :`<button data-act="retest" style="width:100%;padding:13px;border-radius:99px;background:#fff;border:1.2px solid rgba(16,16,17,.75);
-      font-size:13px;font-weight:600">再采 2 天 —— 确认这个状态</button>`}`;
-  }
-  return sheetHead('唾液采集')+`
-    <div class="row" style="gap:7px;padding:6px 20px 0">
-      <span style="width:6px;height:6px;border-radius:50%;background:${S.saliva===0?'var(--ink3)':'var(--lime)'}"></span>
-      <span style="font-size:12.5px;font-weight:500;color:var(--ink2)">${status}</span></div>
-    <div class="scroll" style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:16px">${body}</div>`;
-}
-
 /* -- Guidance (collection steps) -- */
-const GSTEPS=[['清水漱口','漱 10 秒后吐掉。不要刷牙、不要用漱口水 —— 两者都会让结果失真。'],
+const GSTEPS=[['清水漱口','漱 10 秒后吐掉。别刷牙、别用漱口水，都会让结果不准。'],
   ['等待 10 分钟','让口腔回到基线。等待期间不吃不喝。'],
-  ['含住采样棉 2 分钟','放在舌下，不要咀嚼。浸透即可 —— 不用使劲。'],
+  ['含住采样棉 2 分钟','放在舌下，别嚼。泡湿就行，不用使劲。'],
   ['放回管中，封好','不碰棉头，直接放入，按下管盖直到咔哒一声。'],
-  ['标注时间点','写上时间点和实际时刻 —— 标错会让这管结果作废。']];
+  ['标注时间点','写上是哪一管、实际几点采的。标错这管就白采了。']];
 function shGuidance(){
-  const i=S.stepIndex, pt=S.activePoint!=null?S.points[S.activePoint]:null;
+  const i=S.stepIndex, last=i===GSTEPS.length-1;
   return `<div style="position:relative;height:100%;display:flex;flex-direction:column;background:var(--page)">
     <div style="position:absolute;top:0;left:0;right:0;height:56%;overflow:hidden">
       <img src="Assets/guide${i+1}.png" style="width:100%;height:100%;object-fit:cover;object-position:top">
@@ -1207,151 +961,24 @@ function shGuidance(){
     <div class="row" style="position:relative;padding:18px 22px 0">
       <span class="row" style="gap:7px;padding:7px 11px;border-radius:99px;background:rgba(255,255,255,.85)">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>
-        <span style="font-size:12px;font-weight:600;color:var(--ink2)">${pt?pt.name:'采集'}</span></span>
+        <span style="font-size:12px;font-weight:600;color:var(--ink2)">每一管都一样</span></span>
       <button data-act="closeguidance" style="margin-left:auto;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.9);
         display:flex;align-items:center;justify-content:center">${ic('close',13,2.3,'var(--ink2)')}</button></div>
     <div style="flex:1"></div>
     <div style="position:relative;padding:0 22px max(20px, env(safe-area-inset-bottom))">
       <div class="kicker">第 ${i+1} 步 · 共 5 步</div>
-      <div class="serif" style="font-size:27px;font-weight:600;line-height:1.35;margin-top:8px">${GSTEPS[i][0]}</div>
+      <div style="font-size:26px;font-weight:650;line-height:1.35;margin-top:8px">${GSTEPS[i][0]}</div>
       <div class="zh-loose" style="font-size:13.5px;color:var(--ink2);margin-top:10px">${GSTEPS[i][1]}</div>
-      ${i===1?`<div class="row" style="gap:8px;margin-top:14px;padding:9px 12px;border-radius:99px;background:rgba(220,245,90,.45);width:fit-content">
-        ${ic('bell',12,2,'var(--ink)')}<span style="font-size:12px;font-weight:500;color:var(--ink2)">Aira 会在 10 分钟后提醒你</span></div>`:''}
+      ${i===1||last?`<div class="row" style="gap:8px;margin-top:14px;padding:9px 12px;border-radius:99px;background:rgba(220,245,90,.45);width:fit-content">
+        ${ic('bell',12,2,'var(--ink)')}<span style="font-size:12px;font-weight:500;color:var(--ink2)">${last?'其余几管，到点 Aira 会提醒你照做':'Aira 会在 10 分钟后提醒你'}</span></div>`:''}
       <div class="row" style="gap:5px;margin-top:20px">
         ${[0,1,2,3,4].map(k=>`<span style="flex:1;height:3px;border-radius:99px;background:${k<=i?'var(--ink)':'rgba(16,16,17,.12)'}"></span>`).join('')}</div>
       <div class="row" style="gap:10px;margin-top:16px">
         ${i>0?`<button data-act="gback" style="width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid var(--hair);
           display:flex;align-items:center;justify-content:center;flex:none">${ic('chevron',14,2.2,'var(--ink)','transform:rotate(180deg)')}</button>`:''}
-        ${cta(i===4?'这管完成':'下一步','data-act="gnext"')}</div></div></div>`;
+        ${cta(last?'五管都采完了':'下一步','data-act="gnext"')}</div></div></div>`;
 }
 
-/* -- Report：唾液检测后的 T0 报告（report.html 原型，iframe 承载） -- */
-function shReport(){
-  return `<div class="grab"></div>
-    <button data-act="closesheet" style="position:absolute;top:16px;right:16px;z-index:5;width:32px;height:32px;
-      border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.12);
-      display:flex;align-items:center;justify-content:center">${ic('close',12,2.3,'var(--ink2)')}</button>
-    <iframe id="reportframe" src="report.html" title="唾液报告" style="flex:1;width:100%;border:0"></iframe>`;
-}
-function shReportLegacy(){
-  const ch=S.reportChapter;
-  let body='';
-  if(ch===0){
-    body=`<div class="litecard">${sectionLabel('事实')}
-      <div style="font-size:14px;line-height:1.6;margin-top:8px">10/15 共五次采样：4.20 / 5.53 / 2.33 / 1.69 / 1.29 ng/mL。</div>
-      <div class="row" style="gap:6px;margin-top:10px">${['唾液 · Eurofins','原始单位：ng/mL'].map(s=>
-        `<span style="font-size:10.5px;color:var(--ink2);padding:4px 9px;border-radius:99px;background:#fff">${s}</span>`).join('')}</div></div>
-    <div class="fog cool"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><div class="ibadge">${ic('breath',16,1.7,'#fff')}</div>
-        <div class="tt"><div class="a">HPA 轴</div><div class="b">唾液 · 10/15 · 5 个点</div></div>
-        ${chipEl('调节变慢','warn')}</div>
-      <div class="row" style="gap:7px;align-items:baseline;margin-top:12px">
-        <span style="font-size:26px;font-weight:600;color:var(--amber)">紧绷</span>
-        <span style="font-size:12.5px;color:var(--onD2)">透支</span></div>
-      <div style="font-size:12.5px;color:var(--onD2);margin-top:5px">早上启动不了，晚上关不掉</div>
-      <div style="margin-top:10px">${hpaDeviation()}</div>
-      <div style="font-size:10px;color:var(--onD3);margin-top:4px">— — 虚线 = 「平衡」的参考形状</div>
-      <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
-        ${[['var(--sky)','早上启动不了','醒后该有的上升没有出现 —— 身体没进入就绪状态，所以头一两个小时发闷。','CAR 32%','预期 >50%','var(--sky)'],
-           ['var(--coral)','全天关不掉','该下降的时段始终没降 —— 身体持续警觉，放松和入睡都变得更难。','AUCg 33.3','平衡值 22.0','var(--amber)']]
-          .map(r=>`<div class="row" style="gap:10px;align-items:flex-start">
-          <span style="width:12px;height:12px;border-radius:4px;background:${r[0]};opacity:.8;flex:none;margin-top:4px"></span>
-          <div style="flex:1"><div style="font-size:13.5px;font-weight:600">${r[1]}</div>
-            <div class="zh-loose" style="font-size:11.5px;color:var(--onD2);margin-top:3px">${r[2]}</div></div>
-          <div style="text-align:right;flex:none"><div class="num" style="font-size:13px;color:${r[5]}">${r[3]}</div>
-            <div style="font-size:9.5px;color:var(--onD3);margin-top:1px">${r[4]}</div></div></div>`).join('')}</div>
-      <div class="hair-d" style="margin:13px 0"></div>
-      ${stateStrip(3)}
-      <div style="font-size:12.5px;font-weight:600;line-height:1.6;margin-top:13px">透支 = 该启动时启动不了，该停下时停不下来。</div>
-      <div style="font-size:12px;color:var(--onD2);margin-top:2px">和你说的「醒来疲惫、入睡变晚」对得上。</div>
-      <div class="row" style="gap:7px;margin-top:12px">${chipEl('DHEA 2.1 偏低','warn')}${chipEl('睾酮/皮质醇 0.38','off')}</div>
-      ${qualifier('只有一天','只采了一天。补采「醒后 +30 分钟」与「睡前」两个点，确认这是稳定状态，而不是单日波动。','安排复测','data-act="retest"')}
-      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:14px">
-        ${[['「透支」是什么意思？','该启动时启动不了，该停下时停不下来。晨间上升没有出现（CAR 32%，预期 >50%），下午和晚上也始终没降（AUCg 33.3，平衡值 22.0）。'],
-           ['和我的睡眠有关系吗？','方向上有关：晚上关不掉会让入睡更难，你的入睡点比平时晚了 50 分钟。但只采了一天，我分不清是因果还是巧合。'],
-           ['怎么才能弄清楚？','在相同时间点再采 2 天，并记录当天是否有夜间照护。形状在两天里重复出现，才算稳定状态。']]
-          .map((q,i)=>`<button class="evchip" data-qa="${i}" style="font-size:11px">${ic('ask',11,2,'var(--lime)')} ${q[0]}</button>
-            <div id="qa-${i}" class="zh-loose" style="display:none;width:100%;font-size:12px;color:var(--onD2);
-              padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.06)">${q[1]}</div>`).join('')}</div>
-    </div></div>`;
-  } else if(ch===1){
-    body=`<div class="litecard">${sectionLabel('事实')}
-      <div style="font-size:14px;line-height:1.7;margin-top:8px">设备：皮质醇在 14:00–16:00 最低。<br>自评：5 天里有 4 天，14:00 打了 1–2 分。</div></div>
-    <div class="fog cool"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><div class="ibadge">${ic('pulse',16,1.7,'#fff')}</div>
-        <div class="tt"><div class="a">感受 vs 测量</div><div class="b">设备 × 自评</div></div>
-        ${chipEl('5 天中 4 天吻合','sky')}</div>
-      <div style="margin-top:12px">${dualTrack()}</div>
-      <div class="zh-loose" style="font-size:13.5px;margin-top:8px">你在下午和傍晚持续走低 —— 正是你说「感觉垮掉」的那段时间。</div>
-      ${qualifier('第 5 天不吻合','那天 14:00 自评 3 分。单日唾液仍无法确认因果。')}</div></div>
-    <div class="fog flat"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><div class="ibadge" style="background:rgba(220,245,90,.2)"><span style="color:var(--lime);font-weight:700;font-size:13px">?</span></div>
-        <div class="tt"><div class="a">Aira 的一个假设</div></div>${chipEl('未证实','off')}</div>
-      <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:12px">睡眠变短，和皮质醇有关吗？</div>
-      ${evid('支持','var(--lime)',['近 7 天每晚少睡 64 分钟','16:00 皮质醇 1.69 —— 低于常见区间','5 天里 4 天自评午后垮掉'])}
-      ${evid('反对 / 未知','var(--coral)',['唾液只采了 1 天','夜间照护与工作冲刺重叠 —— 分不开','采样前是否停用生物素未核实'])}
-      ${qualifier('如何验证','在相同时间点再采 2 天，并记录是否有夜间照护。只有重复出现的形状才算稳定。')}</div></div>`;
-  } else {
-    body=`<div class="litecard">${sectionLabel('这一章为什么存在')}
-      <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:8px">因为「尚不可知」和结论同样重要。</div>
-      <div class="zh-loose" style="font-size:13px;color:var(--ink2);margin-top:6px">如果 Aira 把注意事项藏进灰色小字，你会跳过 —— 而我们就是在假装全知。</div></div>
-    <div class="fog alert"><div class="bg"></div><div class="pad">
-      ${cardHead('info','时间点与样本量','影响状态判定','1 天','warn')}
-      <div class="row" style="gap:5px;margin-top:14px">${['C1','C2','C3','C4','C5'].map(s=>`<div style="flex:1;text-align:center">
-        <div style="height:22px;border-radius:6px;background:var(--lime)"></div>
-        <div style="font-size:8.5px;color:var(--onD3);margin-top:5px">${s}</div></div>`).join('')}</div>
-      <div class="zh-loose" style="font-size:12.5px;color:var(--onD2);margin-top:12px">五个点都采齐了，可以计算状态。但只有一天 —— 单日数据上「平衡」与「透支」会重叠。</div></div></div>
-    <div class="fog flat"><div class="bg"></div><div class="pad">
-      <div style="font-size:10.5px;font-weight:600;letter-spacing:2px;color:var(--onD3)">三件我们不下结论的事</div>
-      <div style="display:flex;flex-direction:column;gap:0;margin-top:13px">
-      ${[['夜间照护 vs 工作压力 —— 哪个是主因','两者重叠；分开它们需要一个只有其中之一的窗口'],
-         ['生物素是否影响了这次检测','采样前未核实。免疫检测法对生物素敏感'],
-         ['DHEA 偏低是长期还是近期','只有一次测量，没有基线可比']].map((p,i)=>`
-        ${i?'<div class="hair-d" style="margin:11px 0 9px"></div>':''}
-        <div><div style="font-size:13.5px;font-weight:600;line-height:1.5">${p[0]}</div>
-          <div class="zh-loose" style="font-size:12px;color:var(--onD2);margin-top:3px">${p[1]}</div></div>`).join('')}</div></div></div>
-    <div class="row" style="gap:8px;align-items:flex-start;padding:9px 12px;border-radius:11px;background:rgba(16,16,17,.04);
-         border:1px dashed rgba(255,184,92,.9)">
-      <span style="color:var(--amber);font-weight:700;font-size:12px">!</span>
-      <div><div style="font-size:11.5px;font-weight:500">Apple Health · 模拟数据</div>
-        <div style="font-size:10px;color:var(--ink3);margin-top:1px">本演示使用模拟数据，并非真实检测结果</div></div></div>`;
-  }
-  return `<div class="grab"></div>
-    <div class="row" style="padding:16px 20px 0">
-      <div style="flex:1">${sectionLabel('唾液报告 · 采样 10/15')}
-        <div style="font-size:20px;font-weight:600;margin-top:2px">你的状态：透支</div></div>
-      <button data-act="closesheet" style="width:32px;height:32px;border-radius:50%;background:var(--hair2);
-        display:flex;align-items:center;justify-content:center">${ic('close',12,2.3,'var(--ink2)')}</button></div>
-    <div class="chtabs">${['01 HPA 轴','02 对照你的感受','03 仍不确定'].map((c,i)=>
-      `<button class="${ch===i?'on':''}" data-act="chapter" data-v="${i}">${c}</button>`).join('')}</div>
-    <div class="scroll" style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:16px">
-      ${body}
-      ${cta('生成计划','data-act="buildplan"')}
-    </div>`;
-}
-function evid(title,c,items){
-  return `<div style="margin-top:13px"><div style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:${c}">${title}</div>
-    <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px">${items.map(s=>
-      `<div class="row" style="gap:7px;align-items:flex-start"><span style="color:var(--onD3)">·</span>
-       <span class="zh-loose" style="font-size:12px;color:var(--onD2)">${s}</span></div>`).join('')}</div></div>`;
-}
-function dualTrack(w=312,h=110){
-  const cort=[[7,.55],[9,.75],[11,.45],[13,.3],[15,.2],[17,.22],[19,.2],[21,.17]];
-  const felt=[[8,.65],[10,.55],[12,.5],[14,.15],[16,.18],[18,.32],[20,.3]];
-  const pl=8,pr=8,pt=12,pb=26;
-  const X=hr=>pl+(w-pl-pr)*(hr-7)/14, Y=v=>pt+(h-pt-pb)*(1-v);
-  let s=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block">`;
-  s+=`<rect x="${X(14)}" y="${pt}" width="${X(16)-X(14)}" height="${h-pt-pb}" rx="6" fill="rgba(255,138,91,.12)"/>`;
-  s+=`<path d="${smoothPath(cort.map(([hr,v])=>[X(hr),Y(v)]))}" stroke="var(--lime)" stroke-width="2" fill="none"/>`;
-  s+=`<path d="${smoothPath(felt.map(([hr,v])=>[X(hr),Y(v)]))}" stroke="rgba(255,255,255,.75)" stroke-width="1.6" stroke-dasharray="4 3" fill="none"/>`;
-  s+=`<text x="${X(15)}" y="${h-12}" fill="var(--coral)" font-size="9" text-anchor="middle">低谷</text>`;
-  [8,12,16,20].forEach(hr=>s+=`<text x="${X(hr)}" y="${h-2}" fill="rgba(255,255,255,.35)" font-size="8.6" text-anchor="middle">${hr}:00</text>`);
-  s+=`<text x="${pl}" y="10" fill="var(--lime)" font-size="8.6">— 皮质醇</text>
-      <text x="${pl+58}" y="10" fill="rgba(255,255,255,.6)" font-size="8.6">- - 你的感受</text>`;
-  return s+'</svg>';
-}
-
-/* -- Check-in -- */
 function shCheckin(){
   return sheetHead('打卡')+`
     <div class="scroll" style="padding:14px 22px 40px">
@@ -1369,99 +996,33 @@ function shCheckin(){
     </div>`;
 }
 
-/* -- Ask about plan -- */
-function shAsk(){
-  const qa=[['为什么起床时间排第一？','权重最高（9.1），而且是唯一同时作用于两端的干预 —— 定住起床时间，入睡点会自己前移。'],
-    ['我需要补剂吗？','不需要。这一轮不给补剂建议 —— 你的数据还撑不起那个判断，而且行为干预的证据更强。'],
-    ['做不到每天执行怎么办？','只在工作日做也可以。只要别连续中断 3 天 —— 那会把刚稳住的节律重新带偏。']];
-  return sheetHead('问问这份计划')+`
-    <div class="scroll" style="padding:10px 20px 40px;display:flex;flex-direction:column;gap:10px">
-      ${qa.map((q,i)=>`<button data-qa="${i}" class="wcard" style="padding:15px 16px;text-align:left;width:100%">
-        <span class="row" style="gap:9px">${ic('ask',15,2,'var(--ink)')}<span style="flex:1;font-size:14px;font-weight:500">${q[0]}</span>
-          ${ic('chevron',11,2.2,'var(--ink3)','transform:rotate(90deg)')}</span></button>
-        <div id="qa-${i}" class="zh-loose" style="display:none;font-size:13px;color:var(--ink2);padding:2px 16px 8px">${q[1]}</div>`).join('')}</div>`;
-}
-
-/* -- Arrange -- */
-function shArrange(){
-  const a=S.sheetArg;
-  const slots=['早晨 · 07:00','下午 · 13:30','傍晚 · 18:00','睡前 · 22:00'];
-  const rec=(a.icon==='meditate'||a.icon==='read')?3:(a.icon==='coffee'?1:2);
-  if(S._arrMin==null){ S._arrMin=a.defaultMin||20; S._arrSlot=rec; }
-  const reason=[,'下午 —— 你 13:10–15:50 的久坐时段，正好压在精力低谷上。',
-    '傍晚 —— 距睡前至少 3 小时，入睡点才不会被推后。',
-    '睡前 —— 你的问题是晚上关不掉，这个时段收益最大。'][S._arrSlot]||'傍晚 —— 距睡前至少 3 小时。';
-  return sheetHead('安排')+`
-    <div class="scroll" style="padding:10px 20px 40px">
-      <div class="row" style="gap:14px;margin-top:8px">
-        <span style="width:92px;height:92px;border-radius:20px;background:${a.tint};display:flex;align-items:center;justify-content:center;flex:none">${ic(a.icon,40,1.6,'rgba(16,16,17,.8)')}</span>
-        <div><div style="font-size:22px;font-weight:600">${a.name}</div>
-          <div style="font-size:12.5px;color:var(--ink3);margin-top:4px">${a.sub}</div></div></div>
-      <div style="margin-top:24px">${sectionLabel('时长（分钟）')}</div>
-      <div class="row" style="gap:8px;margin-top:10px">${[10,15,20,30,45].map(m=>`<button data-act="arrmin" data-v="${m}"
-        style="flex:1;padding:13px 2px;border-radius:14px;font-size:14px;${S._arrMin===m?'background:var(--ink);color:#fff;font-weight:600':'background:#fff;border:1px solid var(--hair);color:var(--ink2)'}">${m}</button>`).join('')}</div>
-      <div style="margin-top:20px">${sectionLabel('时间段')}</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
-        ${slots.map((s,i)=>`<button data-act="arrslot" data-v="${i}" class="row" style="gap:8px;padding:14px 16px;border-radius:15px;text-align:left;
-          background:${S._arrSlot===i?'rgba(220,245,90,.4)':'#fff'};border:1px solid ${S._arrSlot===i?'rgba(16,16,17,.85)':'var(--hair)'}">
-          <span style="font-size:14.5px;${S._arrSlot===i?'font-weight:600':''}">${s}</span>
-          ${i===rec?'<span style="font-size:10px;font-weight:600;padding:3px 7px;border-radius:99px;background:var(--lime)">Aira 建议</span>':''}
-          <span style="margin-left:auto">${S._arrSlot===i?ic('check',15,2.2,'var(--ink)'):''}</span></button>`).join('')}</div>
-      <div class="row" style="gap:9px;align-items:flex-start;margin-top:16px;padding:13px;border-radius:15px;background:rgba(220,245,90,.4)">
-        ${ic('spark',13,2,'var(--ink)','margin-top:2px')}<span class="zh-loose" style="font-size:12.5px;color:var(--ink2)">${reason}</span></div>
-      <div style="margin-top:22px">${cta('加入计划','data-act="arradd"')}</div></div>`;
-}
-
-/* ================= Analyzing overlay ================= */
-const $anal=document.getElementById('analyzing');
-function deliverReport(){
-  S.points.forEach(p=>p.done=true);
-  closeSheet();
-  const lines=['读取 5 个唾液时间点','与 30 天睡眠数据对齐','对照你自己的基线','区分已知与未知'];
-  $anal.className='open';
-  $anal.innerHTML=`<div class="fogscreen"></div>
-    <div style="position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;color:#fff;text-align:center;padding:0 40px">
-      ${textSphere(250,80)}
-      <div style="font-size:22px;font-weight:600;margin-top:26px">联合分析</div>
-      <div id="an-line" style="font-size:13.5px;color:rgba(255,255,255,.62);margin-top:10px;height:20px">${lines[0]}</div>
-      <div id="an-bar" style="margin:30px 46px 0">${neonBar(0)}</div>
-      <div id="an-pct" class="num" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:12px">0%</div>
-      <div style="position:absolute;bottom:34px;left:0;right:0;font-size:11px;color:rgba(255,255,255,.34);line-height:1.7">
-        这需要一点时间 —— 它在把两侧互相对照着读，<br>而不是分别打分。</div></div>`;
-  let p=0;
-  const t=setInterval(()=>{
-    p++;
-    const b=document.getElementById('an-bar'); if(!b){clearInterval(t);return;}
-    b.innerHTML=neonBar(p);
-    document.getElementById('an-pct').textContent=p+'%';
-    if(p%25===0&&p<100) document.getElementById('an-line').textContent=lines[Math.min(3,p/25)];
-    if(p>=100){ clearInterval(t);
-      setTimeout(()=>{ $anal.className=''; $anal.innerHTML='';
-        S.saliva=4; S.tab=1; S.unread=1; render(); },480); }
-  },52);
-}
 
 /* ================= Demo autoplay ================= */
 const DEMO_STEPS=[
-  ['欢迎页',3.0,()=>{reset();}],
-  ['连接数据',2.4,()=>{S.phase='connect';S.healthGranted=true;}],
-  ['导入 30 天',4.0,()=>{beginSync();}],
-  ['第一份解读',4.2,()=>{S.phase='recap';}],
-  ['关于你',2.6,()=>{S.phase='profile';S.profStep=0;S.nickname='Chloe';}],
-  ['训练习惯',2.4,()=>{S.phase='profile';S.profStep=1;}],
-  ['首页 · 每日循环',3.6,()=>{S.phase='main';S.tab=0;closeSheetNow();}],
-  ['Aira 发起对话',3.6,()=>{S.phase='main';S.tab=1;}],
-  ['为什么是唾液',3.2,()=>{S.phase='main';S.tab=1;if(!S.sent.includes('为什么是唾液？'))S.sent.push('为什么是唾液？');}],
-  ['安排采集',2.6,()=>{S.phase='main';S.tab=1;if(!S.sent.includes('安排在明天'))S.sent.push('安排在明天');if(S.saliva<1)S.saliva=1;}],
-  ['采集步骤',3.4,()=>{S.phase='main';S.tab=0;S.activePoint=0;S.stepIndex=1;render();openSheet('guidance');}],
-  ['样本完成',2.2,()=>{closeSheetNow();S.points.forEach(p=>p.done=true);S.saliva=3;}],
-  ['联合分析',6.4,()=>{deliverReport();}],
-  ['报告',4.4,()=>{S.saliva=4;S.tab=1;render();openSheet('report');}],
-  ['计划',4.0,()=>{closeSheetNow();S.tab=2;}],
-  ['浏览计划',3.4,()=>{S.tab=2;render();
-    const f=document.getElementById('planframe');
-    try{ f.contentWindow.scrollTo({top:720,behavior:'smooth'}); }catch(e){} }],
+  ['欢迎页',2.6,()=>{reset();}],
+  ['连接数据',2.2,()=>{S.phase='connect';S.healthGranted=true;}],
+  ['导入 30 天',4.8,()=>{beginSync();}],
+  ['首读 · 总览',3.0,()=>{S.phase='frintro';}],
+  ['首读报告',8.0,()=>{S.phase='firstread';flipReport('frframe',5,1.5);}],
+  ['关于你',2.4,()=>{S.phase='profile';S.profStep=0;S.nickname='Chloe';}],
+  ['训练习惯',2.0,()=>{S.phase='profile';S.profStep=1;}],
+  ['唾液检测指引',3.0,()=>{S.phase='saliva';}],
+  ['采样日',2.6,()=>{S.phase='collect';S.saliva=1;}],
+  ['采样步骤',3.0,()=>{S.phase='collect';S.stepIndex=2;render();openSheet('guidance');}],
+  ['寄出 · 等待',2.4,()=>{closeSheetNow();S.points.forEach(p=>p.done=true);S.phase='waiting';S.saliva=3;}],
+  ['联合分析',4.8,()=>{deliverReport();}],
+  ['T0 · 总览',3.0,()=>{S.phase='t0intro';S.saliva=4;}],
+  ['T0 报告',9.5,()=>{S.phase='t0';S.saliva=4;S.reopenT0=false;flipReport('t0frame',6,1.4);}],
+  ['计划 · 推荐',3.6,()=>{S.phase='main';S.tab=2;S.deckOpen=true;}],
+  ['加入计划',2.6,()=>{S.phase='main';S.tab=2;S.deckOpen=false;S.plan.acc.add('wind');S.plan.acc.add('early');}],
+  ['首页',3.2,()=>{S.phase='main';S.tab=0;}],
+  ['问 Aira',3.4,()=>{S.phase='main';S.tab=1;if(!S.sent.includes('为什么先从睡前开始？'))S.sent.push('为什么先从睡前开始？');}],
 ];
+let flipTimer=null;
+function flipReport(id,pages,sec){
+  clearInterval(flipTimer); let k=0;
+  flipTimer=setInterval(()=>{ k++; if(k>=pages||!Demo.playing){ clearInterval(flipTimer); return; } reportGo(id,k); },sec*1000);
+}
 /* 桌面端控制台在手机壳外，默认展开；手机端保持收起的右缘把手 */
 const Demo={playing:false,index:0,
   expanded:window.matchMedia('(min-width:768px) and (min-height:640px)').matches,timer:null};
@@ -1470,7 +1031,7 @@ function demoRun(i){
   Demo.index=i;
   const [,,fn]=DEMO_STEPS[i];
   fn();
-  if(S.phase!=='syncing'&&!['guidance','report'].includes(S.sheet||'')&&i!==13) render();
+  if(!['syncing','analyzing'].includes(S.phase)&&S.sheet!=='guidance') render();
   renderDemo();
 }
 function demoPlay(){
@@ -1483,7 +1044,7 @@ function demoPlay(){
   };
   step(0);
 }
-function demoStop(){ Demo.playing=false; clearTimeout(Demo.timer); renderDemo(); }
+function demoStop(){ Demo.playing=false; clearTimeout(Demo.timer); clearInterval(flipTimer); renderDemo(); }
 function renderDemo(){
   const el=document.getElementById('demo');
   el.className=Demo.expanded?'expanded':'';
@@ -1505,21 +1066,33 @@ function act(el){
   const a=el.dataset.act, v=el.dataset.v;
   switch(a){
     case 'getstarted': S.phase='connect'; render(); break;
-    case 'phase': S.phase=v; if(v==='profile')S.profStep=S.profStep||0; render(); break;
+    case 'phase': S.phase=v; render(); break;
     case 'grant': S.healthGranted=true; render(); break;
     case 'device': S.devices.has(v)?S.devices.delete(v):S.devices.add(v); render(); break;
     case 'connectnext': if(S.healthGranted) beginSync(); else {S.healthGranted=true; render();} break;
-    case 'skiphome': S.phase='main'; S.tab=0; render(); break;
     case 'profstep': S.profStep=+v; render(); break;
     case 'sex': S.sex=+v; render(); break;
     case 'band': S.sessionBand=+v; render(); break;
-    case 'finishonb': case 'noneapply':
-      if(a==='noneapply'){S.injuries.clear();S.meds.clear();}
-      S.phase='main'; S.tab=0; render(); break;
-    case 'injury': S.injuries.has(v)?S.injuries.delete(v):S.injuries.add(v); render(); break;
-    case 'med': S.meds.has(v)?S.meds.delete(v):S.meds.add(v); render(); break;
+    case 'finishonb': S.phase='saliva'; render(); break;
+    /* 唾液主线 */
+    case 'schedule': S.saliva=1; S.phase='collect'; render(); break;
+    case 'guide': S.stepIndex=0; openSheet('guidance'); break;
+    case 'gback': S.stepIndex--; refreshSheet(); break;
+    case 'gnext':
+      if(S.stepIndex===GSTEPS.length-1){
+        S.points.forEach(p=>p.done=true); S.saliva=3;
+        closeSheet(()=>{ S.phase='waiting'; render(); });
+      } else { S.stepIndex++; refreshSheet(); }
+      break;
+    case 'closeguidance': closeSheet(()=>render()); break;
+    case 'fastforward': deliverReport(); break;
+    /* T0 报告：主界面里随时重开 */
+    case 'opent0': if(S.sheet) closeSheetNow(); S.reopenT0=true; S.phase='t0'; render(); break;
+    case 'closet0': S.phase='main'; render(); break;
+    case 'openfr': if(S.sheet) closeSheetNow(); S.reopenFR=true; S.phase='firstread'; render(); break;
+    case 'closefr': S.phase='main'; render(); break;
+    /* 主界面 */
     case 'tab': S.tab=+v; if(S.tab===1)S.unread=0; if(S.sheet)closeSheet(); render(); break;
-    case 'range': S.range=+v; S.dayIndex=Mock.days.length-1; render(); break;
     case 'sheet': openSheet(v); break;
     case 'closesheet': closeSheet(); break;
     case 'send': send(v); break;
@@ -1527,38 +1100,18 @@ function act(el){
       const inp=document.getElementById('composer');
       if(inp&&inp.value.trim()) send(inp.value.trim());
       break; }
-    case 'schedule': S.saliva=1; refreshSheet(); render(); break;
-    case 'point': S.activePoint=+v; S.stepIndex=0; $sheet.innerHTML=sheetHTML('guidance'); S.sheet='guidance'; wireSheet(); break;
-    case 'gback': S.stepIndex--; refreshSheet(); break;
-    case 'gnext':
-      if(S.stepIndex===4){
-        if(S.activePoint!=null){ S.points[S.activePoint].done=true;
-          if(S.saliva<2)S.saliva=2;
-          if(S.points.every(p=>p.done))S.saliva=3; }
-        S.sheet='testing'; $sheet.innerHTML=sheetHTML('testing'); wireSheet(); render();
-      } else { S.stepIndex++; refreshSheet(); }
-      break;
-    case 'closeguidance': S.sheet='testing'; $sheet.innerHTML=sheetHTML('testing'); wireSheet(); break;
-    case 'fastforward': deliverReport(); break;
-    case 'openreport': S.sheet='report'; $sheet.innerHTML=sheetHTML('report'); wireSheet(); break;
-    case 'chapter': S.reportChapter=+v; refreshSheet(); break;
-    case 'buildplan': closeSheet(()=>{ S.tab=2; render(); }); break;
-    case 'retest': S.retestScheduled=true; refreshSheet(); break;
-    case 'deckexpand': S.deckExpanded=!S.deckExpanded; render(); break;
-    case 'restoreskipped': stage().forEach(r=>{if(r.state===2)r.state=0;}); render(); break;
-    case 'planseg': S.planSeg=+v; render(); break;
-    case 'arrange': S._arrMin=null; S._arrSlot=null;
-      openSheet('arrange',{name:v,icon:el.dataset.icon,sub:el.dataset.sub,tint:el.dataset.tint,
-        defaultMin:{'快走':20,'跑步':30,'骑行':40,'力量':45,'游泳':30,'跳绳':10,
-          '呼吸练习':10,'拉伸':8,'散步':15,'咖啡':15,'跳舞':15,'阅读':20}[v]||20}); break;
-    case 'arrmin': S._arrMin=+v; refreshSheet(); break;
-    case 'arrslot': S._arrSlot=+v; refreshSheet(); break;
-    case 'arradd': {
-      const a=S.sheetArg, slots=['早晨 · 07:00','下午 · 13:30','傍晚 · 18:00','睡前 · 22:00'];
-      S.arranged.push({name:a.name,icon:a.icon,tint:a.tint,time:slots[S._arrSlot],minutes:S._arrMin,done:0});
-      closeSheet(()=>render()); break; }
+    case 'pacc': if(S.plan.acc.has(v)){ S.plan.acc.delete(v); toast('已从计划移出'); } else { S.plan.acc.add(v); S.plan.skip.delete(v); toast('已加入本周计划'); } render(); break;
+    case 'pday': if(S.plan.day!==+v){ S.plan.day=+v; S._dayAnim=true; } render(); break;
+    case 'deckopen': S.deckOpen=!S.deckOpen; render(); break;
+    case 'restoreskipped': S.plan.skip.clear(); render(); break;
+    case 'pdone': {
+      if(S.plan.done.has(v)){ S.plan.done.delete(v); render(); break; }
+      S.plan.done.add(v);
+      const d=+v.split('-')[0], its=dayItems(d), all=its.length&&its.every(x=>S.plan.done.has(d+'-'+x.key));
+      render(); if(all) celebrate(d,its.length); else toast('完成一项');
+      break; }
     case 'feel': S.feel=+v; refreshSheet(); break;
-    case 'logfeel': S.loggedToday=true; closeSheet(()=>render()); break;
+    case 'logfeel': S.loggedToday=true; closeSheet(()=>{ render(); toast('记下了'); }); break;
   }
 }
 document.addEventListener('click',e=>{
@@ -1592,97 +1145,44 @@ document.addEventListener('input',e=>{
 
 /* scrubber + self trend + deck swipe need per-render wiring */
 function wireScreen(){
-  const sc=document.getElementById('scrub');
-  if(sc){
-    const n=+sc.dataset.n;
-    const pick=x=>{
-      const r=sc.getBoundingClientRect();
-      const w=r.width, pl=26/352*w, pr=14/352*w;
-      let i=Math.round((x-r.left-pl)/(w-pl-pr)*(n-1));
-      i=Math.max(0,Math.min(n-1,i));
-      const di=Mock.days.length-n+i;
-      if(di!==S.dayIndex){ S.dayIndex=di; render(); }
-    };
-    sc.addEventListener('click',e=>pick(e.clientX));
-    let dragging=false;
-    sc.addEventListener('pointerdown',e=>{dragging=true;});
-    sc.addEventListener('pointermove',e=>{ if(dragging&&e.buttons) pick(e.clientX); });
-    sc.addEventListener('pointerup',()=>dragging=false);
+  const card=document.getElementById('topcard');
+  if(card){
+    let x0=null,dx=0;
+    const hints=()=>document.getElementById('swipehints');
+    card.addEventListener('pointerdown',e=>{ if(e.target.closest('[data-act]')) return; x0=e.clientX; dx=0; card.setPointerCapture(e.pointerId); });
+    card.addEventListener('pointermove',e=>{ if(x0==null) return; dx=e.clientX-x0;
+      card.style.transition='none'; card.style.transform=`translateX(${dx}px) rotate(${dx/24}deg)`;
+      const h=hints(); if(h) h.style.opacity=Math.abs(dx)>24?1:0; });
+    card.addEventListener('pointerup',()=>{ if(x0==null) return; x0=null;
+      if(dx>96) deckDecide(1); else if(dx<-96) deckDecide(-1);
+      else { card.style.transition='transform .3s cubic-bezier(.3,.9,.4,1.2)'; card.style.transform='none'; const h=hints(); if(h) h.style.opacity=0; } });
   }
   document.querySelectorAll('[data-self]').forEach(b=>b.addEventListener('click',()=>{
     S.selfSelected=+b.dataset.self; render();
   }));
-  const card=document.getElementById('topcard');
-  if(card){
-    let x0=null,dx=0,moved=false;
-    const hints=()=>document.getElementById('swipehints');
-    card.addEventListener('pointerdown',e=>{ x0=e.clientX; dx=0; moved=false; card.setPointerCapture(e.pointerId); });
-    card.addEventListener('pointermove',e=>{
-      if(x0==null)return; dx=e.clientX-x0;
-      if(Math.abs(dx)>6)moved=true;
-      card.style.transform=`translateX(${dx}px) rotate(${dx/24}deg)`;
-      card.style.transition='none';
-      const h=hints(); if(h)h.style.opacity=Math.abs(dx)>24?1:0;
-    });
-    card.addEventListener('pointerup',e=>{
-      if(x0==null)return;
-      const d=deck()[0];
-      if(dx>96&&d){ flyOff(card,1,()=>{d.state=1;S.deckExpanded=false;render();}); }
-      else if(dx<-96&&d){ flyOff(card,-1,()=>{d.state=2;S.deckExpanded=false;render();}); }
-      else { card.style.transition='transform .3s cubic-bezier(.3,.9,.4,1.2)'; card.style.transform='none';
-        const h=hints(); if(h)h.style.opacity=0; }
-      x0=null;
-    });
-  }
-}
-function flyOff(card,dir,cb){
-  card.style.transition='transform .26s ease-out, opacity .26s';
-  card.style.transform=`translateX(${dir*480}px) rotate(${dir*18}deg)`;
-  card.style.opacity='0';
-  setTimeout(cb,240);
-}
-function wireSheet(){
-  const rf=document.getElementById('reportframe');
-  if(rf){ rf.addEventListener('load',()=>wireMock(rf,()=>closeSheet(()=>{S.tab=2;render();})));
-          wireMock(rf,()=>closeSheet(()=>{S.tab=2;render();})); }
 }
 
-/* 原型 iframe 通用接线：铺满宽度 + 把页内 CTA 接回主流程 */
-function wireMock(iframe,onCta){
-  try{
-    const d=iframe.contentDocument; if(!d||!d.body) return;
-    if(!d.getElementById('host-patch')){
-      const st=d.createElement('style'); st.id='host-patch';
-      st.textContent='#phone{width:100%!important;max-width:100%!important;padding-top:max(26px,env(safe-area-inset-top))!important}';
-      d.head.appendChild(st);
-    }
-    const btn=d.querySelector('button.cta');
-    if(btn&&!btn.dataset.wired){ btn.dataset.wired='1'; btn.addEventListener('click',onCta); }
-  }catch(e){}
+/* 报告页（首读 / T0）：去掉报告自带的手机框，顶部让出状态栏 */
+function patchReport(id){
+  const f=document.getElementById(id);
+  const go=()=>{ try{
+    const d=f.contentDocument; if(!d||!d.head||d.getElementById('host-patch')) return;
+    if(id==='frframe') d.body.dataset.cta=S.reopenFR?'回到首页':'继续';
+    const st=d.createElement('style'); st.id='host-patch';
+    st.textContent='#phone{width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important}'+
+      '#bars{top:max(30px,env(safe-area-inset-top))!important}.closable #bars{right:62px!important}.page{padding-top:max(64px,calc(env(safe-area-inset-top) + 44px))!important}';
+    d.head.appendChild(st);
+  }catch(e){} };
+  f.addEventListener('load',go); go();
 }
-
-/* 计划 iframe：隐藏原型自带的 tab 栏（由主壳接管），底部留出主壳 tab 栏的高度 */
-(function(){
-  const pf=document.getElementById('planframe');
-  const patch=()=>{
-    try{
-      const d=pf.contentDocument; if(!d||!d.head) return;
-      if(d.getElementById('host-patch')) return;
-      const st=d.createElement('style'); st.id='host-patch';
-      st.textContent='.tab-bar{display:none!important}.page{padding-bottom:132px!important}';
-      d.head.appendChild(st);
-    }catch(e){}
-  };
-  pf.addEventListener('load',patch); patch();
-})();
-
-/* 首读报告 iframe：CTA「继续，看看另一半」→ 进入 About you */
-(function(){
-  const fr=document.getElementById('frframe');
-  const go=()=>{ S.phase='profile'; S.profStep=0; render(); };
-  fr.addEventListener('load',()=>wireMock(fr,go));
-  wireMock(fr,go);
-})();
+patchReport('frframe'); patchReport('t0frame');
+document.getElementById('phone').addEventListener('scroll',e=>{ e.target.scrollTop=0; });
+/* 报告末页 CTA 通过 postMessage 回到主线 */
+window.addEventListener('message',e=>{
+  const m=e.data||{}; if(m.aira!=='report-done') return;
+  if(m.which==='first-read'&&S.phase==='firstread'){ if(S.reopenFR){ S.phase='main'; S.tab=0; } else { S.phase='profile'; S.profStep=0; } render(); }
+  else if(m.which==='t0'&&S.phase==='t0'){ S.phase='main'; S.tab=2; render(); }
+});
 
 /* boot */
 render();

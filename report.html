@@ -3,34 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Aira — T0 阶段报告（手表 × 唾液）· 样板</title>
+<title>Aira — T0 · 样板</title>
 <style>
 :root{
   --page:#EDEDEC; --ink:#101011; --ink2:#6B6B6E; --ink3:#A1A1A5; --hair:#E0E0DE;
-  --onD:#fff; --onD2:rgba(255,255,255,.58); --onD3:rgba(255,255,255,.34);
-  --hairD:rgba(255,255,255,.12);
+  --onD2:rgba(255,255,255,.58); --onD3:rgba(255,255,255,.34); --hairD:rgba(255,255,255,.12);
   --lime:#DCF55A; --coral:#FF8A5B; --amber:#FFB85C; --sky:#7ACBFF; --violet:#B79BFF;
-  --r-card:22px; --r-sm:14px;
   --sans:-apple-system,BlinkMacSystemFont,"SF Pro SC","SF Pro Text","PingFang SC","Hiragino Sans GB","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);-webkit-font-smoothing:antialiased;display:flex;justify-content:center}
-#phone{width:393px;background:var(--page);min-height:100vh;padding:54px 20px 46px}
+html,body{height:100%}
+body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);-webkit-font-smoothing:antialiased;
+     display:flex;align-items:center;justify-content:center;overflow:hidden}
+#phone{position:relative;width:100vw;height:100vh;background:var(--page);overflow:hidden}
+@media (min-width:600px){ #phone{width:393px;height:min(852px,calc(100vh - 40px));border-radius:46px;
+  box-shadow:0 0 0 10px #1c1c1f,0 30px 80px rgba(0,0,0,.6)} }
 
-.seclabel{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3);text-transform:uppercase}
-h1{font-weight:650;font-size:28px;line-height:1.32;letter-spacing:.2px;margin:12px 0 10px}
-h1 .hl{box-shadow:inset 0 -11px 0 var(--lime)}
-.lede{font-size:13.5px;line-height:1.75;color:var(--ink2)}
-.meta{font-size:11px;line-height:1.6;color:var(--ink3);margin-top:12px}
+/* 进度条 */
+#bars{position:absolute;top:18px;left:20px;right:20px;display:flex;gap:4px;z-index:5}
+#bars i{flex:1;height:3px;border-radius:2px;background:rgba(16,16,17,.12);overflow:hidden;position:relative}
+#bars i.done::after,#bars i.cur::after{content:"";position:absolute;inset:0;background:var(--ink)}
 
-.chapter{margin-top:40px}
-.chno{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3)}
-.chtitle{font-size:20px;font-weight:650;letter-spacing:.2px;margin:6px 0 5px}
-.chsub{font-size:12.5px;line-height:1.75;color:var(--ink2);margin-bottom:14px}
+/* 翻页 */
+#deck{display:flex;height:100%;transition:transform .5s cubic-bezier(.3,.9,.3,1);touch-action:pan-y}
+.page{flex:0 0 100%;height:100%;padding:52px 22px 104px;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none}
+.page::-webkit-scrollbar{display:none}
+.grp{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3);display:flex;justify-content:space-between}
+.page h2{font-size:28px;font-weight:650;letter-spacing:.3px;margin-top:10px}
+.mean{font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.6}
+.state{font-size:16.5px;font-weight:600;line-height:1.62;margin-top:20px;letter-spacing:.1px}
+.state b{box-shadow:inset 0 -8px 0 rgba(220,245,90,.85);font-weight:650}
+.page .fog{margin-top:18px;opacity:0;transform:translateY(14px);transition:opacity .5s .12s,transform .6s .12s cubic-bezier(.3,.9,.3,1)}
+.page.on .fog{opacity:1;transform:none}
 
-/* ---- 设计系统:雾面渐变玻璃卡 ---- */
-.fog{position:relative;border-radius:var(--r-card);color:#fff;overflow:hidden;isolation:isolate;
-     box-shadow:0 10px 20px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.055)}
+.cover{justify-content:center}
+.cover .k{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3)}
+.cover h1{font-size:40px;font-weight:650;line-height:1.2;margin:14px 0 14px}
+.cover h1 .hl{box-shadow:inset 0 -14px 0 var(--lime)}
+.cover p{font-size:15px;line-height:1.7;color:var(--ink2)}
+
+/* 底部导航 */
+#nav{position:absolute;left:22px;right:22px;bottom:30px;display:flex;gap:12px;align-items:center;z-index:5}
+#prev{width:52px;height:52px;border-radius:50%;border:1px solid rgba(16,16,17,.14);background:transparent;font-size:18px;color:var(--ink);cursor:pointer;flex:none}
+#next{flex:1;display:flex;align-items:center;gap:14px;background:var(--lime);border-radius:99px;padding:5px 5px 5px 22px;border:0;cursor:pointer;
+      box-shadow:0 8px 24px rgba(220,245,90,.3)}
+#next .t{font-size:15.5px;font-weight:600;color:var(--ink);flex:1;text-align:left;font-family:var(--sans)}
+#next .knob{width:42px;height:42px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;color:var(--lime);font-size:16px}
+#prev.hide{display:none}
+
+/* 设计系统:雾面玻璃卡 */
+.fog{position:relative;border-radius:22px;color:#fff;overflow:hidden;isolation:isolate;
+     box-shadow:0 10px 20px rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.055)}
 .fog>.bg{position:absolute;inset:0;z-index:-1;background:#151514;overflow:hidden;pointer-events:none}
 .fog>.bg::before{content:"";position:absolute;inset:-40%;filter:blur(46px)}
 .fog>.bg::after{content:"";position:absolute;inset:0;
@@ -52,480 +75,404 @@ h1 .hl{box-shadow:inset 0 -11px 0 var(--lime)}
   radial-gradient(90% 85% at -2% 104%, rgba(111,95,148,.9) 0%, rgba(111,95,148,.3) 42%, transparent 70%),
   radial-gradient(70% 70% at 52% 116%, rgba(94,137,168,.42) 0%, transparent 65%),
   radial-gradient(64% 64% at 90% -4%, rgba(58,58,51,.86) 0%, transparent 70%)}
-.fog.alert>.bg::before{background:
-  radial-gradient(90% 85% at 102% 104%, rgba(168,96,63,.86) 0%, transparent 70%),
-  radial-gradient(70% 70% at 52% 116%, rgba(158,122,58,.48) 0%, transparent 65%),
-  radial-gradient(64% 64% at 10% -4%, rgba(58,58,51,.76) 0%, transparent 70%)}
-.fog.alert{border-color:rgba(255,184,92,.55)}
-.pad{padding:17px}
-
-/* 玻璃亮片(fog 卡内用) */
-.glass{background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.07));
-       backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-       border:.8px solid rgba(255,255,255,.10);border-radius:var(--r-sm)}
-
-.cardhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}
-.cardhead .t{font-size:13px;font-weight:600}
-.cardhead .s{font-size:10px;color:var(--onD3);text-align:right}
-.chip{display:inline-block;font-size:9px;font-weight:800;letter-spacing:1px;padding:4px 9px;border-radius:99px}
-.chip.warn{background:rgba(255,184,92,.16);color:#FFD9A0;border:1px solid rgba(255,184,92,.4)}
-
-.verd{font-size:16px;font-weight:650;line-height:1.5;letter-spacing:.1px;margin-bottom:8px}
-.fog .verd{color:#fff}
-.body13{font-size:12.5px;line-height:1.75;color:var(--ink2)}
-.fog .body13{color:var(--onD2)}
-.footnote{display:flex;gap:7px;font-size:10px;color:var(--ink3);margin-top:12px;line-height:1.65}
-.fog .footnote{color:var(--onD3)}
-
-/* ---- 分数:一张 fog 卡,发丝线分隔 ---- */
-.score{padding:15px 0 13px}
-.score + .score{border-top:1px solid var(--hairD)}
-.score .top{display:flex;align-items:baseline;gap:10px}
-.score .name{font-size:13.5px;font-weight:600;flex:1}
-.score .scope{font-size:9.5px;color:var(--onD3);letter-spacing:.8px}
-.score .n{font-size:30px;font-weight:650;letter-spacing:-1px;font-variant-numeric:tabular-nums}
-.score .n small{font-size:12px;color:var(--onD3);font-weight:500;letter-spacing:0}
-.bar{display:flex;height:9px;border-radius:6px;overflow:hidden;gap:2px;margin:10px 0 7px}
-.bar i{display:block;height:100%}
-.bar .earn{background:var(--lime);border-radius:6px 0 0 6px}
-.bar .lost{background:rgba(255,184,92,.78)}
-.bar .lost.l2{background:rgba(255,184,92,.55)}
-.bar .lost.l3{background:rgba(255,184,92,.36)}
-.bar .lost.l4{background:rgba(255,184,92,.22)}
-.lostrow{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--onD2)}
-.lostrow b{color:#FFD9A0;font-weight:700}
-
-/* 玻璃小读数 */
-/* 暗色数字行:发丝线分隔,不装盒子 */
-.dfig{display:flex;border-top:1px solid var(--hairD);margin-top:12px}
-.dfig .f{flex:1;padding:11px 4px 2px 12px}
-.dfig .f:first-child{padding-left:2px}
-.dfig .f + .f{border-left:1px solid var(--hairD)}
-.dfig .k{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--onD3)}
-.dfig .v{font-size:17px;font-weight:650;letter-spacing:-.3px;margin-top:4px;font-variant-numeric:tabular-nums}
-.dfig .v small{font-size:10px;color:var(--onD3);font-weight:500}
-.dfig .d{font-size:9.8px;color:var(--onD2);margin-top:3px;line-height:1.55}
-/* 齿轮环 */
-.rings{display:flex;justify-content:space-between;gap:6px}
-.ringbox{flex:1;text-align:center}
-.ringbox .nm{font-size:12.5px;font-weight:600;margin-top:4px}
-.ringbox .sc{font-size:9px;color:var(--onD3);margin-top:2px;line-height:1.4}
-.lostline{display:flex;gap:10px;align-items:baseline;padding:9px 0 8px;border-top:1px solid var(--hairD);font-size:11px;color:var(--onD2);line-height:1.65}
-.lostline .w{flex:none;width:62px;font-weight:600;color:#fff;font-size:11px}
-.lostline b{color:#FFD9A0;font-weight:700}
-/* 象限图的切换 chip */
-.tchips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
-.tchip{font-size:10.5px;font-weight:600;color:var(--onD2);border:1px solid var(--hairD);
-       border-radius:99px;padding:5px 12px;cursor:pointer;user-select:none}
-.tchip.on{background:var(--lime);color:#101011;border-color:var(--lime)}
-input.scrub{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer}
+.pad{padding:16px 14px 12px}
+svg text{font-family:var(--sans)}
+.qmode{position:relative;display:flex;padding:3px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);margin-bottom:10px}
+.qmode i{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:99px;background:var(--lime);transition:transform .45s cubic-bezier(.3,.9,.3,1)}
+.qmode.on i{transform:translateX(100%)}
+.qmode button{position:relative;flex:1;border:0;background:none;padding:8px 0;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.6);cursor:pointer;font-family:var(--sans);transition:color .3s}
+.qmode button.cur{color:#101011}
+.chain{margin-top:12px;border-top:1px solid var(--hairD);padding-top:10px}
+.chain .ln{display:flex;gap:10px;align-items:flex-start;position:relative;padding:3px 0 9px}
+.chain .ln:not(:last-child)::after{content:"";position:absolute;left:18px;top:24px;bottom:-1px;width:1px;background:rgba(255,255,255,.2)}
+.chain .src{flex:none;width:36px;text-align:center;font-size:9.5px;font-weight:700;padding:3px 0;border-radius:99px}
+.chain .src.w{background:rgba(122,203,255,.16);color:#BFE4FF}.chain .src.s{background:rgba(220,245,90,.16);color:#E7FA9A}.chain .src.r{background:#DCF55A;color:#101011}
+.chain .tx{font-size:12px;line-height:1.55;color:rgba(255,255,255,.72)}.chain .res .tx{color:#fff;font-weight:600}
+.bmg{display:flex;align-items:center;gap:8px;margin:12px 0 2px;font-size:10px;font-weight:700;letter-spacing:1.2px}
+.bmg:first-child{margin-top:0}.bmg i{width:6px;height:6px;border-radius:50%}.bmg span{color:rgba(255,255,255,.4);font-weight:500;letter-spacing:0}
+.bmrow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 0;border:0;background:none;color:#fff;text-align:left;cursor:pointer;font-family:var(--sans);border-top:1px solid rgba(255,255,255,.07)}
+.bmrow .nm{width:92px;flex:none}.bmrow .nm b{display:block;font-size:12.5px;font-weight:600}.bmrow .nm small{display:block;font-size:8.5px;color:rgba(255,255,255,.4);margin-top:1px}
+.bmrow .bar{position:relative;flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.08)}
+.bmrow .bar .ref{position:absolute;top:0;bottom:0;border-radius:3px;background:rgba(255,255,255,.3)}
+.bmrow .bar .dot{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:2px solid #151514}
+.bmrow .st{flex:none;width:58px;text-align:right;font-size:11px;font-weight:700}.bmrow .st small{display:block;font-size:9px;font-weight:500;color:rgba(255,255,255,.45)}
+.bmd{display:none;font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.72);padding:2px 0 10px;margin-top:-2px}.bmd.on{display:block}
+.bmd b{color:#BFE4FF;font-weight:600}
+.ft{display:flex;gap:14px;align-items:center}
+.ftx{flex:1;min-width:0}.ftx .k{font-size:10px;font-weight:700;letter-spacing:1.4px;color:rgba(255,255,255,.4)}
+.ftx .v{margin-top:5px}.ftx .d{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:5px;line-height:1.5}
+.pill{display:inline-block;padding:4px 11px;border-radius:99px;font-size:13px;font-weight:650}
+.pill.warn{background:rgba(255,184,92,.18);color:#FFD9A0;border:1px solid rgba(255,184,92,.5)}
+.pill.good{background:rgba(220,245,90,.16);color:#E7FA9A;border:1px solid rgba(220,245,90,.45)}
+.gl{display:flex;margin-top:14px;border-top:1px solid rgba(255,255,255,.12)}
+.gl>div{flex:1;padding:10px 0 0 10px}.gl>div:first-child{padding-left:0}.gl>div+div{border-left:1px solid rgba(255,255,255,.12)}
+.gl span{display:block;font-size:10px;color:rgba(255,255,255,.4)}.gl b{display:block;font-size:14px;font-weight:650;margin-top:4px;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.5)}
+.gl em{font-style:normal;color:#FFD9A0}.gl i{font-style:normal;color:#E7FA9A}
+.plh{font-size:10px;font-weight:700;letter-spacing:1.4px;color:rgba(255,255,255,.4);margin:16px 0 4px}
+.pr{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid rgba(255,255,255,.08)}
+.pr .sc{width:40px;flex:none}.pr .sc b{display:block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}.pr .sc small{display:block;font-size:8.5px;color:rgba(255,255,255,.45);margin-top:3px}
+.plx{font-size:10.5px;color:rgba(255,255,255,.45);margin:-1px 0 4px}
+.pr .t{flex:1;font-size:13.5px;font-weight:600}.pr .t small{display:block;font-size:10.5px;font-weight:400;color:rgba(255,255,255,.45);margin-top:1px}
+.pr .tag{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:99px;color:#101011}
+</style>
+<style>
+input.scrub{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;touch-action:none}
 input.scrub::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:rgba(255,255,255,.16)}
 input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
   background:var(--lime);border:3px solid #151514;margin-top:-7.5px;box-shadow:0 0 0 1px rgba(255,255,255,.25)}
-/* 四叶草交互 */
-#clover .petal, #clover .tip{cursor:pointer}
-#cloverDetail .line{font-size:12.5px;line-height:1.7;color:var(--onD2);margin-top:12px}
-#cloverDetail .line b{color:#fff;font-weight:600}
-
-/* ---- 四问四答:排版行,不装盒子 ---- */
-.qa{display:flex;gap:12px;align-items:flex-start;margin-top:18px;padding-top:15px;border-top:1px solid var(--hair)}
-.qa .n{flex:none;font-size:10px;font-weight:800;letter-spacing:.5px;color:#6B7F1A;
-       border:1px solid rgba(107,127,26,.5);border-radius:7px;padding:2.5px 7px;margin-top:1px}
-.qa .q{font-size:13px;font-weight:600;color:var(--ink);line-height:1.5}
-.qa .a{font-size:12.5px;color:var(--ink2);line-height:1.75;margin-top:4px}
-.qa .a b{color:#5d6e14;font-weight:650}
-
-.limits li{font-size:12px;color:var(--onD2);line-height:1.75;margin:7px 0 0 16px}
-.limits b{color:#fff;font-weight:600}
-.cta{display:flex;align-items:center;gap:14px;width:100%;background:var(--lime);border-radius:99px;
-     padding:5px 5px 5px 22px;box-shadow:0 8px 24px rgba(220,245,90,.2);margin-top:16px;border:0;cursor:pointer}
-.cta .t{font-size:15.5px;font-weight:600;color:var(--ink);flex:1;text-align:left;font-family:var(--sans)}
-.cta .knob{width:42px;height:42px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;color:var(--lime);font-size:16px}
-.planchip{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin-top:9px}
-.planchip .t{font-size:12.5px;font-weight:600}
-.planchip .o{font-size:10px;color:var(--onD3);text-align:right;line-height:1.5}
-svg text{font-family:var(--sans)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:10px;color:var(--onD2)}
-.legend i{display:inline-block;width:8px;height:8px;border-radius:2.5px;margin-right:5px;vertical-align:-.5px}
+.scrubdates{display:flex;justify-content:space-between;align-items:baseline;font-size:9px;color:var(--onD3)}
+.scrubdates b{font-size:11px;color:#E7FA9A}
+.qmode{position:relative;display:flex;padding:3px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);margin-bottom:10px}
+.qmode i{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:99px;background:var(--lime);transition:transform .45s cubic-bezier(.3,.9,.3,1)}
+.qmode.on i{transform:translateX(100%)}
+.qmode button{position:relative;flex:1;border:0;background:none;padding:8px 0;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.6);cursor:pointer;font-family:var(--sans);transition:color .3s}
+.qmode button.cur{color:#101011}
+.chain{margin-top:12px;border-top:1px solid var(--hairD);padding-top:10px}
+.chain .ln{display:flex;gap:10px;align-items:flex-start;position:relative;padding:3px 0 9px}
+.chain .ln:not(:last-child)::after{content:"";position:absolute;left:18px;top:24px;bottom:-1px;width:1px;background:rgba(255,255,255,.2)}
+.chain .src{flex:none;width:36px;text-align:center;font-size:9.5px;font-weight:700;padding:3px 0;border-radius:99px}
+.chain .src.w{background:rgba(122,203,255,.16);color:#BFE4FF}.chain .src.s{background:rgba(220,245,90,.16);color:#E7FA9A}.chain .src.r{background:#DCF55A;color:#101011}
+.chain .tx{font-size:12px;line-height:1.55;color:rgba(255,255,255,.72)}.chain .res .tx{color:#fff;font-weight:600}
+.bmg{display:flex;align-items:center;gap:8px;margin:12px 0 2px;font-size:10px;font-weight:700;letter-spacing:1.2px}
+.bmg:first-child{margin-top:0}.bmg i{width:6px;height:6px;border-radius:50%}.bmg span{color:rgba(255,255,255,.4);font-weight:500;letter-spacing:0}
+.bmrow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 0;border:0;background:none;color:#fff;text-align:left;cursor:pointer;font-family:var(--sans);border-top:1px solid rgba(255,255,255,.07)}
+.bmrow .nm{width:92px;flex:none}.bmrow .nm b{display:block;font-size:12.5px;font-weight:600}.bmrow .nm small{display:block;font-size:8.5px;color:rgba(255,255,255,.4);margin-top:1px}
+.bmrow .bar{position:relative;flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.08)}
+.bmrow .bar .ref{position:absolute;top:0;bottom:0;border-radius:3px;background:rgba(255,255,255,.3)}
+.bmrow .bar .dot{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:2px solid #151514}
+.bmrow .st{flex:none;width:58px;text-align:right;font-size:11px;font-weight:700}.bmrow .st small{display:block;font-size:9px;font-weight:500;color:rgba(255,255,255,.45)}
+.bmd{display:none;font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.72);padding:2px 0 10px;margin-top:-2px}.bmd.on{display:block}
+.bmd b{color:#BFE4FF;font-weight:600}
 </style>
 </head>
-<body>
+<body data-report="t0">
 <div id="phone">
+  <div id="bars"></div>
+  <div id="deck">
 
-  <!-- ============ 头部 ============ -->
-  <div class="seclabel">T0 阶段解读 · 9月22日–10月21日 · 30 晚硬件 × 10月15日唾液</div>
-  <h1>有些"为什么",<br>现在<span class="hl">看得见</span>了。</h1>
-  <p class="lede">这不是 10月15日一天的记录——是把那天的几管唾液,放回这 30 天的硬件数据里读:首读留下的四条洞察(下午的困、周三的夜晚、38 分钟的入睡、修复的余力),逐条有了内侧的证据。</p>
-  <p class="meta">唾液 = 这段时期的一天切片(4 管皮质醇 + 晚间褪黑素 + 晨起 DHEA);硬件 = 同期 30 晚趋势与基线。下面按维度逐个对读。</p>
+    <section class="page">
+      <div class="grp"><span>综合</span><span class="cnt"></span></div>
+      <h2>你落进了「高负荷」</h2><div class="mean">压力高、恢复差。横轴是身体承受的压力，纵轴是恢复得怎么样</div>
+      <div class="fog flat"><div class="bg"></div><div class="pad">
+        <div class="qmode" id="qMode"><i></i><button data-m="0">只看手表</button><button data-m="1">加上唾液</button></div>
+        <svg id="quad" width="100%" viewBox="0 0 325 268"></svg>
+        <input type="range" class="scrub" id="qSlider" min="0" max="29" value="29">
+        <div class="scrubdates"><span id="d0"></span><b id="qDate"></b><span id="d1"></span></div>
+      </div></div>
+      <div class="state" id="s_quad"></div>
+    </section>
 
-  <!-- ============ R2-0 三个分数 ============ -->
-  <div class="chapter">
-    <div class="chno">01 — 这一个月,在往哪边走</div>
-    <div class="chtitle">四个周,一条轨迹</div>
-    <div class="chsub">图上是你这 30 天的轨迹——从"平衡"慢慢滑向"透支"。拖动下面的日期,看自己每天在哪;换一组轴,再看一遍。</div>
+    <section class="page">
+      <div class="grp"><span>唾液</span><span class="cnt"></span></div>
+      <h2>唾液里，5 个信号偏离</h2><div class="mean">一天五管测了 6 个信号，问题集中在两处。点一行，看它对上了手表里的哪条</div>
+      <div class="fog flat"><div class="bg"></div><div class="pad" id="bmList"></div></div>
+      <div class="state">压力激素<b>退不下来</b>，修复和免疫<b>补不回来</b>；生物钟还准。</div>
+    </section>
 
-    <div class="fog flat"><div class="bg"></div><div class="pad">
-      <div class="tchips" id="viewChips"></div>
-      <svg id="quad" width="100%" viewBox="0 0 325 268"></svg>
-      <div style="margin-top:10px;padding:0 2px">
-        <input type="range" class="scrub" id="quadSlider" min="0" max="29" value="29">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:2px;font-size:9px;color:var(--onD3)">
-          <span>9月22日</span><span id="quadDate" style="font-size:11px;font-weight:700;color:#E7FA9A"></span><span>10月21日</span>
-        </div>
-      </div>
-      <div id="quadRead" style="font-size:12.5px;line-height:1.7;color:var(--onD2);margin-top:10px"></div>
-    </div></div>
+    <section class="page">
+      <div class="grp"><span>压力</span><span class="cnt"></span></div>
+      <h2>压力激素白天退不下去</h2><div class="mean">压力激素（皮质醇）本该早上高、晚上低</div>
+      <div class="fog flat"><div class="bg"></div><div class="pad"><svg id="c_cort" width="100%" viewBox="0 0 325 310"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">紧绷集中在 14–17 点和 21 点后</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">下午 1.9、睡前 1.3，都高过参考上限</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">累不只是没睡够，是压力激素一直没退</span></div></div></div></div>
+      <div class="state">早上升不上去，<b>下午和睡前又退不下来</b>。</div>
+    </section>
 
-    <div class="chno" style="margin-top:26px">02 — 三个分数</div>
-    <div class="chtitle">三个分数,说三件事</div>
-    <div class="chsub">昨晚睡得怎么样、今天扛不扛得住、这一个月攒没攒下底子。环上缺的口,就是丢掉的分。</div>
+    <section class="page">
+      <div class="grp"><span>恢复</span><span class="cnt"></span></div>
+      <h2>身体在消耗，修复跟不上</h2><div class="mean">夜里的放松度 × 唾液里的修复激素</div>
+      <div class="fog cool"><div class="bg"></div><div class="pad"><svg id="c_rec" width="100%" viewBox="0 0 325 204"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">HRV 每周降 1.8 毫秒，周末也没回弹</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">修复激素 DHEA 偏低，免疫防线 sIgA 也变薄</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">身体在用储备扛，修复跟不上——不是练多了</span></div></div></div></div>
+      <div class="state">训练一直没加量——<b>消耗来自训练之外</b>。</div>
+    </section>
 
-    <div class="fog flat"><div class="bg"></div><div class="pad">
-      <div class="rings">
-        <div class="ringbox"><svg id="ring0" width="94" height="94" viewBox="0 0 94 94"></svg><div class="nm">睡眠</div><div class="sc">昨晚睡得怎么样</div></div>
-        <div class="ringbox"><svg id="ring1" width="94" height="94" viewBox="0 0 94 94"></svg><div class="nm">准备度</div><div class="sc">今天扛不扛得住</div></div>
-        <div class="ringbox"><svg id="ring2" width="94" height="94" viewBox="0 0 94 94"></svg><div class="nm">储备</div><div class="sc">这个月的底子</div></div>
-      </div>
-          </div></div>
-    <div class="footnote"><span>※</span><span>最大的一块丢分,只是"躺得不够久"——它也是最容易补的一块。</span></div>
+    <section class="page">
+      <div class="grp"><span>睡眠</span><span class="cnt"></span></div>
+      <h2>入睡难，不怪生物钟</h2><div class="mean">褪黑素告诉我们，身体几点准备好入睡</div>
+      <div class="fog viol"><div class="bg"></div><div class="pad"><svg id="c_clock" width="100%" viewBox="0 0 325 296"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">躺下平均 38 分钟才睡着</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">褪黑素 22:05 准时升起，睡前皮质醇却还高</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">不用调生物钟，要把睡前的压力降下来</span></div></div></div></div>
+      <div class="state">身体零点就准备好了，你却要<b>醒着躺半个多小时</b>。</div>
+    </section>
+
+    <section class="page">
+      <div class="grp"><span>下一步</span><span class="cnt"></span></div>
+      <h2>四周，回到「扛得住」</h2><div class="mean">你现在的状态、恢复目标，和为你准备的计划</div>
+      <div class="fog warm"><div class="bg"></div><div class="pad">
+        <div class="ft">
+          <svg id="miniq" width="104" height="104" viewBox="0 0 104 104"></svg>
+          <div class="ftx">
+            <div class="k">现在</div><div class="v"><span class="pill warn">高负荷</span></div>
+            <div class="d">压力激素退不下来，修复激素补不回来</div>
+            <div class="k" style="margin-top:12px">四周后的目标</div><div class="v"><span class="pill good">有压力但扛得住</span></div>
+            <div class="d">11月19日复测，同样的图再看一次</div></div></div>
+        <div class="gl">
+          <div><span>入睡</span><b><em>38</em> → <i>20</i> 分</b></div>
+          <div><span>白天紧绷</span><b><em>2</em> → <i>1.3</i> 时</b></div>
+          <div><span>睡眠债</span><b><em>6</em> → <i>2</i> 时</b></div></div>
+        <div class="plh">为你准备的恢复计划 · 按影响分排序</div><div class="plx">影响分满分 10，越高越能把你往目标推。</div>
+        <div id="plist"></div>
+      </div></div>
+      <div class="state">计划已经排进 Aira，<b>挑一条先开始</b>。</div>
+    </section>
+
   </div>
-
-  <!-- ============ R2-1 HPA 的一天 ============ -->
-  <div class="chapter">
-    <div class="chno">03 — 压力 · 这一个月</div>
-    <div class="chtitle">白天一直紧,不是错觉</div>
-    <div class="chsub">手表这 30 天记到:日均紧绷 1 小时 34 分,集中在下午和深夜。唾液把内侧的原因接上了——皮质醇白天降得太慢,到睡前还是平衡值的 2.8 倍。</div>
-
-    <div class="fog cool"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><span class="t">每天的紧绷时长</span><span class="s">30 天 · 周三周四的尖峰清晰可见</span></div>
-      <svg id="tenseW" width="100%" viewBox="0 0 325 150"></svg>
-      <div style="height:1px;background:var(--hairD);margin:12px 0"></div>
-      <div class="body13">唾液在第 4 周补了内侧的注脚:早上"点火"偏弱,白天降得太慢,<b style="color:#FFD9A0">到睡前还剩平时近 3 倍</b>——那 38 分钟的入睡,直接原因在这。</div>
-      <div class="footnote"><span>※</span><span>采样 1 天 · 首测对照实验室参考区间;从 T1 起,只和你自己比。</span></div>
-    </div></div>
-  </div>
-
-  <!-- ============ R2-2 生物钟 ============ -->
-  <div class="chapter">
-    <div class="chno">04 — 睡眠 · 这一个月</div>
-    <div class="chtitle">你的生物钟,其实很准时</div>
-    <div class="chsub">这 30 天的硬件侧:入睡中位 38 分钟、节律 68 分、周末漂移 1 小时 50 分。洞察 03 问的是慢在哪一环——褪黑素给出了内侧的答案。</div>
-
-    <div class="fog viol"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><span class="t">每天的入睡用时</span><span class="s">30 晚</span></div>
-      <svg id="sleepW" width="100%" viewBox="0 0 325 140"></svg>
-      <div class="footnote"><span>※</span><span>唾液标定(第 4 周):褪黑素 23:42 准时升起——慢的不是生物钟。</span></div>
-    </div></div>
-
-    <div class="fog flat" style="margin-top:12px"><div class="bg"></div><div class="pad">
-      <div class="verd">褪黑素 23:42 升起。你 00:47 才睡着。</div>
-      <div class="body13">你大概一直以为自己天生晚睡。数据说不是:褪黑素 23:42 准时升起,睡眠窗口是开着的——你在窗口里醒着躺了 65 分钟,因为睡前皮质醇还停在平衡值的 2.8 倍。这个区分很实际:<b style="color:#E7FA9A">不用光照治疗,不用大调作息——要改的,是睡前那一个小时。</b></div>
-    </div></div>
-  </div>
-
-  <!-- ============ R2-3 修复余力 ============ -->
-  <div class="chapter">
-    <div class="chno">05 — 恢复与训练 · 这一个月</div>
-    <div class="chtitle">修复的速度,没跟上消耗</div>
-    <div class="chsub">身体里有一对激素:皮质醇管消耗,DHEA 管修复。早上这两个数一比,就知道最近是"花得多"还是"补得上"。你的读数:花得多,补得慢——手表这 30 天看到的,是同一件事。</div>
-
-    <div class="fog flat"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><span class="t">每天的夜间放松度</span><span class="s">30 晚 · 阴影带 = 你的典型范围</span></div>
-      <svg id="hrvW" width="100%" viewBox="0 0 325 130"></svg>
-      <div style="height:1px;background:var(--hairD);margin:12px 0"></div>
-      <div class="cardhead"><span class="t">修复 ÷ 消耗 · DHEA/皮质醇比</span><span class="chip warn">低于区间</span></div>
-      <svg id="gauge" width="100%" viewBox="0 0 325 64"></svg>
-      <div class="footnote"><span>※</span><span>训练侧有两个好消息:同配速心率比四周前低 3 bpm;练完到上床隔 2.4 小时——负荷和时机都不是消耗源。这个比值从 T1 起只和你自己比,今天种下的是基线。(运动人群在此处追加睾酮/皮质醇比与 sIgA。)</span></div>
-    </div></div>
-  </div>
-
-  <!-- ============ R2-3b 运动 ============ -->
-  <div class="chapter">
-    <div class="chno">06 — 运动 · 这一个月</div>
-    <div class="chtitle">训练,不是消耗源</div>
-    <div class="chsub">四周都是 3 次上下,从没断——负荷平稳;练完到上床平均隔 2.4 小时,时机也没问题。让你累的,另有其人。</div>
-    <div class="fog warm"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><span class="t">每天的训练分钟</span><span class="s">30 天 · 同配速心率比四周前低 3 bpm</span></div>
-      <svg id="moveW" width="100%" viewBox="0 0 325 120"></svg>
-    </div></div>
-  </div>
-
-  <!-- ============ R2-4 四问四答 ============ -->
-  <div class="chapter">
-    <div class="chno">07 — 四条洞察,四个答案</div>
-    <div class="chtitle">首读的四条洞察,答案到齐了</div>
-    <div class="chsub">首读里的四条洞察,这一天的化学信号把每一条都补完整了。</div>
-
-    <div class="qa"><div class="n">01</div><div>
-      <div class="q">下午的困——欠觉,还是化学?</div>
-      <div class="a"><b>两者都有,化学占大头。</b>你 14:00 的皮质醇已经掉到接近睡前的水平——白天的"电量"提前用完了;7 小时的睡眠债也在。补觉能还一半,另一半要把这条曲线养回来。</div>
-    </div></div>
-    <div class="qa"><div class="n">02</div><div>
-      <div class="q">周三的夜晚,发生了什么?</div>
-      <div class="a"><b>线索指向晚上,而不是训练。</b>收工最晚的那些夜里,睡前皮质醇一直没降下来;周三/周四的 HRV 凹陷和它们一一对上,训练负荷那边却是平的。</div>
-    </div></div>
-    <div class="qa"><div class="n">03</div><div>
-      <div class="q">生物钟偏晚,还是没能安静下来?</div>
-      <div class="a"><b>更像是后者。</b>褪黑素 23:42 起始,对你的年龄来说很准时;入睡却在 65 分钟之后,皮质醇还停在平衡值的 2.8 倍。夜晚需要的,是一段放松的缓冲,而不是光照治疗。</div>
-    </div></div>
-    <div class="qa"><div class="n">04</div><div>
-      <div class="q">修复,跟上消耗了吗?</div>
-      <div class="a"><b>这个月,慢了半拍。</b>修复激素跟不上消耗激素(0.21,低于区间),手表那侧也是同一个方向:夜里的放松度在降,周末歇不回来。储备 58 分,说的就是这件事。</div>
-    </div></div>
-
-    <div class="fog flat" style="margin-top:18px"><div class="bg"></div><div class="pad">
-      <div class="cardhead"><span class="t">体感 × 实测</span><span class="s">你的话 × 试管</span></div>
-      <div class="body13">五天里有四天,你把 14:00 的精力打了 1–2 分——正是皮质醇掉到低位的那个小时,体感和数据对上了。第五天没对上:那天你多走了一段午间散步,下午评分 4 分。这反过来恰好支持第 3 条计划:下午 15 分钟散步。</div>
-    </div></div>
-  </div>
-
-  <!-- ============ R2-5 诚实限定 ============ -->
-  <div class="chapter">
-    <div class="chno">08 — 我们还不确定的</div>
-    <div class="fog alert" style="margin-top:14px"><div class="bg"></div><div class="pad">
-      <div class="verd">"还不确定"的部分,和结论一样重要。</div>
-      <ul class="limits">
-        <li><b>只有一个采样日。</b>单日数据上,"平衡"与"紧绷"会有重叠;今天的判断,到 T1 复测之前都是暂定的。</li>
-        <li><b>首测对照实验室参考区间。</b>从 T1 起,只和你自己比。</li>
-        <li><b>生病优先。</b>10月9日(腕温、呼吸速率偏高)已从所有趋势中剔除。</li>
-        <li><b>周期提示。</b>女性不判读睾酮/皮质醇——激素本来就随月经周期波动。</li>
-      </ul>
-    </div></div>
-  </div>
-
-  <!-- ============ R2-6 下一步 ============ -->
-  <div class="chapter">
-    <div class="chno">09 — 下一步</div>
-    <div class="fog warm" style="margin-top:14px"><div class="bg"></div><div class="pad">
-      <div class="verd" style="font-size:18px">一个原因,一个小的开始</div>
-      <div class="body13" style="margin-bottom:4px">三条各对一个原因,挑一条开始就行。横条画的是:大概多久,能在数字里看到它的效果。</div>
-      <svg id="roadmap" width="100%" viewBox="0 0 325 168"></svg>
-      <button class="cta"><span class="t">和 Aira 一起定计划</span><span class="knob">→</span></button>
-      <div style="text-align:center;font-size:11px;color:var(--onD3);margin-top:10px">四周后 T1 复测:同样的三个数字,直接对比。</div>
-    </div></div>
-  </div>
-
+  <div id="nav"><button id="prev" class="hide">←</button><button id="next"><span class="t">下一页</span><span class="knob">→</span></button></div>
 </div>
-
 <script>
-const NS = "http://www.w3.org/2000/svg";
-function el(p,n,a){ const e=document.createElementNS(NS,n); for(const k in a)e.setAttribute(k,a[k]); p.appendChild(e); return e; }
+const NS="http://www.w3.org/2000/svg";
+function el(p,n,a){ const e=document.createElementNS(NS,n); for(const k in a) e.setAttribute(k,a[k]); p.appendChild(e); return e; }
+function txt(p,x,y,s,o={}){ const t=el(p,"text",Object.assign({x,y,"font-size":9,fill:"rgba(255,255,255,.42)"},o)); t.textContent=s; return t; }
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const START=new Date(2026,8,23), N=30, SAMPLE=23;
+const dayOf=i=>{ const d=new Date(START); d.setDate(d.getDate()+i); return d; };
+const md=i=>{ const d=dayOf(i); return (d.getMonth()+1)+"/"+d.getDate(); };
+const isWeekendNight=i=>{ const g=dayOf(i).getDay(); return g===5||g===6; };
+const isMidweek=i=>{ const g=dayOf(i).getDay(); return g===3||g===4; };
+const isRestDay=i=>{ const g=dayOf(i).getDay(); return g===0||g===6; };
+const hmStr=h=>{ const H=Math.floor(h), M=Math.round((h-H)*60); return M===60?`${H+1} 小时`:(M?`${H} 小时 ${M} 分`:`${H} 小时`); };
+const avg=a=>a.reduce((s,v)=>s+v,0)/a.length;
+const slopePerWeek=a=>{ const n=a.length, mx=(n-1)/2, my=avg(a); let sxy=0,sxx=0; a.forEach((v,i)=>{ sxy+=(i-mx)*(v-my); sxx+=(i-mx)**2; }); return sxy/sxx*7; };
+const median=a=>{ const s=[...a].sort((x,y)=>x-y), m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
 
-/* ---------- R2-0b 齿轮环 ---------- */
-function combRing(id, score){
-  const s=document.getElementById(id), C=47, r=39, N=52;
-  for(let i=0;i<N;i++){
-    const a=(-90+i*360/N)*Math.PI/180;
-    const lit=i<Math.round(N*score/100);
-    el(s,"line",{x1:C+Math.cos(a)*(r-9),y1:C+Math.sin(a)*(r-9),x2:C+Math.cos(a)*r,y2:C+Math.sin(a)*r,
-       stroke:lit?"#DCF55A":"rgba(255,184,92,.28)","stroke-width":2.6,"stroke-linecap":"round"});
-  }
-  el(s,"text",{x:C,y:C+4,"text-anchor":"middle","font-size":24,"font-weight":650,fill:"#fff"}).textContent=score;
-  el(s,"text",{x:C,y:C+17,"text-anchor":"middle","font-size":7.5,fill:"rgba(255,255,255,.4)"}).textContent="/ 100";
+/* ---------- 坐标框架:y 轴单位 + 刻度 + 日期 ---------- */
+function frame(sv,{H=220,ymin,ymax,yticks,yfmt=v=>v,yunit,band=false,xlabel=true}){
+  const X0=36, Y0=24, W=283;
+  const y=v=>Y0+H-(v-ymin)/(ymax-ymin)*H;
+  const x=band ? (i=>X0+i*(W/N)+(W/N-3)/2) : (i=>X0+i*(W/(N-1)));
+  txt(sv,0,10,yunit,{fill:"rgba(255,255,255,.6)","font-weight":600});
+  yticks.forEach(t=>{ el(sv,"line",{x1:X0,y1:y(t),x2:X0+W,y2:y(t),stroke:"rgba(255,255,255,.07)","stroke-width":1});
+    txt(sv,X0-6,y(t)+3,yfmt(t),{"text-anchor":"end"}); });
+  if(xlabel) [[0,"start"],[14,"middle"],[29,"end"]].forEach(([i,a])=>txt(sv,a==="start"?X0:(a==="end"?X0+W:x(i)),Y0+H+18,md(i),{"text-anchor":a}));
+  return {x,y,X0,Y0,W,H,bw:W/N-3,bx:i=>X0+i*(W/N)};
 }
-combRing("ring0",72); combRing("ring1",61); combRing("ring2",58);
+function legend(sv,items){ let lx=319; [...items].reverse().forEach(([label,color,shape])=>{
+  const t=txt(sv,lx,10,label,{"text-anchor":"end",fill:"rgba(255,255,255,.6)"}); const w=t.getComputedTextLength()+4;
+  if(shape==="dash") el(sv,"line",{x1:lx-w-14,y1:7,x2:lx-w-2,y2:7,stroke:color,"stroke-width":1.4,"stroke-dasharray":"3 3"});
+  else el(sv,"rect",{x:lx-w-10,y:2.5,width:8,height:8,rx:2.5,fill:color});
+  lx-=w+22; }); }
 
-/* ---------- R2-6 干预时间表 ---------- */
-(function(){
-  const s=document.getElementById("roadmap"); if(!s) return;
-  const X0=10, W=305, H=168, weeks=4;
-  const x=w=>X0+(w/weeks)*W;
-  for(let w=0;w<=4;w++){
-    el(s,"line",{x1:x(w),y1:14,x2:x(w),y2:H-28,stroke:"rgba(255,255,255,.1)","stroke-width":1,
-       "stroke-dasharray":w===0||w===4?"none":"2 4"});
-    el(s,"text",{x:x(w),y:H-14,"text-anchor":w===0?"start":(w===4?"end":"middle"),"font-size":8.5,
-       fill:"rgba(255,255,255,.4)"}).textContent=["今天","第1周","第2周","第3周","T1 复测"][w];
-  }
-  const defs=el(s,"defs",{});
-  const pat=el(defs,"pattern",{id:"hatch",width:6,height:6,patternUnits:"userSpaceOnUse",patternTransform:"rotate(45)"});
-  el(pat,"rect",{width:6,height:6,fill:"rgba(255,255,255,.05)"});
-  el(pat,"line",{x1:0,y1:0,x2:0,y2:6,stroke:"rgba(255,255,255,.22)","stroke-width":1.6});
-  const rows=[
-    {y:24, to:2, fill:"#DCF55A", ink:"#101011", inside:true,  name:"给夜晚留一段缓冲", note:"睡前的残留 · 约 2 周可见"},
-    {y:66, to:1, fill:"rgba(255,255,255,.6)", ink:"#101011", inside:false, name:"就寝停在 00:15 ± 20 分", note:"作息规律 · 约 1 周有响应"},
-    {y:108,to:4, fill:"url(#hatch)", ink:"rgba(255,255,255,.85)", inside:true, name:"下午出去走 15 分钟", note:"白天的回落 · T1 一起复看"},
-  ];
-  rows.forEach(r=>{
-    el(s,"rect",{x:x(0),y:r.y,width:x(r.to)-x(0),height:22,rx:11,fill:r.fill,
-       stroke:r.fill==="url(#hatch)"?"rgba(255,255,255,.25)":"none","stroke-width":.8});
-    if(r.inside){
-      el(s,"text",{x:x(0)+11,y:r.y+14.5,"font-size":10,"font-weight":650,fill:r.ink}).textContent=r.name;
-      if(r.to===4) el(s,"text",{x:x(0)+11,y:r.y+34,"font-size":8.8,fill:"rgba(255,255,255,.45)"}).textContent=r.note;
-      else el(s,"text",{x:x(r.to)+8,y:r.y+14.5,"font-size":8.8,fill:"rgba(255,255,255,.45)"}).textContent=r.note;
-    } else {
-      el(s,"text",{x:x(r.to)+8,y:r.y+14.5,"font-size":10,"font-weight":650,fill:"rgba(255,255,255,.88)"}).textContent=r.name;
-      el(s,"text",{x:x(r.to)+8,y:r.y+32,"font-size":8.8,fill:"rgba(255,255,255,.45)"}).textContent=r.note;
-    }
-  });
-  el(s,"circle",{cx:x(0),cy:14,r:3,fill:"#DCF55A"});
-  el(s,"line",{x1:x(0),y1:14,x2:x(0),y2:H-28,stroke:"rgba(220,245,90,.6)","stroke-width":1.4});
-})();
 
-/* ---------- R2-0 象限轨迹图(日期滑动 + 动效) ---------- */
+const S=(id,html)=>{ document.getElementById(id).innerHTML=html; };
+const r3=rng(9), hrv=[];
+for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
+
+/* ---------- 位置:压力负荷 × 恢复状态(只看手表 ↔ 加上唾液) ---------- */
 (function(){
   const sv=document.getElementById("quad");
-  const X0=10, Y0=16, W=305, H=230;
-  const px=v=>X0+v/100*W, py=v=>Y0+H-v/100*H;
-  function daily(anchors){
-    const idx=[2,9,16,25], pts=[];
-    for(let i=0;i<30;i++){
-      let k=0; while(k<idx.length-2 && i>idx[k+1]) k++;
-      const t=Math.min(1,Math.max(0,(i-idx[k])/(idx[k+1]-idx[k])));
-      pts.push([anchors[k][0]+(anchors[k+1][0]-anchors[k][0])*t + 2.1*Math.sin(i*1.7),
-                anchors[k][1]+(anchors[k+1][1]-anchors[k][1])*t + 2.1*Math.cos(i*1.3)]);
-    }
-    return pts;
-  }
-  const VIEWS={
-    rd:{name:"恢复 × 损耗",xl:"恢复 高 →",yl:"↑ 损耗 高",
-        corners:{tl:"透支中",tr:"硬扛着",bl:"低速运转",br:"游刃有余"},
-        days:daily([[72,36],[58,54],[41,71],[28,87]]),
-        read:i=> i<8  ? "月初:恢复够用,损耗不高——还在平衡区。" :
-             i<16 ? "损耗开始多过恢复,点在往左上挪。" :
-             i<24 ? "加班最多的一段,明显偏进透支象限。" :
-                    "月末:恢复低、损耗高——还停在『透支中』。"},
-    se:{name:"压力 × 精力",xl:"精力 高 →",yl:"↑ 压力 高",
-        corners:{tl:"紧绷 · 低电量",tr:"高压硬顶",bl:"休眠",br:"状态在线"},
-        days:daily([[69,40],[56,57],[42,72],[33,85]]),
-        read:i=> i<8  ? "月初:压力中等,精力还跟得上。" :
-             i<16 ? "压力抬头,精力开始被消耗。" :
-             i<24 ? "在往『紧绷 · 低电量』的角上走。" :
-                    "月末:压力高、精力低——紧绷把电量压住了。"}
-  };
-  const dateStr=i=> i<9 ? ("9月"+(22+i)+"日") : ("10月"+(i-8)+"日");
-  let view="rd", prevD=VIEWS.rd.days, curD=VIEWS.rd.days, vb=1;
-  let dayPos=29, dayTarget=29, raf=null, last=0;
+  const X0=40, Y0=16, W=275, H=212, LO=20, HI=80;
+  const px=v=>X0+(v-LO)/(HI-LO)*W, py=v=>Y0+H-(v-LO)/(HI-LO)*H;
+  const A=[[0,38,68],[8,48,63],[14,58,57],[21,64,53],[29,67,51]], HW=[];
+  for(let i=0;i<N;i++){ let k=0; while(k<A.length-2 && i>A[k+1][0]) k++;
+    const t=(i-A[k][0])/(A[k+1][0]-A[k][0]);
+    HW.push([A[k][1]+(A[k+1][1]-A[k][1])*t+1.8*Math.sin(i*1.7), A[k][2]+(A[k+1][2]-A[k][2])*t+1.8*Math.cos(i*1.3)]); }
+  const DS=5, DR=-7;
+  const CB=HW.map((p,i)=> i<SAMPLE ? p : [p[0]+DS, p[1]+DR]);
+  const Q={tl:"状态稳定",tr:"有压力但扛得住",bl:"恢复不足",br:"高负荷"};
+  const quadOf=([s,r])=> r>=50 ? (s<50?"tl":"tr") : (s<50?"bl":"br");
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-  const P=i=>{ const a=prevD[i], b=curD[i], t=ease(Math.min(1,vb));
-    return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t]; };
-  const pos=f=>{ const i=Math.floor(f), j=Math.min(29,i+1), t=f-i;
-    const a=P(i), b=P(j); return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t]; };
+  document.getElementById("d0").textContent=md(0); document.getElementById("d1").textContent=md(29);
+  let pos=29, target=29, m=1, mT=1, ripple=1, raf=null, last=0, revealTimer=null;
+  const lerp=(a,f)=>{ const i=Math.floor(f), j=Math.min(29,i+1), t=f-i; return [a[i][0]+(a[j][0]-a[i][0])*t, a[i][1]+(a[j][1]-a[i][1])*t]; };
+  const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t];
+  const modeEl=document.getElementById("qMode");
   function draw(){
     while(sv.firstChild) sv.removeChild(sv.firstChild);
-    const V=VIEWS[view];
-    el(sv,"line",{x1:px(50),y1:Y0,x2:px(50),y2:Y0+H,stroke:"rgba(255,255,255,.13)","stroke-width":1,"stroke-dasharray":"3 4"});
-    el(sv,"line",{x1:X0,y1:py(50),x2:X0+W,y2:py(50),stroke:"rgba(255,255,255,.13)","stroke-width":1,"stroke-dasharray":"3 4"});
-    const lbl=(t,x,y,a)=>el(sv,"text",{x,y,"text-anchor":a,"font-size":9,fill:"rgba(255,255,255,.38)"}).textContent=t;
-    lbl(V.corners.tl,X0+2,Y0+10,"start"); lbl(V.corners.tr,X0+W-2,Y0+10,"end");
-    lbl(V.corners.bl,X0+2,Y0+H-4,"start"); lbl(V.corners.br,X0+W-2,Y0+H-4,"end");
-    el(sv,"text",{x:X0+2,y:Y0-5,"font-size":9,fill:"rgba(255,255,255,.5)"}).textContent=V.yl;
-    el(sv,"text",{x:X0+W-2,y:Y0+H+15,"text-anchor":"end","font-size":9,fill:"rgba(255,255,255,.5)"}).textContent=V.xl;
-    const pts=[...Array(30)].map((_,i)=>P(i));
+    const em=ease(m), d=Math.round(pos), withS=pos>=SAMPLE-.5;
+    const hw=lerp(HW,pos), cb=lerp(CB,pos), cur=withS?mix(hw,cb,em):hw, q=quadOf(cur), qh=quadOf(hw);
+    /* 落点象限着色 */
+    const qx={tl:[X0,Y0],tr:[px(50),Y0],bl:[X0,py(50)],br:[px(50),py(50)]}[q];
+    el(sv,"rect",{x:qx[0],y:qx[1],width:W/2,height:H/2,fill:q==="br"?"rgba(255,184,92,.13)":"rgba(220,245,90,.06)"});
+    [30,40,50,60,70].forEach(v=>{ txt(sv,X0-6,py(v)+3,v,{"text-anchor":"end"}); txt(sv,px(v),Y0+H+14,v,{"text-anchor":"middle"}); });
+    el(sv,"line",{x1:px(50),y1:Y0,x2:px(50),y2:Y0+H,stroke:"rgba(255,255,255,.16)","stroke-width":1,"stroke-dasharray":"3 4"});
+    el(sv,"line",{x1:X0,y1:py(50),x2:X0+W,y2:py(50),stroke:"rgba(255,255,255,.16)","stroke-width":1,"stroke-dasharray":"3 4"});
+    const corner=(k,x,y,a)=>txt(sv,x,y,Q[k],{"text-anchor":a,"font-size":10,"font-weight":k===q?700:400,fill:k===q?(k==="br"?"#FFD9A0":"#E7FA9A"):"rgba(255,255,255,.34)"});
+    corner("tl",X0+4,Y0+12,"start"); corner("tr",X0+W-4,Y0+12,"end"); corner("bl",X0+4,Y0+H-6,"start"); corner("br",X0+W-4,Y0+H-6,"end");
+    txt(sv,X0+W,Y0+H+30,"压力负荷 0–100 →",{"text-anchor":"end",fill:"rgba(255,255,255,.6)","font-weight":600});
+    txt(sv,0,Y0-4,"↑ 恢复状态 0–100",{fill:"rgba(255,255,255,.6)","font-weight":600});
+    /* 轨迹 */
     const path=a=>a.map(([x,y])=>`${px(x)},${py(y)}`).join(" ");
-    el(sv,"polyline",{points:path(pts),fill:"none",stroke:"rgba(255,255,255,.13)","stroke-width":1.3,"stroke-dasharray":"1 4","stroke-linecap":"round"});
-    const tr=pts.slice(0,Math.floor(dayPos)+1); tr.push(pos(dayPos));
-    el(sv,"polyline",{points:path(tr),fill:"none",stroke:"rgba(220,245,90,.45)","stroke-width":1.6,"stroke-linecap":"round","stroke-linejoin":"round"});
-    const [x,y]=pos(dayPos), d=Math.round(dayPos);
-    el(sv,"circle",{cx:px(x),cy:py(y),r:10,fill:"rgba(220,245,90,.18)"});
-    el(sv,"circle",{cx:px(x),cy:py(y),r:6,fill:"#DCF55A",stroke:"#151514","stroke-width":2});
-    const onLeft = x<42;
-    el(sv,"text",{x:px(x)+(onLeft?11:-11),y:py(y)+3.5,"text-anchor":onLeft?"start":"end","font-size":9.5,"font-weight":700,fill:"#E7FA9A"})
-      .textContent=dateStr(d)+(d===29?" · 你在这":"");
-    document.getElementById("quadDate").textContent=dateStr(d);
-    document.getElementById("quadRead").textContent=V.read(d);
+    const TR=HW.map((p,i)=> i<SAMPLE ? p : mix(p,CB[i],em));
+    el(sv,"polyline",{points:path(TR),fill:"none",stroke:"rgba(255,255,255,.14)","stroke-width":1.3,"stroke-dasharray":"1 4","stroke-linecap":"round"});
+    const walked=TR.slice(0,Math.floor(pos)+1); walked.push(cur);
+    el(sv,"polyline",{points:path(walked),fill:"none",stroke:"rgba(220,245,90,.5)","stroke-width":1.7,"stroke-linecap":"round","stroke-linejoin":"round"});
+    /* 只看手表的位置 + 唾液带来的位移 */
+    if(withS && em>.02){
+      const ax=px(hw[0]), ay=py(hw[1]), bx=px(cur[0]), by=py(cur[1]), L=Math.hypot(bx-ax,by-ay);
+      if(L>14){
+        const ux=(bx-ax)/L, uy=(by-ay)/L, sx=ax+ux*8, sy=ay+uy*8, ex=bx-ux*11, ey=by-uy*11;
+        el(sv,"line",{x1:sx,y1:sy,x2:ex,y2:ey,stroke:"#DCF55A","stroke-width":2.2,"stroke-linecap":"round"});
+        el(sv,"path",{d:`M${ex+ux*5} ${ey+uy*5} L${ex-uy*4-ux*2} ${ey+ux*4-uy*2} L${ex+uy*4-ux*2} ${ey-ux*4-uy*2} Z`,fill:"#DCF55A"});
+      }
+      el(sv,"circle",{cx:ax,cy:ay,r:6,fill:"#151514",stroke:"rgba(255,255,255,.8)","stroke-width":1.6});
+      txt(sv,ax-11,ay-9,"只看手表",{"text-anchor":"end",fill:"rgba(255,255,255,.7)","font-size":9.5});
+      if(em>.6){
+        const op=Math.min(1,(em-.6)/.4), lab=`唾液：压力 +${DS} · 恢复 ${DR}`;
+        const g=el(sv,"g",{opacity:op}), cx=ax-12, cy=ay+28;
+        const t=txt(g,cx,cy,lab,{"text-anchor":"end","font-size":10,"font-weight":700,fill:"#101011"});
+        const w=t.getComputedTextLength()||lab.length*8;
+        const r=el(g,"rect",{x:cx-w-8,y:cy-12.5,width:w+16,height:18,rx:9,fill:"#DCF55A"}); g.insertBefore(r,t);
+      }
+    }
+    /* 当前点 + 落地涟漪 */
+    const cx=px(cur[0]), cy=py(cur[1]);
+    if(ripple<1) el(sv,"circle",{cx,cy,r:8+ripple*20,fill:"none",stroke:q==="br"?"#FFB85C":"#DCF55A","stroke-width":2,opacity:1-ripple});
+    el(sv,"circle",{cx,cy,r:11,fill:"rgba(220,245,90,.18)"});
+    el(sv,"circle",{cx,cy,r:6.5,fill:"#DCF55A",stroke:"#151514","stroke-width":2});
+    const left=cur[0]<62;
+    const lbl=!withS?md(d):em>.5?"加上唾液":em<.02?"只看手表":"";
+    if(lbl) txt(sv,cx+(left?12:-12),cy+(withS&&em>.5?16:3.5),lbl,{"text-anchor":left?"start":"end","font-size":9.5,"font-weight":700,fill:"#E7FA9A"});
+    document.getElementById("qDate").textContent=md(d);
+    S("s_quad", !withS ? `${md(d)}，你在<b>「${Q[q]}」</b>。拖动日期，看这 30 天怎么走过来。`
+      : em<.5 ? `只看手表，你还在<b>「${Q[qh]}」</b>。切到「加上唾液」看看。`
+      : qh!==q ? `只看手表还在「${Q[qh]}」，<b>加上唾液就落进了「${Q[q]}」</b>——先减负，别再加码。`
+               : `加上唾液，你在<b>「${Q[q]}」</b>。`);
+    modeEl.classList.toggle("on",mT>.5);
+    [...modeEl.querySelectorAll("button")].forEach(b=>b.classList.toggle("cur",(+b.dataset.m)===(mT>.5?1:0)));
   }
-  function tick(ts){
-    const dt=Math.min(50,(ts-last)||16); last=ts;
-    if(vb<1) vb=Math.min(1, vb+dt/380);
-    const diff=dayTarget-dayPos;
-    if(Math.abs(diff)>0.02) dayPos+=diff*(1-Math.exp(-dt/110)); else dayPos=dayTarget;
-    draw();
-    if(vb<1 || Math.abs(dayTarget-dayPos)>0.02) raf=requestAnimationFrame(tick); else raf=null;
-  }
-  function kick(){ if(!raf){ last=performance.now(); raf=requestAnimationFrame(tick); } }
-  const vc=document.getElementById("viewChips");
-  ["rd","se"].forEach(k=>{
-    const b=document.createElement("div"); b.className="tchip"+(k===view?" on":""); b.textContent=VIEWS[k].name;
-    b.onclick=()=>{ if(k===view) return;
-      prevD=[...Array(30)].map((_,i)=>P(i)); curD=VIEWS[k].days; vb=0; view=k;
-      [...vc.children].forEach(c=>c.classList.remove("on")); b.classList.add("on"); kick(); };
-    vc.appendChild(b);
-  });
-  document.getElementById("quadSlider").addEventListener("input",e=>{ dayTarget=+e.target.value; kick(); });
+  function tick(ts){ const dt=Math.min(50,(ts-last)||16); last=ts; let busy=false;
+    const diff=target-pos; if(Math.abs(diff)>.02){ pos+=diff*(1-Math.exp(-dt/110)); busy=true; } else pos=target;
+    if(m!==mT){ const was=m<1; m=mT>m?Math.min(mT,m+dt/850):Math.max(mT,m-dt/600); busy=true; if(was&&m===1) ripple=0; }
+    if(ripple<1){ ripple=Math.min(1,ripple+dt/700); busy=true; }
+    draw(); raf=busy?requestAnimationFrame(tick):null; }
+  const kick=()=>{ if(!raf){ last=performance.now(); raf=requestAnimationFrame(tick);} };
+  const setMode=v=>{ clearTimeout(revealTimer); mT=v; if(pos<SAMPLE-.5){ target=29; } kick(); };
+  modeEl.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setMode(+b.dataset.m); });
+  const sl=document.getElementById("qSlider");
+  ["pointerdown","pointerup","touchstart"].forEach(ev=>sl.addEventListener(ev,e=>e.stopPropagation()));
+  sl.addEventListener("input",e=>{ target=+e.target.value; kick(); });
+  /* 进入这一页:先停在只看手表,再滑进加上唾液 */
+  window.quadReveal=()=>{ clearTimeout(revealTimer); pos=target=29; sl.value=29; m=mT=0; ripple=1; draw();
+    revealTimer=setTimeout(()=>{ mT=1; kick(); },850); };
   draw();
 })();
 
-/* ---------- 周趋势小图/* ---------- 周趋势小图/* ---------- 日趋势小图(30 天) ---------- */
-function mulb2(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
-function dayAxis(sv,X0,W,H){
-  ["9月22日","10月21日"].forEach((t,i)=>el(sv,"text",{x:i?X0+W:X0,y:H-6,"text-anchor":i?"end":"start","font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=t);
-}
-/* 紧绷:逐日面积线,周三周四起尖峰 */
+/* ---------- 唾液信号面板 ---------- */
 (function(){
-  const sv=document.getElementById("tenseW"); if(!sv) return;
-  const rr=mulb2(5), X0=28, W=287, H=150;
-  const vals=[]; for(let i=0;i<30;i++){ const dow=i%7;
-    vals.push(Math.max(24, 58+i*1.5+((dow===2||dow===3)?36:0)+(rr()-.5)*20)); }
-  const max=170, y=v=>H-22-(v/max)*(H-44);
-  [60,120].forEach((v,k)=>{ el(sv,"line",{x1:X0,y1:y(v),x2:X0+W,y2:y(v),stroke:"rgba(255,255,255,.08)","stroke-width":1});
-    el(sv,"text",{x:2,y:y(v)+3,"font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=(k?"2h":"1h"); });
-  const pts=vals.map((v,i)=>`${X0+i*(W/29)},${y(v)}`).join(" ");
-  el(sv,"polygon",{points:`${X0},${y(0)} ${pts} ${X0+W},${y(0)}`,fill:"rgba(255,184,92,.16)"});
-  el(sv,"polyline",{points:pts,fill:"none",stroke:"#FFB85C","stroke-width":2,"stroke-linejoin":"round"});
-  vals.forEach((v,i)=>{ const dow=i%7; if(dow===2||dow===3)
-    el(sv,"circle",{cx:X0+i*(W/29),cy:y(v),r:2.6,fill:"#FFB85C",stroke:"#151514","stroke-width":1.4}); });
-  el(sv,"circle",{cx:X0+W,cy:y(vals[29]),r:3.4,fill:"#FFB85C",stroke:"#151514","stroke-width":2});
-  el(sv,"text",{x:X0+W-6,y:y(vals[29])-8,"text-anchor":"end","font-size":9,"font-weight":700,fill:"#FFD9A0"}).textContent="1:52";
-  dayAxis(sv,X0,W,H);
-})();
-/* 入睡用时:逐日,稳定地慢 */
-(function(){
-  const sv=document.getElementById("sleepW"); if(!sv) return;
-  const rr=mulb2(9), X0=28, W=287, H=140;
-  const vals=[]; for(let i=0;i<30;i++) vals.push(38+(rr()-.5)*9);
-  const max=60, y=v=>H-22-(v/max)*(H-44);
-  [20,40].forEach(v=>{ el(sv,"line",{x1:X0,y1:y(v),x2:X0+W,y2:y(v),stroke:"rgba(255,255,255,.08)","stroke-width":1});
-    el(sv,"text",{x:2,y:y(v)+3,"font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent=v+"m"; });
-  el(sv,"line",{x1:X0,y1:y(38),x2:X0+W,y2:y(38),stroke:"rgba(183,155,255,.5)","stroke-width":1.2,"stroke-dasharray":"4 4"});
-  el(sv,"text",{x:X0+W,y:y(38)-6,"text-anchor":"end","font-size":8.5,"font-weight":700,fill:"#D9C9FF"}).textContent="中位 38 分";
-  el(sv,"polyline",{points:vals.map((v,i)=>`${X0+i*(W/29)},${y(v)}`).join(" "),fill:"none",stroke:"rgba(183,155,255,.85)","stroke-width":2,"stroke-linejoin":"round"});
-  dayAxis(sv,X0,W,H);
-})();
-/* 放松度:逐日 + 典型范围带 */
-(function(){
-  const sv=document.getElementById("hrvW"); if(!sv) return;
-  const rr=mulb2(7), X0=28, W=287, H=130;
-  const vals=[]; for(let i=0;i<30;i++){ const dow=i%7;
-    vals.push(49.5-i*.3+(rr()-.5)*3.2-((dow===2||dow===3)?2.4:0)); }
-  const y=v=>H-22-((v-34)/20)*(H-42);
-  const base=i=>47.3-i*.3;
-  const band=[...Array(30)].map((_,i)=>`${X0+i*(W/29)},${y(base(i)+4)}`).join(" ")+" "+
-             [...Array(30)].map((_,i)=>`${X0+(29-i)*(W/29)},${y(base(29-i)-4)}`).join(" ");
-  el(sv,"polygon",{points:band,fill:"rgba(122,203,255,.12)"});
-  el(sv,"polyline",{points:vals.map((v,i)=>`${X0+i*(W/29)},${y(v)}`).join(" "),fill:"none",stroke:"#7ACBFF","stroke-width":2,"stroke-linejoin":"round"});
-  el(sv,"text",{x:X0+2,y:y(vals[0])-8,"font-size":9,fill:"rgba(255,255,255,.58)"}).textContent="49";
-  el(sv,"text",{x:X0+W,y:y(vals[29])-8,"text-anchor":"end","font-size":9,"font-weight":700,fill:"#7ACBFF"}).textContent="41";
-  dayAxis(sv,X0,W,H);
-})();
-/* 训练分钟:30 根细柱,节奏一眼可见 */
-(function(){
-  const sv=document.getElementById("moveW"); if(!sv) return;
-  const rr=mulb2(3), X0=28, W=287, H=120;
-  const vals=[]; for(let i=0;i<30;i++){ const dow=i%7;
-    if(dow===1||dow===3) vals.push(40+(rr()-.5)*14);
-    else if(dow===5&&rr()>.4) vals.push(28+(rr()-.5)*10);
-    else vals.push(rr()>.75?14+rr()*8:0); }
-  const max=58, y=v=>H-22-(v/max)*(H-40), bw=W/30-2.4;
-  [30].forEach(v=>{ el(sv,"line",{x1:X0,y1:y(v),x2:X0+W,y2:y(v),stroke:"rgba(255,255,255,.08)","stroke-width":1});
-    el(sv,"text",{x:2,y:y(v)+3,"font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent="30m"; });
-  vals.forEach((v,i)=>{ const bx=X0+i*(W/30);
-    if(v>2) el(sv,"rect",{x:bx,y:y(v),width:bw,height:(H-22)-y(v),rx:2.4,fill:"rgba(220,245,90,.78)"});
-    else el(sv,"rect",{x:bx,y:H-24,width:bw,height:2,rx:1,fill:"rgba(255,255,255,.12)"}); });
-  dayAxis(sv,X0,W,H);
+  const box=document.getElementById("bmList");
+  const G=[
+    {g:"退不下来",sub:"压力激素",c:"#FFB85C",rows:[
+      {n:"早上的启动",t:"CAR",v:19,lo:50,hi:75,min:0,max:100,st:"偏低",val:"+19%",d:"早上身体没被真正叫醒。手表上：<b>周一早上最难起，周末作息往后漂近 2 小时</b>。"},
+      {n:"白天的回落",t:"日内斜率",v:75,lo:85,hi:100,min:40,max:100,st:"偏平",val:"降 75%",d:"压力激素白天降得太慢。手表上：<b>紧绷集中在 14–17 点和 21 点后</b>。"},
+      {n:"睡前的残留",t:"睡前皮质醇",v:1.3,lo:.2,hi:.6,min:0,max:2,st:"偏高",val:"1.3",d:"睡前身体还在戒备。手表上：<b>躺下平均 38 分钟才睡着</b>。"}]},
+    {g:"补不回来",sub:"修复与免疫",c:"#FFB85C",rows:[
+      {n:"修复余力",t:"DHEA / 皮质醇",v:.19,lo:.25,hi:.6,min:0,max:.8,st:"偏低",val:"0.19",d:"扛压的储备在变薄。手表上：<b>夜间 HRV 每周降 1.8 毫秒</b>。"},
+      {n:"免疫防线",t:"sIgA",v:62,lo:70,hi:300,min:0,max:360,st:"偏低",val:"62",d:"口腔和呼吸道的防线变薄，高负荷时常见。手表上：<b>呼吸和腕温暂时还正常</b>。"}]},
+    {g:"还守得住",sub:"生物钟",c:"#DCF55A",rows:[
+      {n:"生物钟",t:"褪黑素起始",v:22.08,lo:21.5,hi:23.5,min:20,max:26,st:"准时",val:"22:05",d:"身体按时在零点前后准备好入睡——<b>入睡难不怪生物钟</b>。"}]},
+  ];
+  let open=null;
+  const pct=(v,r)=>Math.max(0,Math.min(100,(v-r.min)/(r.max-r.min)*100));
+  function draw(){
+    box.innerHTML=G.map((g,gi)=>`<div class="bmg" style="color:${g.c}"><i style="background:${g.c}"></i>${g.g}<span>· ${g.sub}</span></div>`+
+      g.rows.map((r,ri)=>{ const k=gi+"-"+ri, bad=g.c!=="#DCF55A";
+        return `<button class="bmrow" data-k="${k}"><span class="nm"><b>${r.n}</b><small>${r.t}</small></span>
+          <span class="bar"><i class="ref" style="left:${pct(r.lo,r)}%;width:${pct(r.hi,r)-pct(r.lo,r)}%"></i>
+            <i class="dot" style="left:${pct(r.v,r)}%;background:${g.c}"></i></span>
+          <span class="st" style="color:${bad?"#FFD9A0":"#E7FA9A"}">${r.st}<small>${r.val}</small></span></button>
+          <div class="bmd ${open===k?"on":""}">${r.d}</div>`; }).join("")).join("")+
+      `<div style="font-size:9px;color:rgba(255,255,255,.38);margin-top:8px">灰色段 = 参考区间（首测对照参考；复测起和你自己比）</div>`;
+  }
+  box.addEventListener("click",e=>{ const b=e.target.closest(".bmrow"); if(!b) return; open=open===b.dataset.k?null:b.dataset.k; draw(); });
+  draw();
 })();
 
-/* ---------- R2-3 修复余力标尺 ---------- */
+/* ---------- 皮质醇日内曲线 × 30 天逐时紧绷 ---------- */
 (function(){
-  const s = document.getElementById("gauge");
-  const X0=16, W=293, lo=0, hi=0.8;
-  const x=v=>X0+((v-lo)/(hi-lo))*W;
-  el(s,"rect",{x:X0,y:26,width:W,height:8,rx:4,fill:"rgba(255,255,255,.1)"});
-  el(s,"rect",{x:x(.25),y:26,width:x(.60)-x(.25),height:8,rx:4,fill:"rgba(255,255,255,.28)"});
-  el(s,"text",{x:x(.425),y:18,"text-anchor":"middle","font-size":8.8,fill:"rgba(255,255,255,.5)"}).textContent="参考区间 0.25 – 0.60";
-  el(s,"circle",{cx:x(.21),cy:30,r:6,fill:"#FFB85C",stroke:"#151514","stroke-width":2.4});
-  el(s,"text",{x:x(.21),y:52,"text-anchor":"middle","font-size":10.5,"font-weight":800,fill:"#FFD9A0"}).textContent="你 0.21";
-  el(s,"text",{x:X0,y:52,"font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent="0";
-  el(s,"text",{x:X0+W,y:52,"text-anchor":"end","font-size":8.5,fill:"rgba(255,255,255,.34)"}).textContent="0.8";
+  const sv=document.getElementById("c_cort");
+  const X0=36, W=283, span=18, x=h=>X0+(h-6)/span*W;
+  const hot=[[14,18],[21,24]];
+  hot.forEach(([a,b])=>el(sv,"rect",{x:x(a),y:20,width:x(b)-x(a),height:252,fill:"rgba(255,184,92,.08)"}));
+  txt(sv,0,10,"皮质醇 · nmol/L",{fill:"rgba(255,184,92,.95)","font-weight":600});
+  const TY=24, TH=118, cy=v=>TY+TH-v/9*TH;
+  [0,3,6,9].forEach(t=>{ el(sv,"line",{x1:X0,y1:cy(t),x2:X0+W,y2:cy(t),stroke:"rgba(255,255,255,.07)","stroke-width":1}); txt(sv,X0-6,cy(t)+3,t,{"text-anchor":"end"}); });
+  const T=[7.33,7.83,11.5,15,23.5], lo=[3.2,5.4,1.6,.7,.2], hi=[5.4,8.4,3.2,1.4,.6], you=[4.3,5.1,2.7,1.9,1.3];
+  el(sv,"polygon",{points:T.map((t,i)=>`${x(t)},${cy(hi[i])}`).join(" ")+" "+T.slice().reverse().map((t,j)=>`${x(t)},${cy(lo[T.length-1-j])}`).join(" "),fill:"rgba(255,255,255,.14)"});
+  el(sv,"polyline",{points:T.map((t,i)=>`${x(t)},${cy(you[i])}`).join(" "),fill:"none",stroke:"#FFB85C","stroke-width":2.2,"stroke-linejoin":"round"});
+  T.forEach((t,i)=>el(sv,"circle",{cx:x(t),cy:cy(you[i]),r:4,fill:"#FFB85C",stroke:"#151514","stroke-width":2}));
+  legend(sv,[["你 · 10/16","#FFB85C"],["参考区间","rgba(255,255,255,.3)"]]);
+  txt(sv,0,164,"紧绷 · 30 天平均分钟",{fill:"rgba(255,255,255,.6)","font-weight":600});
+  const BY=172, BH=96, mins=[2,3,4,6,5,4,3,8,16,20,18,12,7,5,9,18,22,14], bw=W/18-3, by=v=>BY+BH-v/24*BH;
+  [0,10,20].forEach(t=>txt(sv,X0-6,by(t)+3,t,{"text-anchor":"end"}));
+  mins.forEach((v,k)=>{ const h=6+k, isHot=hot.some(([a,b])=>h>=a&&h<b);
+    el(sv,"rect",{x:x(h)+1.5,y:by(v),width:bw,height:by(0)-by(v),rx:2.4,fill:isHot?"#FFB85C":"rgba(255,255,255,.3)"}); });
+  [6,12,18,24].forEach(h=>txt(sv,x(h),300,String(h%24).padStart(2,"0")+":00",{"text-anchor":h===6?"start":(h===24?"end":"middle")}));
+})();
+
+/* ---------- 恢复:30 晚夜间 HRV + 三条参考区间 ---------- */
+(function(){
+  const sv=document.getElementById("c_rec");
+  const y=(()=>{ const oy=36, H=140, lo=34, hi=54, f=v=>oy+H-(v-lo)/(hi-lo)*H;
+    txt(sv,0,oy-14,"夜间 HRV · 毫秒",{fill:"rgba(255,255,255,.62)","font-weight":600});
+    txt(sv,319,oy-14,"↑ 越高，睡得越放松",{"text-anchor":"end",fill:"rgba(255,255,255,.75)","font-weight":600});
+    [40,45,50].forEach(t=>{ el(sv,"line",{x1:36,y1:f(t),x2:319,y2:f(t),stroke:"rgba(255,255,255,.07)","stroke-width":1}); txt(sv,30,f(t)+3,t,{"text-anchor":"end"}); });
+    return f; })();
+  const x=i=>36+i*(283/29);
+  el(sv,"rect",{x:36,y:y(50),width:283,height:y(42)-y(50),fill:"rgba(255,255,255,.08)"});
+  const k=slopePerWeek(hrv)/7, my=avg(hrv);
+  el(sv,"line",{x1:x(0),y1:y(my-k*14.5),x2:x(29),y2:y(my+k*14.5),stroke:"rgba(255,255,255,.7)","stroke-width":1.2,"stroke-dasharray":"4 4"});
+  el(sv,"polyline",{points:hrv.map((v,i)=>`${x(i)},${y(v)}`).join(" "),fill:"none",stroke:"rgba(122,203,255,.45)","stroke-width":1.2});
+  hrv.forEach((v,i)=>el(sv,"circle",{cx:x(i),cy:y(v),r:2.8,fill:"#7ACBFF",stroke:"#151514","stroke-width":1.3}));
+  [[0,"start"],[14,"middle"],[29,"end"]].forEach(([i,a])=>txt(sv,x(i),194,md(i),{"text-anchor":a}));
+})();
+
+/* ---------- 生物钟:30 晚作息 + 醒着躺 + 身体准备好入睡 ---------- */
+(function(){
+  const sv=document.getElementById("c_clock"), r=rng(13);
+  const X0=36, W=283, T0=24, PH=244, span=13, bw=W/N-3, bx=i=>X0+i*(W/N), y=h=>T0+h/span*PH;
+  const clock=h=>{ const t=(22+h)%24, hh=Math.floor(t), mm=Math.round((t-hh)*60); return String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0"); };
+  txt(sv,0,10,"上床 → 睡着 → 醒来",{fill:"rgba(255,255,255,.6)","font-weight":600});
+  [2,6,10].forEach(h=>{ el(sv,"line",{x1:X0,y1:y(h),x2:X0+W,y2:y(h),stroke:"rgba(255,255,255,.07)","stroke-width":1}); txt(sv,X0-6,y(h)+3,clock(h),{"text-anchor":"end"}); });
+  for(let i=0;i<N;i++){ const wk=isWeekendNight(i);
+    let onset=2.78+(r()-.5)*.5, dur=6.5+(r()-.5)*.8, lat=.63+(r()-.5)*.25;
+    if(wk){ onset+=1.8+(r()-.5)*.4; dur=7.9+(r()-.5)*.5; }
+    el(sv,"rect",{x:bx(i),y:y(onset-lat),width:bw,height:lat/span*PH,rx:2.4,fill:"#FFB85C"});
+    el(sv,"rect",{x:bx(i),y:y(onset),width:bw,height:dur/span*PH,rx:2.4,fill:wk?"#DCF55A":"rgba(255,255,255,.6)"}); }
+  const ready=2.08;
+  el(sv,"line",{x1:X0,y1:y(ready),x2:X0+W,y2:y(ready),stroke:"#B79BFF","stroke-width":1.8});
+  txt(sv,X0+2,y(ready)-6,"身体准备好入睡 00:05",{"font-size":9.5,"font-weight":700,fill:"#D9C9FF"});
+  [[0,"start"],[14,"middle"],[29,"end"]].forEach(([i,a])=>txt(sv,a==="start"?X0:(a==="end"?X0+W:bx(i)+bw/2),T0+PH+20,md(i),{"text-anchor":a}));
+  legend(sv,[["醒着躺","#FFB85C"],["工作日","rgba(255,255,255,.6)"],["周末","#DCF55A"]]);
+})();
+
+/* ---------- 下一步:现在 → 目标 + 恢复计划 ---------- */
+(function(){
+  const sv=document.getElementById("miniq"), S0=6, W=92;
+  el(sv,"rect",{x:S0,y:S0,width:W,height:W,rx:12,fill:"rgba(255,255,255,.05)",stroke:"rgba(255,255,255,.12)"});
+  el(sv,"rect",{x:S0+W/2,y:S0+W/2,width:W/2,height:W/2,fill:"rgba(255,184,92,.16)"});
+  el(sv,"rect",{x:S0+W/2,y:S0,width:W/2,height:W/2,fill:"rgba(220,245,90,.10)"});
+  el(sv,"line",{x1:S0+W/2,y1:S0,x2:S0+W/2,y2:S0+W,stroke:"rgba(255,255,255,.18)","stroke-dasharray":"2 3"});
+  el(sv,"line",{x1:S0,y1:S0+W/2,x2:S0+W,y2:S0+W/2,stroke:"rgba(255,255,255,.18)","stroke-dasharray":"2 3"});
+  const now=[82,72], goal=[66,32];
+  el(sv,"path",{d:`M${now[0]-3} ${now[1]-8} Q ${now[0]-14} ${(now[1]+goal[1])/2} ${goal[0]+2} ${goal[1]+9}`,fill:"none",stroke:"#DCF55A","stroke-width":1.8,"stroke-dasharray":"3 3"});
+  el(sv,"circle",{cx:goal[0],cy:goal[1],r:7,fill:"none",stroke:"#DCF55A","stroke-width":1.8});
+  el(sv,"circle",{cx:now[0],cy:now[1],r:6,fill:"#FFB85C",stroke:"#151514","stroke-width":2});
+  const P=[[9.2,"23:00 后放下工作和手机","每晚","入睡","#B79BFF"],[8.6,"提前 30 分钟上床","每晚 00:15","睡眠债","#7ACBFF"],
+           [7.8,"下午离开工位走 15 分钟","工作日 15:00","白天紧绷","#FFB85C"],[7.1,"睡前 10 分钟缓慢呼吸","工作日 23:50","入睡","#B79BFF"]];
+  document.getElementById("plist").innerHTML=P.map(([sc,t,w,tag,c])=>`<div class="pr"><span class="sc"><b style="color:${c}">${sc}</b><small>影响分</small></span>
+    <span class="t">${t}<small>${w}</small></span><span class="tag" style="background:${c}">${tag}</span></div>`).join("");
+})();
+
+/* ---------- 翻页 ---------- */
+(function(){
+  const deck=document.getElementById("deck"), pages=[...deck.children], P=pages.length;
+  const bars=document.getElementById("bars"), prev=document.getElementById("prev"), next=document.getElementById("next");
+  pages.forEach(()=>bars.appendChild(document.createElement("i")));
+  const counted=pages.filter(p=>p.querySelector(".cnt"));
+  counted.forEach((p,i)=>{ p.querySelector(".cnt").textContent=String(i+1).padStart(2,"0")+" / "+String(counted.length).padStart(2,"0"); });
+  let cur=0;
+  function go(i){ cur=Math.max(0,Math.min(P-1,i));
+    if(cur===0&&window.quadReveal) window.quadReveal();
+    deck.style.transform=`translateX(${-cur*100}%)`;
+    pages.forEach((p,k)=>p.classList.toggle("on",k===cur));
+    [...bars.children].forEach((b,k)=>{ b.className=k<cur?"done":(k===cur?"cur":""); });
+    prev.classList.toggle("hide",cur===0);
+    next.querySelector(".t").textContent = cur===P-1 ? (document.body.dataset.cta||"和 Aira 一起定计划") : "下一页";
+  }
+  next.onclick=()=>{ if(cur<P-1) go(cur+1); else if(window.parent!==window) window.parent.postMessage({aira:"report-done",which:document.body.dataset.report},"*"); };
+  prev.onclick=()=>go(cur-1);
+  document.addEventListener("keydown",e=>{ if(e.key==="ArrowRight") go(cur+1); if(e.key==="ArrowLeft") go(cur-1); });
+  let sx=null;
+  deck.addEventListener("pointerdown",e=>{ sx=e.clientX; });
+  deck.addEventListener("pointerup",e=>{ if(sx===null) return; const dx=e.clientX-sx; sx=null;
+    if(Math.abs(dx)>50) go(cur+(dx<0?1:-1)); });
+  window.goTo=go;
+  go(0);
 })();
 </script>
 </body>
