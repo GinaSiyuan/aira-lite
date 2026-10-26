@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Aira — 压力不是一种感觉，它有形状。</title>
+<title>Aira — 压力不只是一种感觉，它可以被测出来。</title>
 <meta name="description" content="Aira Lite 网页体验版 — AI 压力管理助手的核心流程：可穿戴数据 + 唾液皮质醇，一份联合解读。">
 <style>
 /* ============ Design tokens (mirrors Theme.swift) ============ */
@@ -27,6 +27,7 @@ body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);overflow:hidden
 /* ============ Desktop: phone frame / Mobile: fullscreen ============ */
 #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;gap:56px}
 #aside{display:none}
+#demo{display:none!important}
 #phone{position:relative;width:100%;height:100%;background:var(--page);overflow:hidden}
 @media (min-width:768px) and (min-height:640px){
   body{background:radial-gradient(1200px 800px at 70% 20%, #16181a 0%, #0a0a0c 60%)}
@@ -401,14 +402,6 @@ input{font-family:inherit;border:0;outline:none;background:none}
 </head>
 <body>
 <div id="stage">
-  <div id="aside">
-    <div class="k">AIRA · LITE 网页体验版</div>
-    <h1>压力不是一种感觉。<em>它有形状。</em></h1>
-    <p>Aira 核心流程的可交互演示 —— 连接 Apple Health、读完首读报告、完成一天五管唾液、拿到 T0 报告，
-       再到首页、Aira 和计划里自由探索。</p>
-    <p class="hint">像真实用户一样逐屏点击体验，或用 <b>DEMO ▸</b> 控制台自动播放完整流程。
-       数据均为模拟。Aira 不是医疗器械。</p>
-  </div>
   <div id="phone">
     <div id="screen"></div>
     <div id="frhost"><iframe id="frframe" src="first-read.html" title="首读报告"></iframe>

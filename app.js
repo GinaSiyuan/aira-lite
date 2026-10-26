@@ -53,7 +53,7 @@ const S = {
   reopenT0:false, reopenFR:false,
   points:[
     {name:'醒来',        when:'06:45', hint:'睁眼后先别起身，留在床上取这一管', done:false},
-    {name:'醒后 30 分钟', when:'07:15', hint:'和上一管连起来，看早上压力激素升没升起来', done:false},
+    {name:'醒后 30 分钟', when:'07:15', hint:'和上一管对比，看你醒来后压力激素有没有正常升高', done:false},
     {name:'午饭前',      when:'11:30', hint:'吃饭前取，食物会干扰读数', done:false},
     {name:'下午',        when:'15:00', hint:'饭后至少 1 小时再取', done:false},
     {name:'睡前',        when:'23:30', hint:'这一管也用来看身体几点准备好入睡', done:false},
@@ -81,24 +81,24 @@ const TARGETS=[
 const ACTS=[
   {id:'wind', target:'lat', icon:'moon', tag:'入睡', col:'#B79BFF', impact:9.2, saliva:true,
    title:'23:00 后放下工作和手机', how:'不回工作消息，把灯调暗，做点放松的事', when:'每晚 23:00', time:'23:00', days:ALLDAYS,
-   because:'你的睡前皮质醇是参考上限的 2 倍多，30 晚里有 26 晚躺下半小时以上才睡着。生物钟本身是准时的——要先让压力激素在睡前退下去。',
-   evidence:['睡前皮质醇 1.3 · 参考 ≤0.6','入睡 38 分钟 · 30 晚中位','褪黑素 22:05 · 准时'], onset:'约 2 周，入睡用时开始缩短',
-   why3:['入睡是你离目标最远的一项','唾液直接指向睡前这一段','每晚只要提前收手机']},
+   because:'你睡前的压力激素是正常范围的两倍多，难怪 30 晚里有 26 晚躺下半小时都睡不着。生物钟其实是准的，关键是让睡前的压力先退下去。',
+   evidence:['睡前压力激素偏高，是正常的 2 倍多','平均躺下 38 分钟才睡着','生物钟是准的'], onset:'约 2 周，入睡用时开始缩短',
+   why3:['入睡是你离目标最远的一项','唾液显示你睡前压力激素偏高','每晚只要提前收手机']},
   {id:'early', target:'debt', icon:'clock', tag:'睡眠债', col:'#7ACBFF', impact:8.6, saliva:true,
    title:'提前 30 分钟上床', how:'00:15 前躺下，周末也别晚于 01:00', when:'每晚 00:15', time:'00:15', days:ALLDAYS,
-   because:'近 7 晚欠了 6 小时觉，修复类激素（DHEA、睾酮）相对皮质醇都偏低。睡够，是补修复余力最直接的办法。',
-   evidence:['睡眠债 6 小时 · 近 7 晚','DHEA/皮质醇 0.19 · 偏低','HRV 每周 −1.8 毫秒'], onset:'约 1 周睡眠债开始下降，修复激素到复测再看',
+   because:'这一周你少睡了 6 个小时，负责修复的激素也偏低。多睡一会儿，是让身体缓过来最直接的办法。',
+   evidence:['这一周少睡了 6 小时','修复激素偏低','睡觉时越来越难放松'], onset:'约 1 周睡眠债开始下降，修复激素到复测再看',
    why3:['睡眠债一周就攒了 6 小时','修复激素偏低，睡够最直接','只是早一点躺下']},
   {id:'walk', target:'tense', icon:'walk', tag:'白天紧绷', col:'#FFB85C', impact:7.8, saliva:true,
-   title:'下午离开工位走 15 分钟', how:'15:00 前后，你白天最紧张的时段', when:'工作日 15:00', time:'15:00', days:WORKDAYS,
-   because:'你白天的紧绷集中在 14–17 点，下午那管皮质醇也没按时降下来，而那段时间你正好连坐 2 个多小时。起身走一走，把这段紧绷打断。',
-   evidence:['紧绷集中在 14–17 点','下午皮质醇 1.9 · 偏高','连续久坐 2 小时 40 分'], onset:'约 1 周，下午的紧绷时长会变短',
+   title:'下午离开工位走 15 分钟', how:'下午 3 点左右，正是你最紧张的时候', when:'工作日 15:00', time:'15:00', days:WORKDAYS,
+   because:'你白天最紧张的就是下午 2 点到 5 点，那管唾液里的压力激素也没按时降下来，而那会儿你通常连坐两个多小时。起来走走，把这段紧绷打断。',
+   evidence:['下午 2 点到 5 点最紧张','下午压力激素偏高','常常连坐 2 个多小时'], onset:'约 1 周，下午的紧绷时长会变短',
    why3:['正好卡在你最紧张的时段','手表和唾液都指向下午','需要从工位离开，稍难坚持']},
   {id:'breath', target:'lat', icon:'meditate', tag:'入睡', col:'#B79BFF', impact:7.1, saliva:false,
    title:'睡前 10 分钟缓慢呼吸', how:'躺下后，呼气比吸气长一倍', when:'工作日 23:50', time:'23:50', days:WORKDAYS,
-   because:'和「23:00 后放下工作和手机」搭配用：躺下后你的心率比平时高，慢呼气能让它更快降下来。',
-   evidence:['睡前心率比平时高','入睡 38 分钟'], onset:'当晚就能感到，2 周看入睡用时',
-   why3:['和「放下工作和手机」一起用效果更好','只有手表证据，没有唾液直接支撑','需要每晚记得做']},
+   because:'躺下后你的心跳比平时快，慢慢呼气能让它更快降下来。和「23:00 后放下工作和手机」一起做，效果更好。',
+   evidence:['躺下后心跳比平时快','平均躺下 38 分钟才睡着'], onset:'当晚就能感到，2 周看入睡用时',
+   why3:['和「放下工作和手机」一起用效果更好','目前只有手表数据支持','需要每晚记得做']},
 ];
 const targetOf = id => TARGETS.find(t=>t.id===id);
 const actsFor = id => ACTS.filter(a=>a.target===id && S.plan.acc.has(a.id));
@@ -313,14 +313,14 @@ function vWelcome(){
     <div class="appearup" style="position:relative;padding-right:56px">
       <div class="glass" style="border-radius:20px;padding:14px">
         <div class="row" style="gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>
-          <span style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.55)">压力激素 · 一天的形状</span>
+          <span style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.55)">压力激素 · 一天里的变化</span>
           <span style="margin-left:auto;font-size:9px;color:rgba(255,255,255,.35)">ng/mL</span></div>
         <div style="margin-top:10px">${cortisolSketch()}</div>
         <div class="row" style="justify-content:space-between;margin-top:8px">
           ${['醒来','+30 分','午饭前','下午','睡前'].map(t=>`<span style="font-size:8.5px;color:rgba(255,255,255,.4)">${t}</span>`).join('')}</div>
         <div class="row" style="gap:12px;margin-top:9px;font-size:9px;color:rgba(255,255,255,.5)">
           <span class="row" style="gap:5px"><i style="width:12px;height:2px;border-radius:2px;background:var(--lime)"></i>你的一天</span>
-          <span class="row" style="gap:5px"><i style="width:12px;border-top:1.4px dashed rgba(255,255,255,.4)"></i>该有的形状</span></div>
+          <span class="row" style="gap:5px"><i style="width:12px;border-top:1.4px dashed rgba(255,255,255,.4)"></i>正常应该是这样</span></div>
       </div>
       <div style="position:absolute;right:0;top:20px;display:flex;flex-direction:column;gap:7px;align-items:flex-end">
         <div class="glass" style="border-radius:14px;padding:7px 10px;color:#fff">
@@ -334,10 +334,10 @@ function vWelcome(){
           <div style="font-size:9px;color:rgba(255,255,255,.45)">睡眠</div></div></div>
     </div>
     <div style="flex:1 0 10px"></div>
-    <div class="serif appearup" style="font-size:34px;font-weight:600;color:#fff;line-height:1.3">压力不是<br>一种感觉。</div>
-    <div class="serif appearup" style="font-size:34px;font-weight:500;color:var(--lime);line-height:1.35">它有形状。</div>
+    <div class="serif appearup" style="font-size:34px;font-weight:600;color:#fff;line-height:1.3">压力不只是<br>一种感觉。</div>
+    <div class="serif appearup" style="font-size:34px;font-weight:500;color:var(--lime);line-height:1.35">它可以被测出来。</div>
     <p class="appearup zh-loose" style="font-size:12.5px;color:rgba(255,255,255,.58);margin-top:10px">
-      Aira 把手表数据和一天的唾液放在一起读——告诉你身体现在在哪，接下来四周该做什么。</p>
+      Aira 把你的手表数据和一天的唾液放在一起看，告诉你最近为什么累，接下来四周该怎么调整。</p>
     <div style="flex:1 0 8px"></div>
     <div style="display:flex;flex-direction:column;gap:13px">
       ${[['你的可穿戴设备','Apple Health、Oura、WHOOP · 近 30 天',
@@ -349,7 +349,7 @@ function vWelcome(){
          ['一次唾液采样','一天五管，在家完成',
           `<span style="width:88px;display:flex;justify-content:center">
             <span style="width:40px;height:40px;border-radius:10px;background:#f2f4ea;display:flex;align-items:center;justify-content:center;transform:rotate(-5deg);box-shadow:0 3px 8px rgba(0,0,0,.25)">${ic('drop',22,1.8,'#7a8f3a')}</span></span>`],
-         ['一份联合解读','你的状态，和接下来四周的计划',
+         ['一份完整解读','你为什么累，接下来四周怎么调整',
           `<span style="width:88px;display:flex;justify-content:center">
             <span style="width:40px;height:40px;border-radius:10px;background:#f4f2ec;display:flex;align-items:center;justify-content:center;transform:rotate(4deg);box-shadow:0 3px 8px rgba(0,0,0,.25)">${ic('plan',22,1.6,'#5d6b2f')}</span></span>`]
        ].map((r,i)=>`<div class="row appearup" style="gap:14px;animation-delay:${0.18+i*0.09}s">${r[2]}
@@ -357,7 +357,6 @@ function vWelcome(){
           <div style="font-size:11px;color:rgba(255,255,255,.48);margin-top:2px">${r[1]}</div></div></div>`).join('')}
     </div>
     <div style="margin-top:16px">${cta('开始使用','data-act="getstarted"')}</div>
-    <div style="text-align:center;font-size:10.5px;color:rgba(255,255,255,.32);margin-top:10px">Aira 不是医疗器械，仅用于健康生活指导。</div>
   </div></div>`;
 }
 
@@ -376,7 +375,7 @@ function vConnect(){
     ['breath','呼吸与腕温','身体有没有在生病']];
   const wearables=[['appicon_oura','Oura Ring'],['appicon_whoop','WHOOP'],['appicon_garmin','Garmin']];
   return `<div class="view" style="background:var(--page)"><div class="onb">
-    ${onbTop(0,2,'data-act="phase" data-v="welcome"')}
+    ${onbTop(1,2,'data-act="backprof"')}
     <h2>连接你的数据</h2>
     <div class="sub">Aira 读取你最近 30 天的 Apple Health，马上给你第一份解读。</div>
     <div class="body">
@@ -401,7 +400,7 @@ function vConnect(){
           <span style="font-size:10.5px;color:${S.devices.has(name)?'var(--ink)':'var(--ink3)'};${S.devices.has(name)?'font-weight:600':''}">${name}</span></button>`).join('')}</div>
       <div class="row" style="gap:9px;align-items:flex-start;margin-top:16px">
         ${ic('info',13,1.8,'var(--ink3)','margin-top:2px')}
-        <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">没有手表也可以，iPhone 自带的睡眠和步数也能读，只是结论会粗一些。</span></div>
+        <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">没有手表也可以，iPhone 自带的睡眠和步数也能读，只是解读会粗一些。</span></div>
     </div>
     <div class="foot">${cta(S.healthGranted?'导入最近 30 天':'连接 Apple Health','data-act="connectnext"')}</div>
   </div></div>`;
@@ -410,10 +409,10 @@ function vConnect(){
 /* ---- 两次报告前的加载：同一个组件 ---- */
 const LOADS={
   sync:{phase:'syncing', next:'frintro', kicker:'首读 · 读取 Apple Health', title:'正在读取你最近 30 天的数据',
-    steps:['睡眠 · 30 晚','心率变异性 · 30 晚','心率 · 30 天','步数与运动 · 30 天','整理成你的首读'],
-    note:'数据只在你的设备和 Aira 的加密存储之间流动。'},
-  analyze:{phase:'analyzing', next:'t0intro', kicker:'T0 报告 · 唾液 × 手表', title:'正在把唾液和手表数据放在一起读',
-    steps:['读取 5 管唾液','和 30 天手表数据对齐','对照参考区间','算出压力负荷和恢复状态','整理成你的 T0 报告'],
+    steps:['睡眠 · 30 晚','心率变异性 · 30 晚','心率 · 30 天','步数与运动 · 30 天','整理成你的首读报告'],
+    note:'你的数据加密保存，只用来给你做解读。'},
+  analyze:{phase:'analyzing', next:'t0intro', kicker:'阶段解读 · 唾液 + 手表', title:'正在把唾液和手表数据放在一起读',
+    steps:['读取 5 管唾液','和你 30 天的手表数据放在一起','看压力激素一天里怎么变','看身体修复得怎么样','整理成你的阶段解读'],
     note:'唾液和手表数据要放在一起读，需要一点时间。'},
 };
 let loadTimer=null;
@@ -469,14 +468,14 @@ function deliverReport(){
 
 /* ---- 两次报告的总览首屏：同一个组件 ---- */
 const INTROS={
-  fr:{kicker:'首读 · 9月15日 – 10月14日', l1:'30 天的数据，', l2:'读出了 5 件事。',
+  fr:{kicker:'首读报告 · 9月15日 – 10月14日', l1:'30 天的数据，', l2:'读出了 5 件事。',
       sub:'全部来自你的 Apple Health。一页一件，每页一张图。', to:'firstread',
       heads:[['睡眠','工作日总是睡不够'],['睡眠','一到周末，作息就往后漂'],['白天','白天越来越难放松下来'],
              ['夜里','夜里的恢复一周比一周差'],['运动','运动有规律，量还差一点']]},
-  t0:{kicker:'T0 报告 · 唾液 10月16日 × 手表 30 天', l1:'加上一天的唾液，', l2:'读出了 5 件事。',
-      sub:'每一页都把唾液和手表数据画在同一张图里。', to:'t0',
-      heads:[['位置','你落进了「高负荷」'],['唾液','唾液里，5 个信号偏离'],['压力','压力激素白天退不下去'],
-             ['恢复','身体在消耗，修复跟不上'],['睡眠','入睡难，不怪生物钟']]},
+  t0:{kicker:'阶段解读 · 30 天手表数据 + 10月16日唾液', l1:'手表数据加上唾液，', l2:'看清了你为什么累。',
+      sub:'首读看到你最近睡不够、白天总绷着、夜里恢复变差。这次加上一天的唾液，找到了背后的原因。', to:'t0',
+      heads:[['状态','你现在压力大，恢复跟不上'],['唾液','唾液里看到了两个问题'],['压力','压力激素白天退不下去'],
+             ['恢复','身体一直在消耗，补得太慢'],['睡眠','入睡难，不怪生物钟']]},
 };
 function vIntro(k){
   const I=INTROS[k];
@@ -508,9 +507,9 @@ function ruler(valKey,val,min,max,unit){
 }
 function vProfile(){
   const step=S.profStep;
-  const title=step===0?'先认识一下你':'你平时训练吗？';
-  const sub=step===0?'年龄和性别不同，唾液里激素的正常范围也不同。'
-                    :'练得多的人，恢复数据要换一种读法；计划也会照着你的习惯来排。';
+  const title=step===0?'先认识一下你':'你平时运动吗？';
+  const sub=step===0?'年龄和性别不同，激素的正常范围也不一样。知道这些，我们才能按你的情况来看。'
+                    :'运动多的人，身体需要的恢复时间不一样。我们也会照你的习惯来排计划。';
   let body='';
   if(step===0){
     body=`<div style="display:flex;flex-direction:column;gap:20px;padding-top:6px">
@@ -519,31 +518,31 @@ function vProfile(){
           style="width:100%;background:#fff;border:1px solid var(--hair);border-radius:18px;padding:15px 17px;
                  font-size:21px;font-weight:600"></div>
       <div><div class="row" style="gap:7px;margin-bottom:9px"><span style="font-size:14px;font-weight:600">年龄</span>
-          <span style="font-size:11px;color:var(--ink3)">参考区间随年龄段变化</span></div>
+          <span style="font-size:11px;color:var(--ink3)">不同年龄，正常范围不一样</span></div>
         ${ruler('age',S.age,13,90,'岁')}</div>
       <div><div class="row" style="gap:7px;margin-bottom:9px"><span style="font-size:14px;font-weight:600">出生性别</span>
-          <span style="font-size:11px;color:var(--ink3)">皮质醇与 DHEA 的区间不同</span></div>
-        <div class="seg">${['女','男','不便透露'].map((o,i)=>
+          <span style="font-size:11px;color:var(--ink3)">男女的激素水平不太一样</span></div>
+        <div class="seg">${['女','男','不想说'].map((o,i)=>
           `<button class="${S.sex===i?'on':''}" data-act="sex" data-v="${i}">${o}</button>`).join('')}</div>
         ${S.sex===2?`<div class="row" style="gap:8px;align-items:flex-start;margin-top:10px">${ic('info',12,1.9,'var(--ink3)','margin-top:3px')}
-          <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">Aira 会用更宽的参考范围，结论会粗一些。</span></div>`:''}
+          <span class="zh-loose" style="font-size:11.5px;color:var(--ink3)">没关系，只是解读会稍微粗一点。</span></div>`:''}
       </div></div>`;
   } else {
     const freqs=[['不练','moon'],['1–2 次','run'],['3–4 次','run'],['5 次以上','run']];
     body=`<div style="display:flex;flex-direction:column;gap:16px;padding-top:10px">
-      <div style="font-size:13px;font-weight:600">每周训练几次？</div>
+      <div style="font-size:13px;font-weight:600">每周运动几次？</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
         ${freqs.map((f,i)=>`<button class="wcard" data-act="band" data-v="${i}"
           style="padding:17px 4px;border-radius:17px;display:flex;flex-direction:column;align-items:center;gap:5px;
           ${S.sessionBand===i?'background:var(--ink);color:#fff;border-color:var(--ink)':''}">
           ${ic(f[1],18,1.9,S.sessionBand===i?'#fff':'var(--ink2)')}
           <span style="font-size:14px;${S.sessionBand===i?'font-weight:600':'font-weight:500'}">${f[0]}</span></button>`).join('')}</div>
-      ${S.sessionBand>0?`<div class="fadein"><div style="font-size:13px;font-weight:600;margin:8px 0 10px">练了多久了？</div>
+      ${S.sessionBand>0?`<div class="fadein"><div style="font-size:13px;font-weight:600;margin:8px 0 10px">坚持多久了？</div>
         ${ruler('years',S.years,0,30,'年')}</div>`:''}
     </div>`;
   }
   return `<div class="view" style="background:var(--page)"><div class="onb">
-    ${onbTop(1,2, step===0?'data-act="phase" data-v="firstread"':'data-act="profstep" data-v="0"')}
+    ${onbTop(0,2, step===0?'data-act="phase" data-v="welcome"':'data-act="profstep" data-v="0"')}
     <h2>${title}</h2><div class="sub">${sub}</div>
     <div class="body">${body}</div>
     <div class="foot">${cta('继续', step===0?'data-act="profstep" data-v="1"':'data-act="finishonb"')}</div>
@@ -570,16 +569,16 @@ function fiveTubes(w=312,h=118){
   return s+'</svg>';
 }
 function vSaliva(){
-  const avoid=['前一天开始停用生物素（维生素 B7）','每管前 30 分钟不吃东西、不喝咖啡','每管前 10 分钟不刷牙','醒来后先别运动，第一管在床上取'];
+  const avoid=['前一天起，先别吃生物素（维生素 B7）','每管前 30 分钟不吃东西、不喝咖啡','每管前 10 分钟不刷牙','醒来后先别运动，第一管在床上取'];
   return `<div class="view" style="background:var(--page)">
   <div class="scroll" style="padding:0 20px 20px">
     ${salTop('唾液检测')}
     <div style="font-size:26px;font-weight:650;line-height:1.35;margin-top:12px">原因，藏在一天的唾液里</div>
-    <div class="zh-loose" style="font-size:13.5px;color:var(--ink2);margin-top:8px">手表看到了现象。压力激素有没有按时退下去、修复还剩多少、生物钟准不准——要从唾液里看。</div>
+    <div class="zh-loose" style="font-size:13.5px;color:var(--ink2);margin-top:8px">手表能看到你累，看不到为什么。压力激素有没有按时退下去、身体修复得怎么样、生物钟准不准，要从唾液里看。</div>
     <div class="fog cool" style="margin-top:16px"><div class="bg"></div><div class="pad">
       ${cardHead('drop','一天五管','在家完成 · 寄回实验室','每管 2 分钟','sky')}
       <div style="margin-top:12px">${fiveTubes()}</div>
-      <div class="zh-loose" style="font-size:12px;color:var(--onD2);margin-top:8px">压力激素本该早上高、晚上低。五个时间点连起来，就是你一天的形状。</div></div></div>
+      <div class="zh-loose" style="font-size:12px;color:var(--onD2);margin-top:8px">压力激素正常是早上高、晚上低。五个时间点连起来，就能看出你的一天是怎么变的。</div></div></div>
     <div class="fog flat" style="margin-top:12px"><div class="bg"></div><div class="pad">
       ${cardHead('info','采样当天避开','都会让结果不准')}
       <div style="display:flex;flex-direction:column;gap:11px;margin-top:12px">
@@ -676,11 +675,11 @@ function vHome(){
            <span class="num" style="font-size:10px;color:var(--onD3);width:16px">0${i+1}</span>
            <span style="flex:1;font-size:13px;color:rgba(255,255,255,.88)">${t}</span>
            <span style="font-size:9.5px;color:var(--onD3)">${tag}</span></div>`).join('')}</div>`)}
-      ${reportEntry('opent0','warm','drop','T0 报告','唾液 10月16日 × 手表 30 天',['高负荷','warn'],
+      ${reportEntry('opent0','warm','drop','阶段解读','唾液 10月16日 + 手表 30 天',['高负荷','warn'],
         `<div class="row" style="gap:16px;align-items:center;margin-top:14px">
            <div style="text-align:center">${scoreRing(72,'#FFB85C',78)}<div style="font-size:10.5px;color:var(--onD2);margin-top:4px">压力负荷</div></div>
            <div style="text-align:center">${scoreRing(44,'#DCF55A',78)}<div style="font-size:10.5px;color:var(--onD2);margin-top:4px">恢复状态</div></div>
-           <div style="flex:1;font-size:13.5px;font-weight:600;line-height:1.55">你落进了<br>「高负荷」</div></div>
+           <div style="flex:1;font-size:13.5px;font-weight:600;line-height:1.55">压力大，<br>恢复跟不上</div></div>
          <div style="margin-top:10px">${t0.heads.slice(1,4).map(([tag,t],i)=>`<div class="row" style="gap:10px;padding:7px 0;border-top:1px solid var(--hairD)">
            <span class="num" style="font-size:10px;color:var(--onD3);width:16px">0${i+2}</span>
            <span style="flex:1;font-size:13px;color:rgba(255,255,255,.88)">${t}</span>
@@ -724,7 +723,7 @@ function vAgent(){
     <div style="flex:none;padding:8px 0 90px">
       <div style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:0 16px 8px">
         <button class="replychip" data-act="opent0" style="background:var(--lime);color:var(--ink);font-weight:600;flex:none">
-          ${ic('drop',11,2.2,'var(--ink)')} 打开 T0 报告</button>
+          ${ic('drop',11,2.2,'var(--ink)')} 看阶段解读</button>
         ${asks.map(c=>`<button class="replychip glass" data-act="send" data-v="${c}" style="flex:none;font-size:12.5px">${c}</button>`).join('')}
       </div>
       <div class="row" style="gap:10px;padding:0 16px">
@@ -748,20 +747,20 @@ function bub(t,lead=false,grouped=false,delay=null){
 function userBub(t,fresh=false){ return `<div class="bubble user ${fresh?'fresh':''}" style="margin-top:14px">${t}</div>`; }
 /* 开场摘要在上，用户问答按发送顺序依次追加在下 */
 function buildThread(){
-  let out=`<div class="stagemark" style="margin-top:8px">10月22日 · T0 报告</div>`;
-  out+=bub('你的 T0 报告出来了。');
-  out+=bub('一句话：你落进了「高负荷」——压力高，恢复差。',true,true);
+  let out=`<div class="stagemark" style="margin-top:8px">10月22日 · 阶段解读</div>`;
+  out+=bub('你的阶段解读出来了。');
+  out+=bub('简单说：你最近压力很大，身体却一直没缓过来。',true,true);
   out+=`<button data-act="opent0" style="display:block;width:calc(100% - 28px);margin:10px 28px 0 0;text-align:left">
     <div class="glass" style="border-radius:22px;padding:16px;color:#fff">
       <div class="cardhead"><div class="ibadge">${ic('drop',16,1.7,'#fff')}</div>
-        <div class="tt"><div class="a">T0 报告</div><div class="b">唾液 10/16 × 手表 30 天</div></div>${chipEl('高负荷','warn')}</div>
+        <div class="tt"><div class="a">阶段解读</div><div class="b">唾液 10/16 + 手表 30 天</div></div>${chipEl('高负荷','warn')}</div>
       <div class="row" style="justify-content:space-around;margin-top:12px">
         ${[[72,'#FFB85C','压力负荷'],[44,'#DCF55A','恢复状态']].map(([v,c,n])=>`<div style="text-align:center">${scoreRing(v,c,74)}
           <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">${n}</div></div>`).join('')}</div>
       <div class="row" style="justify-content:flex-end;gap:5px;margin-top:10px;font-size:12px;font-weight:600;color:var(--lime)">
         看完整报告 ${ic('arrowRight',11,2.2,'var(--lime)')}</div></div></button>`;
-  out+=bub('最该先动的是睡前那一小时。压力激素到睡前还没退下去，所以你躺下半小时都睡不着。');
-  out+=bub('我在计划里放了三个四周目标，每个都配了活动，你挑着加。',false,true);
+  out+=bub('最该先改的是睡前这一个小时。你的压力激素到睡前还没退下去，所以躺下半小时都睡不着。');
+  out+=bub('接下来四周的计划我排好了，挑一两件先做就行。',false,true);
   out+=`<button data-act="tab" data-v="2" class="row" style="gap:7px;margin:10px 0 0;padding:11px 16px;border-radius:99px;
     background:var(--lime);color:var(--ink);font-size:12.5px;font-weight:600">去计划看看 ${ic('arrowRight',12,2.2,'var(--ink)')}</button>`;
   if(S.sent.length||S.typing) out+=`<div class="stagemark" style="margin-top:20px">今天</div>`;
@@ -770,20 +769,20 @@ function buildThread(){
   return out;
 }
 const AIRA_QA={
-  '「高负荷」是什么意思？':['压力负荷和恢复状态两条轴交出来的位置：压力在高处，恢复在低处。','身体一边在扛，一边没缓过来——这时候最不该做的就是继续加码。'],
-  '为什么先从睡前开始？':['三个问题里，入睡难最直接，也最好撬动。','压力激素在睡前退下去，入睡会变快，睡眠债也跟着少——一件事同时推两个目标。'],
-  '白天紧绷怎么缓解？':['你白天最紧张的是下午 14–17 点。那个时段起身走 15 分钟，比熬到下班再运动更管用。','我已经把它放进推荐活动了。'],
-  '什么时候复测？':[`${TODAY.retest}，和这次一样的五个时间点。`,'到时候同样的图再画一次，看你的位置有没有往「有压力但扛得住」挪。'],
-  '运动要不要加量？':['先别加。你的运动本来就规律，量也只差一点。','现在身体在「高负荷」，加强度只会让恢复更吃紧。等复测回到「扛得住」再说。'],
+  '「高负荷」是什么意思？':['就是压力一直很大，身体又没来得及缓过来。','这种时候最不该做的，就是继续给自己加码。'],
+  '为什么先从睡前开始？':['因为它最容易见效。','睡前压力退下去了，你会睡得更快，欠的觉也补得回来，一件事两头都好。'],
+  '白天紧绷怎么缓解？':['你白天最紧张的是下午 2 点到 5 点。那会儿起身走 15 分钟，比熬到下班再运动更管用。','我已经把它放进推荐活动了。'],
+  '什么时候复测？':[`${TODAY.retest}，和这次一样的五个时间点。`,'到时候同样的图再画一次，看你有没有从「高负荷」回到「负荷可控」。'],
+  '运动要不要加量？':['先别加。你的运动本来就规律，量也只差一点。','现在身体在「高负荷」，加强度只会让恢复更吃紧。等复测回到「负荷可控」再说。'],
 };
 function airaReply(s){
   if(AIRA_QA[s]) return AIRA_QA[s];
-  if(/睡|醒|失眠|困/.test(s)) return AIRA_QA['为什么先从睡前开始？'];
+  if(/睡|醒|失眠|困/.test(s)) return ['你这一周少睡了 6 个小时，想多睡是对的。','可以先试试 00:15 前躺下，再配合 23:00 后放下工作和手机，入睡会快一些。'];
   if(/运动|练|跑|健身|走路/.test(s)) return AIRA_QA['运动要不要加量？'];
-  if(/压力|紧|焦虑|累|烦/.test(s)) return ['这个月白天紧绷越来越长，修复类激素也偏低——累是真实的，不是你想多了。','先从睡前一小时和下午走动开始，这两件最容易见效。'];
+  if(/压力|紧|焦虑|累|烦/.test(s)) return ['这个月白天紧绷越来越长，修复类激素也偏低——累是真实的，不是你想多了。','先从晚上早点放下工作、下午起来走走开始，这两件最容易见效。'];
   if(/复测|唾液|检测|报告/.test(s)) return AIRA_QA['什么时候复测？'];
-  if(/计划|目标|怎么做|开始/.test(s)) return ['计划里有三个四周目标：入睡、白天紧绷、睡眠债。每个都配了活动，从你最愿意做的那条开始就行。'];
-  return ['记下了。按你现在的数据，最值得先动的还是睡前那一小时——想聊具体怎么做，直接问我就好。'];
+  if(/计划|目标|怎么做|开始/.test(s)) return ['计划主要管三件事：睡得着、白天松一点、把欠的觉补回来。从你最愿意做的那条开始就行。'];
+  return ['我在。照你现在的情况，最值得先做的是晚上 23:00 后放下工作和手机。想聊聊具体怎么做吗？'];
 }
 function exchange(s,fresh=false){
   let out=userBub(s);
@@ -809,7 +808,7 @@ function vPlan(){
   const wk=WEEK.map((_,i)=>dayItems(i)), tot=wk.reduce((s,a)=>s+a.length,0);
   const dn=wk.reduce((s,a,i)=>s+a.filter(x=>S.plan.done.has(i+'-'+x.key)).length,0);
   const anim=S._dayAnim; S._dayAnim=false;
-  const met=[['入睡','38','20','分'],['白天紧绷','2','1.3','时'],['睡眠债','6','2','时']];
+  const met=[['入睡要多久','38','20','分钟'],['白天紧绷','120','80','分钟'],['睡眠债','6','2','小时']];
   return `<div class="scroll" style="padding:0 20px 110px;padding-top:max(14px, env(safe-area-inset-top))">
     <div class="row" style="align-items:flex-start;padding-top:14px">
       <div style="flex:1"><div style="font-size:12.5px;color:var(--ink3)">第 1 周 / 4 · ${TODAY.retest}复测</div>
@@ -817,9 +816,9 @@ function vPlan(){
       <img src="Assets/avatar.jpg" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.2)"></div>
 
     <div class="fog cool" style="margin-top:15px"><div class="bg"></div><div class="pad">
-      ${cardHead('spark','本轮目标','来自 T0 报告 · 四周后复测','高负荷','warn')}
-      <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:12px">先把睡前那一端稳住</div>
-      <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:6px">压力激素在睡前退下去，入睡和睡眠债都会跟着好。</div>
+      ${cardHead('spark','这四周的目标','来自阶段解读 · 四周后再测','高负荷','warn')}
+      <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:12px">先从睡好觉开始</div>
+      <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:6px">晚上早点放下工作，躺下能更快睡着，欠的觉也能慢慢补回来。睡好了，白天自然轻松些。</div>
       <div class="row" style="margin-top:14px;border-top:1px solid var(--hairD)">
         ${met.map(([k,a,b,u],i)=>`<div style="flex:1;padding:11px 0 0 ${i?'12px':'0'};${i?'border-left:1px solid var(--hairD)':''}">
           <div style="font-size:10px;color:var(--onD3)">${k}</div>
@@ -828,7 +827,7 @@ function vPlan(){
 
     <div class="row" style="margin-top:24px">${sectionLabel('推荐给你 · 按影响分排序')}
       ${deck().length?`<span style="margin-left:auto;font-size:10.5px;font-weight:600;color:var(--ink3)">还有 ${deck().length} 条</span>`:''}</div>
-    <div style="font-size:11.5px;color:var(--ink3);margin-top:4px;line-height:1.55">影响分（满分 10）= 这件事能把你往四周目标推多远。离目标越远、证据越直接、越容易做到，分越高。</div>
+    <div style="font-size:11.5px;color:var(--ink3);margin-top:4px;line-height:1.55">影响分满分 10。分越高，这件事对你越有用：它对准你最需要改善的地方，有数据支持，也容易做到。</div>
     <div style="margin-top:10px">${deckHTML()}</div>
 
     <div class="row" style="margin-top:26px">${sectionLabel('本周')}
@@ -948,7 +947,7 @@ function sheetHead(title){
 
 /* -- Guidance (collection steps) -- */
 const GSTEPS=[['清水漱口','漱 10 秒后吐掉。别刷牙、别用漱口水，都会让结果不准。'],
-  ['等待 10 分钟','让口腔回到基线。等待期间不吃不喝。'],
+  ['等 10 分钟','让嘴里恢复平常的状态，这段时间先别吃喝。'],
   ['含住采样棉 2 分钟','放在舌下，别嚼。泡湿就行，不用使劲。'],
   ['放回管中，封好','不碰棉头，直接放入，按下管盖直到咔哒一声。'],
   ['标注时间点','写上是哪一管、实际几点采的。标错这管就白采了。']];
@@ -1000,12 +999,12 @@ function shCheckin(){
 /* ================= Demo autoplay ================= */
 const DEMO_STEPS=[
   ['欢迎页',2.6,()=>{reset();}],
+  ['关于你',2.4,()=>{S.phase='profile';S.profStep=0;S.nickname='Chloe';}],
+  ['运动习惯',2.0,()=>{S.phase='profile';S.profStep=1;}],
   ['连接数据',2.2,()=>{S.phase='connect';S.healthGranted=true;}],
   ['导入 30 天',4.8,()=>{beginSync();}],
   ['首读 · 总览',3.0,()=>{S.phase='frintro';}],
   ['首读报告',8.0,()=>{S.phase='firstread';flipReport('frframe',5,1.5);}],
-  ['关于你',2.4,()=>{S.phase='profile';S.profStep=0;S.nickname='Chloe';}],
-  ['训练习惯',2.0,()=>{S.phase='profile';S.profStep=1;}],
   ['唾液检测指引',3.0,()=>{S.phase='saliva';}],
   ['采样日',2.6,()=>{S.phase='collect';S.saliva=1;}],
   ['采样步骤',3.0,()=>{S.phase='collect';S.stepIndex=2;render();openSheet('guidance');}],
@@ -1065,7 +1064,8 @@ function pauseGlyph(){ return `<svg width="10" height="12" viewBox="0 0 10 12"><
 function act(el){
   const a=el.dataset.act, v=el.dataset.v;
   switch(a){
-    case 'getstarted': S.phase='connect'; render(); break;
+    case 'backprof': S.phase='profile'; S.profStep=1; render(); break;
+    case 'getstarted': S.phase='profile'; S.profStep=0; render(); break;
     case 'phase': S.phase=v; render(); break;
     case 'grant': S.healthGranted=true; render(); break;
     case 'device': S.devices.has(v)?S.devices.delete(v):S.devices.add(v); render(); break;
@@ -1073,7 +1073,7 @@ function act(el){
     case 'profstep': S.profStep=+v; render(); break;
     case 'sex': S.sex=+v; render(); break;
     case 'band': S.sessionBand=+v; render(); break;
-    case 'finishonb': S.phase='saliva'; render(); break;
+    case 'finishonb': S.phase='connect'; render(); break;
     /* 唾液主线 */
     case 'schedule': S.saliva=1; S.phase='collect'; render(); break;
     case 'guide': S.stepIndex=0; openSheet('guidance'); break;
@@ -1180,7 +1180,7 @@ document.getElementById('phone').addEventListener('scroll',e=>{ e.target.scrollT
 /* 报告末页 CTA 通过 postMessage 回到主线 */
 window.addEventListener('message',e=>{
   const m=e.data||{}; if(m.aira!=='report-done') return;
-  if(m.which==='first-read'&&S.phase==='firstread'){ if(S.reopenFR){ S.phase='main'; S.tab=0; } else { S.phase='profile'; S.profStep=0; } render(); }
+  if(m.which==='first-read'&&S.phase==='firstread'){ if(S.reopenFR){ S.phase='main'; S.tab=0; } else { S.phase='saliva'; } render(); }
   else if(m.which==='t0'&&S.phase==='t0'){ S.phase='main'; S.tab=2; render(); }
 });
 

@@ -128,7 +128,7 @@ svg text{font-family:var(--sans)}
 
     <section class="page">
       <div class="grp"><span>夜里的恢复</span><span class="cnt"></span></div>
-      <h2>夜里的恢复一周比一周差</h2><div class="mean">夜间 HRV 越高、夜间心率越低，说明身体夜里恢复得越好</div>
+      <h2>夜里的恢复一周比一周差</h2><div class="mean">睡觉时 HRV 越高、心跳越慢，说明身体恢复得越好</div>
       <div class="fog cool"><div class="bg"></div><div class="pad"><svg id="c_night" width="100%" viewBox="0 0 325 420"></svg></div></div>
       <div class="state" id="s_night"></div>
     </section>
@@ -142,8 +142,8 @@ svg text{font-family:var(--sans)}
 
     <section class="page cover">
       <div class="k">下一步</div>
-      <h1>这些是<br>身体的<span class="hl">表现</span></h1>
-      <p>为什么会这样——压力激素、修复储备、生物钟——要从唾液里看。一天五管：醒来、醒后半小时、午饭前、下午、睡前。</p>
+      <h1>你累，<br>手表看到了。<br>为什么累，<span class="hl">要看唾液</span></h1>
+      <p>压力激素有没有按时退下去、身体修复得怎么样、生物钟准不准，这些手表看不到。一天五管唾液，就能看清。</p>
     </section>
 
   </div>
@@ -210,7 +210,7 @@ const walk=[104.6,104.1,103.7,104.3,103.9,104.2,103.6,103.6,101.6,101.2,100.8,10
 
 /* ---------- 01 睡得够不够:睡眠账本 + 入睡用时 ---------- */
 (function(){ const sv=document.getElementById("c_sleep");
-  legend(sv,10,[["实睡","rgba(255,255,255,.55)"],["睡眠债","#FFB85C"],["多睡的","#DCF55A"],["7.5 小时必备睡眠","rgba(255,255,255,.75)","dash"]]);
+  legend(sv,10,[["实际睡的","rgba(255,255,255,.55)"],["睡眠债","#FFB85C"],["多睡的","#DCF55A"],["建议睡 7.5 小时","rgba(255,255,255,.75)","dash"]]);
   const y=plot(sv,{oy:52,H:220,ymin:4,ymax:10,yticks:[4,6,8,10],unit:"睡眠 · 小时"});
   nights.forEach((n,i)=>{ const top=Math.min(n.dur,NEED);
     el(sv,"rect",{x:bx(i),y:y(top),width:BW,height:y(4)-y(top),rx:2.4,fill:"rgba(255,255,255,.55)"});
@@ -288,7 +288,7 @@ const walk=[104.6,104.1,103.7,104.3,103.9,104.2,103.6,103.6,101.6,101.2,100.8,10
 
 /* ---------- 04 夜里的恢复:HRV + 夜间心率 + 休息日 ---------- */
 (function(){ const sv=document.getElementById("c_night");
-  legend(sv,10,[["工作日","#7ACBFF","dot"],["休息日","#DCF55A","dot"],["典型范围","rgba(255,255,255,.22)"],["趋势","rgba(255,255,255,.7)","dash"]]);
+  legend(sv,10,[["工作日","#7ACBFF","dot"],["休息日","#DCF55A","dot"],["你平时的范围","rgba(255,255,255,.22)"],["趋势","rgba(255,255,255,.7)","dash"]]);
   function series(arr,{oy,H,ymin,ymax,yticks,unit,band,hint,color,dates}){
     const y=plot(sv,{oy,H,ymin,ymax,yticks,unit,dates});
     el(sv,"rect",{x:X0,y:y(band[1]),width:W,height:y(band[0])-y(band[1]),fill:"rgba(255,255,255,.08)"});
@@ -309,12 +309,12 @@ const walk=[104.6,104.1,103.7,104.3,103.9,104.2,103.6,103.6,101.6,101.2,100.8,10
 (function(){ const sv=document.getElementById("c_move");
   /* 近 7 天活动量 */
   const last=Math.round(roll[29]), GW=W+X0, gx=v=>v/180*GW;
-  txt(sv,0,12,"近 7 天中高强度运动",{fill:"rgba(255,255,255,.62)","font-weight":600});
+  txt(sv,0,12,"近 7 天快走及以上的运动",{fill:"rgba(255,255,255,.62)","font-weight":600});
   txt(sv,GW,12,`${last} / 150 分钟`,{"text-anchor":"end",fill:"#E7FA9A","font-weight":700});
   el(sv,"rect",{x:0,y:22,width:GW,height:10,rx:5,fill:"rgba(255,255,255,.1)"});
   el(sv,"rect",{x:0,y:22,width:gx(last),height:10,rx:5,fill:"#DCF55A"});
   el(sv,"line",{x1:gx(150),y1:17,x2:gx(150),y2:37,stroke:"rgba(255,255,255,.85)","stroke-width":1.4});
-  txt(sv,gx(150),48,"推荐",{"text-anchor":"middle"});
+  txt(sv,gx(150),48,"建议 150 分钟",{"text-anchor":"middle"});
   /* 运动热力图:星期 × 时段 */
   const hy=86, rows=["一","二","三","四","五","六","日"], cols=9, cw=W/cols, ch=17;
   txt(sv,0,hy-14,"什么时候运动 · 30 天累计分钟",{fill:"rgba(255,255,255,.62)","font-weight":600});

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Aira — T0 · 样板</title>
+<title>Aira — 阶段解读 · 样板</title>
 <style>
 :root{
   --page:#EDEDEC; --ink:#101011; --ink2:#6B6B6E; --ink3:#A1A1A5; --hair:#E0E0DE;
@@ -91,29 +91,21 @@ svg text{font-family:var(--sans)}
 .bmg{display:flex;align-items:center;gap:8px;margin:12px 0 2px;font-size:10px;font-weight:700;letter-spacing:1.2px}
 .bmg:first-child{margin-top:0}.bmg i{width:6px;height:6px;border-radius:50%}.bmg span{color:rgba(255,255,255,.4);font-weight:500;letter-spacing:0}
 .bmrow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 0;border:0;background:none;color:#fff;text-align:left;cursor:pointer;font-family:var(--sans);border-top:1px solid rgba(255,255,255,.07)}
-.bmrow .nm{width:92px;flex:none}.bmrow .nm b{display:block;font-size:12.5px;font-weight:600}.bmrow .nm small{display:block;font-size:8.5px;color:rgba(255,255,255,.4);margin-top:1px}
+.bmrow .nm{width:118px;flex:none}.bmrow .nm b{display:block;font-size:12.5px;font-weight:600}.bmrow .nm small{display:block;font-size:8.5px;color:rgba(255,255,255,.4);margin-top:1px}
 .bmrow .bar{position:relative;flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.08)}
 .bmrow .bar .ref{position:absolute;top:0;bottom:0;border-radius:3px;background:rgba(255,255,255,.3)}
 .bmrow .bar .dot{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:2px solid #151514}
 .bmrow .st{flex:none;width:58px;text-align:right;font-size:11px;font-weight:700}.bmrow .st small{display:block;font-size:9px;font-weight:500;color:rgba(255,255,255,.45)}
 .bmd{display:none;font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.72);padding:2px 0 10px;margin-top:-2px}.bmd.on{display:block}
 .bmd b{color:#BFE4FF;font-weight:600}
-.ft{display:flex;gap:14px;align-items:center}
-.ftx{flex:1;min-width:0}.ftx .k{font-size:10px;font-weight:700;letter-spacing:1.4px;color:rgba(255,255,255,.4)}
-.ftx .v{margin-top:5px}.ftx .d{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:5px;line-height:1.5}
-.pill{display:inline-block;padding:4px 11px;border-radius:99px;font-size:13px;font-weight:650}
+.fg{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-top:10px}
+.fg>div{text-align:center}.fg .k{display:block;font-size:10px;font-weight:700;letter-spacing:1.2px;color:rgba(255,255,255,.4);margin-bottom:6px}
+.fg .ar{color:rgba(255,255,255,.5);font-size:16px;padding-bottom:6px}
+.pill{display:inline-block;padding:5px 12px;border-radius:99px;font-size:13.5px;font-weight:650}
 .pill.warn{background:rgba(255,184,92,.18);color:#FFD9A0;border:1px solid rgba(255,184,92,.5)}
 .pill.good{background:rgba(220,245,90,.16);color:#E7FA9A;border:1px solid rgba(220,245,90,.45)}
-.gl{display:flex;margin-top:14px;border-top:1px solid rgba(255,255,255,.12)}
-.gl>div{flex:1;padding:10px 0 0 10px}.gl>div:first-child{padding-left:0}.gl>div+div{border-left:1px solid rgba(255,255,255,.12)}
-.gl span{display:block;font-size:10px;color:rgba(255,255,255,.4)}.gl b{display:block;font-size:14px;font-weight:650;margin-top:4px;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.5)}
-.gl em{font-style:normal;color:#FFD9A0}.gl i{font-style:normal;color:#E7FA9A}
-.plh{font-size:10px;font-weight:700;letter-spacing:1.4px;color:rgba(255,255,255,.4);margin:16px 0 4px}
-.pr{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid rgba(255,255,255,.08)}
-.pr .sc{width:40px;flex:none}.pr .sc b{display:block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}.pr .sc small{display:block;font-size:8.5px;color:rgba(255,255,255,.45);margin-top:3px}
-.plx{font-size:10.5px;color:rgba(255,255,255,.45);margin:-1px 0 4px}
-.pr .t{flex:1;font-size:13.5px;font-weight:600}.pr .t small{display:block;font-size:10.5px;font-weight:400;color:rgba(255,255,255,.45);margin-top:1px}
-.pr .tag{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:99px;color:#101011}
+.gx{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:15px;font-weight:650}
+.gx i{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4)}
 </style>
 <style>
 input.scrub{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;touch-action:none}
@@ -136,7 +128,7 @@ input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:
 .bmg{display:flex;align-items:center;gap:8px;margin:12px 0 2px;font-size:10px;font-weight:700;letter-spacing:1.2px}
 .bmg:first-child{margin-top:0}.bmg i{width:6px;height:6px;border-radius:50%}.bmg span{color:rgba(255,255,255,.4);font-weight:500;letter-spacing:0}
 .bmrow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 0;border:0;background:none;color:#fff;text-align:left;cursor:pointer;font-family:var(--sans);border-top:1px solid rgba(255,255,255,.07)}
-.bmrow .nm{width:92px;flex:none}.bmrow .nm b{display:block;font-size:12.5px;font-weight:600}.bmrow .nm small{display:block;font-size:8.5px;color:rgba(255,255,255,.4);margin-top:1px}
+.bmrow .nm{width:118px;flex:none}.bmrow .nm b{display:block;font-size:12.5px;font-weight:600}.bmrow .nm small{display:block;font-size:8.5px;color:rgba(255,255,255,.4);margin-top:1px}
 .bmrow .bar{position:relative;flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.08)}
 .bmrow .bar .ref{position:absolute;top:0;bottom:0;border-radius:3px;background:rgba(255,255,255,.3)}
 .bmrow .bar .dot{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:2px solid #151514}
@@ -151,8 +143,8 @@ input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:
   <div id="deck">
 
     <section class="page">
-      <div class="grp"><span>综合</span><span class="cnt"></span></div>
-      <h2>你落进了「高负荷」</h2><div class="mean">压力高、恢复差。横轴是身体承受的压力，纵轴是恢复得怎么样</div>
+      <div class="grp"><span>你的状态</span><span class="cnt"></span></div>
+      <h2>你现在压力大，恢复跟不上</h2><div class="mean">横轴是身体最近承受的压力，纵轴是身体恢复得怎么样</div>
       <div class="fog flat"><div class="bg"></div><div class="pad">
         <div class="qmode" id="qMode"><i></i><button data-m="0">只看手表</button><button data-m="1">加上唾液</button></div>
         <svg id="quad" width="100%" viewBox="0 0 325 268"></svg>
@@ -164,51 +156,43 @@ input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:
 
     <section class="page">
       <div class="grp"><span>唾液</span><span class="cnt"></span></div>
-      <h2>唾液里，5 个信号偏离</h2><div class="mean">一天五管测了 6 个信号，问题集中在两处。点一行，看它对上了手表里的哪条</div>
+      <h2>唾液里看到了两个问题</h2><div class="mean">一天五管，看了 6 样东西。点一行，看看它和你最近的状态有什么关系</div>
       <div class="fog flat"><div class="bg"></div><div class="pad" id="bmList"></div></div>
-      <div class="state">压力激素<b>退不下来</b>，修复和免疫<b>补不回来</b>；生物钟还准。</div>
+      <div class="state">压力激素一直<b>退不下来</b>，身体修复也<b>跟不上</b>。好在生物钟是准的。</div>
     </section>
 
     <section class="page">
       <div class="grp"><span>压力</span><span class="cnt"></span></div>
-      <h2>压力激素白天退不下去</h2><div class="mean">压力激素（皮质醇）本该早上高、晚上低</div>
-      <div class="fog flat"><div class="bg"></div><div class="pad"><svg id="c_cort" width="100%" viewBox="0 0 325 310"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">紧绷集中在 14–17 点和 21 点后</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">下午 1.9、睡前 1.3，都高过参考上限</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">累不只是没睡够，是压力激素一直没退</span></div></div></div></div>
-      <div class="state">早上升不上去，<b>下午和睡前又退不下来</b>。</div>
+      <h2>压力激素白天退不下去</h2><div class="mean">正常来说，压力激素（皮质醇）早上最高，到晚上就该退下去</div>
+      <div class="fog flat"><div class="bg"></div><div class="pad"><svg id="c_cort" width="100%" viewBox="0 0 325 310"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">紧绷集中在 14–17 点和 21 点后</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">下午和睡前的压力激素，都比正常范围高</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">累不只是没睡够，是压力激素一直没退</span></div></div></div></div>
+      <div class="state">早上该升高的时候没升起来，到了下午和晚上又<b>一直退不下去</b>——难怪白天总是绷着。</div>
     </section>
 
     <section class="page">
       <div class="grp"><span>恢复</span><span class="cnt"></span></div>
-      <h2>身体在消耗，修复跟不上</h2><div class="mean">夜里的放松度 × 唾液里的修复激素</div>
-      <div class="fog cool"><div class="bg"></div><div class="pad"><svg id="c_rec" width="100%" viewBox="0 0 325 204"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">HRV 每周降 1.8 毫秒，周末也没回弹</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">修复激素 DHEA 偏低，免疫防线 sIgA 也变薄</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">身体在用储备扛，修复跟不上——不是练多了</span></div></div></div></div>
-      <div class="state">训练一直没加量——<b>消耗来自训练之外</b>。</div>
+      <h2>身体一直在消耗，补得太慢</h2><div class="mean">睡觉时身体放松得怎么样，修复激素够不够</div>
+      <div class="fog cool"><div class="bg"></div><div class="pad"><svg id="c_rec" width="100%" viewBox="0 0 325 204"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">睡觉时越来越难放松，周末也没好转</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">负责修复的激素偏低，抵抗力也弱了</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">身体在靠老本撑着，而且不是练多了</span></div></div></div></div>
+      <div class="state">你并没有多练，<b>这份累来自工作和生活本身</b>。</div>
     </section>
 
     <section class="page">
       <div class="grp"><span>睡眠</span><span class="cnt"></span></div>
-      <h2>入睡难，不怪生物钟</h2><div class="mean">褪黑素告诉我们，身体几点准备好入睡</div>
-      <div class="fog viol"><div class="bg"></div><div class="pad"><svg id="c_clock" width="100%" viewBox="0 0 325 296"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">躺下平均 38 分钟才睡着</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">褪黑素 22:05 准时升起，睡前皮质醇却还高</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">不用调生物钟，要把睡前的压力降下来</span></div></div></div></div>
-      <div class="state">身体零点就准备好了，你却要<b>醒着躺半个多小时</b>。</div>
+      <h2>入睡难，不怪生物钟</h2><div class="mean">褪黑素是让人犯困的激素，从它能看出你的身体几点想睡</div>
+      <div class="fog viol"><div class="bg"></div><div class="pad"><svg id="c_clock" width="100%" viewBox="0 0 325 296"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">躺下平均 38 分钟才睡着</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">晚上 10 点身体就开始犯困了，但睡前压力激素还很高</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">不用调生物钟，要把睡前的压力降下来</span></div></div></div></div>
+      <div class="state">身体零点就准备好睡了，你却要<b>醒着躺半个多小时</b>——是那会儿还没放松下来。</div>
     </section>
 
     <section class="page">
       <div class="grp"><span>下一步</span><span class="cnt"></span></div>
-      <h2>四周，回到「扛得住」</h2><div class="mean">你现在的状态、恢复目标，和为你准备的计划</div>
+      <h2>先把压力降下来</h2><div class="mean">接下来四周，就做这一件事</div>
       <div class="fog warm"><div class="bg"></div><div class="pad">
-        <div class="ft">
-          <svg id="miniq" width="104" height="104" viewBox="0 0 104 104"></svg>
-          <div class="ftx">
-            <div class="k">现在</div><div class="v"><span class="pill warn">高负荷</span></div>
-            <div class="d">压力激素退不下来，修复激素补不回来</div>
-            <div class="k" style="margin-top:12px">四周后的目标</div><div class="v"><span class="pill good">有压力但扛得住</span></div>
-            <div class="d">11月19日复测，同样的图再看一次</div></div></div>
-        <div class="gl">
-          <div><span>入睡</span><b><em>38</em> → <i>20</i> 分</b></div>
-          <div><span>白天紧绷</span><b><em>2</em> → <i>1.3</i> 时</b></div>
-          <div><span>睡眠债</span><b><em>6</em> → <i>2</i> 时</b></div></div>
-        <div class="plh">为你准备的恢复计划 · 按影响分排序</div><div class="plx">影响分满分 10，越高越能把你往目标推。</div>
-        <div id="plist"></div>
+        <svg id="miniq" width="100%" viewBox="0 0 280 200"></svg>
+        <div class="fg"><div><span class="k">现在</span><span class="pill warn">高负荷</span></div>
+          <span class="ar">→</span>
+          <div><span class="k">四周后</span><span class="pill good">负荷可控</span></div></div>
+        <div class="gx">降低压力 <i></i> 提升恢复</div>
       </div></div>
-      <div class="state">计划已经排进 Aira，<b>挑一条先开始</b>。</div>
+      <div class="state">计划已经排好了，<b>四周后再测一次</b>，看看走了多远。</div>
     </section>
 
   </div>
@@ -263,7 +247,7 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
     HW.push([A[k][1]+(A[k+1][1]-A[k][1])*t+1.8*Math.sin(i*1.7), A[k][2]+(A[k+1][2]-A[k][2])*t+1.8*Math.cos(i*1.3)]); }
   const DS=5, DR=-7;
   const CB=HW.map((p,i)=> i<SAMPLE ? p : [p[0]+DS, p[1]+DR]);
-  const Q={tl:"状态稳定",tr:"有压力但扛得住",bl:"恢复不足",br:"高负荷"};
+  const Q={tl:"状态稳定",tr:"负荷可控",bl:"恢复不足",br:"高负荷"};
   const quadOf=([s,r])=> r>=50 ? (s<50?"tl":"tr") : (s<50?"bl":"br");
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   document.getElementById("d0").textContent=md(0); document.getElementById("d1").textContent=md(29);
@@ -318,9 +302,9 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
     const lbl=!withS?md(d):em>.5?"加上唾液":em<.02?"只看手表":"";
     if(lbl) txt(sv,cx+(left?12:-12),cy+(withS&&em>.5?16:3.5),lbl,{"text-anchor":left?"start":"end","font-size":9.5,"font-weight":700,fill:"#E7FA9A"});
     document.getElementById("qDate").textContent=md(d);
-    S("s_quad", !withS ? `${md(d)}，你在<b>「${Q[q]}」</b>。拖动日期，看这 30 天怎么走过来。`
-      : em<.5 ? `只看手表，你还在<b>「${Q[qh]}」</b>。切到「加上唾液」看看。`
-      : qh!==q ? `只看手表还在「${Q[qh]}」，<b>加上唾液就落进了「${Q[q]}」</b>——先减负，别再加码。`
+    S("s_quad", !withS ? `${md(d)}，你在<b>「${Q[q]}」</b>。拖一拖日期，看看这个月是怎么走过来的。`
+      : em<.5 ? `只看手表，你的负荷好像还<b>可控</b>。切到「加上唾液」再看看。`
+      : qh!==q ? `只看手表，你的负荷好像还可控；加上唾液才看清，<b>身体其实已经在「${Q[q]}」</b>。这段时间先减减负，别再给自己加码。`
                : `加上唾液，你在<b>「${Q[q]}」</b>。`);
     modeEl.classList.toggle("on",mT>.5);
     [...modeEl.querySelectorAll("button")].forEach(b=>b.classList.toggle("cur",(+b.dataset.m)===(mT>.5?1:0)));
@@ -347,14 +331,14 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
   const box=document.getElementById("bmList");
   const G=[
     {g:"退不下来",sub:"压力激素",c:"#FFB85C",rows:[
-      {n:"早上的启动",t:"CAR",v:19,lo:50,hi:75,min:0,max:100,st:"偏低",val:"+19%",d:"早上身体没被真正叫醒。手表上：<b>周一早上最难起，周末作息往后漂近 2 小时</b>。"},
-      {n:"白天的回落",t:"日内斜率",v:75,lo:85,hi:100,min:40,max:100,st:"偏平",val:"降 75%",d:"压力激素白天降得太慢。手表上：<b>紧绷集中在 14–17 点和 21 点后</b>。"},
-      {n:"睡前的残留",t:"睡前皮质醇",v:1.3,lo:.2,hi:.6,min:0,max:2,st:"偏高",val:"1.3",d:"睡前身体还在戒备。手表上：<b>躺下平均 38 分钟才睡着</b>。"}]},
+      {n:"醒来后的压力激素",t:"正常醒后半小时会明显升高，帮你清醒过来",v:19,lo:50,hi:75,min:0,max:100,st:"升得不够",val:"只升了 19%",d:"早上身体没真正醒过来，难怪<b>周一最难起，一到周末就想往后睡</b>。"},
+      {n:"白天的压力激素",t:"正常从早到晚一路往下降",v:75,lo:85,hi:100,min:40,max:100,st:"降得太慢",val:"降了 75%",d:"压力激素白天降得太慢，所以你<b>下午和晚上总是绷着</b>。"},
+      {n:"睡前的压力激素",t:"正常睡前应该降到很低",v:1.3,lo:.2,hi:.6,min:0,max:2,st:"偏高",val:"正常的 2 倍多",d:"到了睡前，身体还在戒备，所以<b>躺下要半个多小时才睡着</b>。"}]},
     {g:"补不回来",sub:"修复与免疫",c:"#FFB85C",rows:[
-      {n:"修复余力",t:"DHEA / 皮质醇",v:.19,lo:.25,hi:.6,min:0,max:.8,st:"偏低",val:"0.19",d:"扛压的储备在变薄。手表上：<b>夜间 HRV 每周降 1.8 毫秒</b>。"},
-      {n:"免疫防线",t:"sIgA",v:62,lo:70,hi:300,min:0,max:360,st:"偏低",val:"62",d:"口腔和呼吸道的防线变薄，高负荷时常见。手表上：<b>呼吸和腕温暂时还正常</b>。"}]},
+      {n:"修复激素",t:"帮身体修复、扛住压力的激素",v:.19,lo:.25,hi:.6,min:0,max:.8,st:"偏低",val:"比正常低",d:"身体用来扛压的底子在变薄，<b>睡觉时也越来越难放松</b>。"},
+      {n:"抵抗力",t:"口腔里的抗体，挡住感冒的第一道防线",v:62,lo:70,hi:300,min:0,max:360,st:"偏低",val:"比正常低",d:"抵抗力有点弱了，压力大的时候常这样。<b>这阵子更容易感冒</b>，多留意。"}]},
     {g:"还守得住",sub:"生物钟",c:"#DCF55A",rows:[
-      {n:"生物钟",t:"褪黑素起始",v:22.08,lo:21.5,hi:23.5,min:20,max:26,st:"准时",val:"22:05",d:"身体按时在零点前后准备好入睡——<b>入睡难不怪生物钟</b>。"}]},
+      {n:"生物钟",t:"身体几点开始犯困",v:22.08,lo:21.5,hi:23.5,min:20,max:26,st:"准时",val:"晚上 10 点",d:"身体每晚 10 点就开始犯困、零点前后就准备好睡了，<b>入睡难不怪生物钟</b>。"}]},
   ];
   let open=null;
   const pct=(v,r)=>Math.max(0,Math.min(100,(v-r.min)/(r.max-r.min)*100));
@@ -366,7 +350,7 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
             <i class="dot" style="left:${pct(r.v,r)}%;background:${g.c}"></i></span>
           <span class="st" style="color:${bad?"#FFD9A0":"#E7FA9A"}">${r.st}<small>${r.val}</small></span></button>
           <div class="bmd ${open===k?"on":""}">${r.d}</div>`; }).join("")).join("")+
-      `<div style="font-size:9px;color:rgba(255,255,255,.38);margin-top:8px">灰色段 = 参考区间（首测对照参考；复测起和你自己比）</div>`;
+      `<div style="font-size:9px;color:rgba(255,255,255,.38);margin-top:8px">灰色是大多数人的正常范围</div>`;
   }
   box.addEventListener("click",e=>{ const b=e.target.closest(".bmrow"); if(!b) return; open=open===b.dataset.k?null:b.dataset.k; draw(); });
   draw();
@@ -385,7 +369,7 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
   el(sv,"polygon",{points:T.map((t,i)=>`${x(t)},${cy(hi[i])}`).join(" ")+" "+T.slice().reverse().map((t,j)=>`${x(t)},${cy(lo[T.length-1-j])}`).join(" "),fill:"rgba(255,255,255,.14)"});
   el(sv,"polyline",{points:T.map((t,i)=>`${x(t)},${cy(you[i])}`).join(" "),fill:"none",stroke:"#FFB85C","stroke-width":2.2,"stroke-linejoin":"round"});
   T.forEach((t,i)=>el(sv,"circle",{cx:x(t),cy:cy(you[i]),r:4,fill:"#FFB85C",stroke:"#151514","stroke-width":2}));
-  legend(sv,[["你 · 10/16","#FFB85C"],["参考区间","rgba(255,255,255,.3)"]]);
+  legend(sv,[["你 · 10/16","#FFB85C"],["正常范围","rgba(255,255,255,.3)"]]);
   txt(sv,0,164,"紧绷 · 30 天平均分钟",{fill:"rgba(255,255,255,.6)","font-weight":600});
   const BY=172, BH=96, mins=[2,3,4,6,5,4,3,8,16,20,18,12,7,5,9,18,22,14], bw=W/18-3, by=v=>BY+BH-v/24*BH;
   [0,10,20].forEach(t=>txt(sv,X0-6,by(t)+3,t,{"text-anchor":"end"}));
@@ -430,22 +414,23 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
   legend(sv,[["醒着躺","#FFB85C"],["工作日","rgba(255,255,255,.6)"],["周末","#DCF55A"]]);
 })();
 
-/* ---------- 下一步:现在 → 目标 + 恢复计划 ---------- */
+/* ---------- 下一步:现在 → 目标 ---------- */
 (function(){
-  const sv=document.getElementById("miniq"), S0=6, W=92;
-  el(sv,"rect",{x:S0,y:S0,width:W,height:W,rx:12,fill:"rgba(255,255,255,.05)",stroke:"rgba(255,255,255,.12)"});
-  el(sv,"rect",{x:S0+W/2,y:S0+W/2,width:W/2,height:W/2,fill:"rgba(255,184,92,.16)"});
-  el(sv,"rect",{x:S0+W/2,y:S0,width:W/2,height:W/2,fill:"rgba(220,245,90,.10)"});
-  el(sv,"line",{x1:S0+W/2,y1:S0,x2:S0+W/2,y2:S0+W,stroke:"rgba(255,255,255,.18)","stroke-dasharray":"2 3"});
-  el(sv,"line",{x1:S0,y1:S0+W/2,x2:S0+W,y2:S0+W/2,stroke:"rgba(255,255,255,.18)","stroke-dasharray":"2 3"});
-  const now=[82,72], goal=[66,32];
-  el(sv,"path",{d:`M${now[0]-3} ${now[1]-8} Q ${now[0]-14} ${(now[1]+goal[1])/2} ${goal[0]+2} ${goal[1]+9}`,fill:"none",stroke:"#DCF55A","stroke-width":1.8,"stroke-dasharray":"3 3"});
-  el(sv,"circle",{cx:goal[0],cy:goal[1],r:7,fill:"none",stroke:"#DCF55A","stroke-width":1.8});
-  el(sv,"circle",{cx:now[0],cy:now[1],r:6,fill:"#FFB85C",stroke:"#151514","stroke-width":2});
-  const P=[[9.2,"23:00 后放下工作和手机","每晚","入睡","#B79BFF"],[8.6,"提前 30 分钟上床","每晚 00:15","睡眠债","#7ACBFF"],
-           [7.8,"下午离开工位走 15 分钟","工作日 15:00","白天紧绷","#FFB85C"],[7.1,"睡前 10 分钟缓慢呼吸","工作日 23:50","入睡","#B79BFF"]];
-  document.getElementById("plist").innerHTML=P.map(([sc,t,w,tag,c])=>`<div class="pr"><span class="sc"><b style="color:${c}">${sc}</b><small>影响分</small></span>
-    <span class="t">${t}<small>${w}</small></span><span class="tag" style="background:${c}">${tag}</span></div>`).join("");
+  const sv=document.getElementById("miniq"), X0=50, Y0=8, W=180, H=172;
+  const q=(x,y,f)=>el(sv,"rect",{x,y,width:W/2,height:H/2,fill:f});
+  el(sv,"rect",{x:X0,y:Y0,width:W,height:H,rx:16,fill:"rgba(255,255,255,.04)",stroke:"rgba(255,255,255,.12)"});
+  q(X0+W/2,Y0+H/2,"rgba(255,184,92,.16)"); q(X0+W/2,Y0,"rgba(220,245,90,.10)");
+  el(sv,"line",{x1:X0+W/2,y1:Y0,x2:X0+W/2,y2:Y0+H,stroke:"rgba(255,255,255,.18)","stroke-dasharray":"3 4"});
+  el(sv,"line",{x1:X0,y1:Y0+H/2,x2:X0+W,y2:Y0+H/2,stroke:"rgba(255,255,255,.18)","stroke-dasharray":"3 4"});
+  txt(sv,X0+W-8,Y0+H-10,"高负荷",{"text-anchor":"end","font-size":10,"font-weight":700,fill:"#FFD9A0"});
+  txt(sv,X0+W-8,Y0+16,"负荷可控",{"text-anchor":"end","font-size":10,"font-weight":700,fill:"#E7FA9A"});
+  txt(sv,X0-8,Y0+12,"恢复 ↑",{"text-anchor":"end","font-size":9});
+  txt(sv,X0+W,Y0+H+12,"压力 →",{"text-anchor":"end","font-size":9});
+  const now=[X0+W*.78,Y0+H*.7], goal=[X0+W*.6,Y0+H*.3];
+  el(sv,"path",{d:`M${now[0]} ${now[1]-10} Q ${now[0]-34} ${(now[1]+goal[1])/2} ${goal[0]+8} ${goal[1]+8}`,fill:"none",stroke:"#DCF55A","stroke-width":2,"stroke-dasharray":"4 4"});
+  el(sv,"circle",{cx:goal[0],cy:goal[1],r:9,fill:"none",stroke:"#DCF55A","stroke-width":2});
+  el(sv,"circle",{cx:now[0],cy:now[1],r:13,fill:"rgba(255,184,92,.2)"});
+  el(sv,"circle",{cx:now[0],cy:now[1],r:7,fill:"#FFB85C",stroke:"#151514","stroke-width":2});
 })();
 
 /* ---------- 翻页 ---------- */
