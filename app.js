@@ -268,6 +268,7 @@ function render(){
   t0.classList.toggle('show', S.phase==='t0');
   t0.classList.toggle('reopen', S.phase==='t0' && S.reopenT0);
   try{ document.getElementById('t0frame').contentDocument.body.classList.toggle('closable', S.phase==='t0' && S.reopenT0); }catch(e){}
+  syncT0Sex();
   if(S.phase!==S.entered){
     S.entered=S.phase;
     if(S.phase==='firstread') reportGo('frframe',0);
@@ -298,6 +299,7 @@ function celebrate(d,n){
   c.classList.add('show'); clearTimeout(celeT); celeT=setTimeout(()=>c.classList.remove('show'),2600);
 }
 let celeT=null;
+function syncT0Sex(){ try{ document.getElementById('t0frame').contentDocument.body.classList.toggle('sex-m', S.sex===1); }catch(e){} }
 function reportGo(id,i){ try{ document.getElementById(id).contentWindow.goTo(i); }catch(e){} }
 
 /* ---- 1 Welcome ---- */
@@ -474,7 +476,7 @@ const INTROS={
              ['夜里','夜里的恢复一周比一周差'],['运动','运动有规律，量还差一点']]},
   t0:{kicker:'阶段解读 · 30 天手表数据 + 10月16日唾液', l1:'手表数据加上唾液，', l2:'看清了你为什么累。',
       sub:'首读看到你最近睡不够、白天总绷着、夜里恢复变差。这次加上一天的唾液，找到了背后的原因。', to:'t0',
-      heads:[['状态','你现在压力大，恢复跟不上'],['唾液','唾液里看到了两个问题'],['压力','压力激素白天退不下去'],
+      heads:[['状态','你现在压力大，恢复跟不上'],['压力','压力激素白天退不下去'],
              ['恢复','身体一直在消耗，补得太慢'],['睡眠','入睡难，不怪生物钟']]},
 };
 function vIntro(k){
@@ -817,8 +819,8 @@ function vPlan(){
 
     <div class="fog cool" style="margin-top:15px"><div class="bg"></div><div class="pad">
       ${cardHead('spark','这四周的目标','来自阶段解读 · 四周后再测','高负荷','warn')}
-      <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:12px">先从睡好觉开始</div>
-      <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:6px">晚上早点放下工作，躺下能更快睡着，欠的觉也能慢慢补回来。睡好了，白天自然轻松些。</div>
+      <div style="font-size:17px;font-weight:600;line-height:1.5;margin-top:12px">调节睡前压力节律，改善入睡困难</div>
+      <div class="zh-loose" style="font-size:13px;color:var(--onD2);margin-top:6px">优化睡前节律，缩短入睡所需时间，并逐步修复近期的睡眠缺失。夜间恢复质量提升后，日间的紧绷感也会随之缓解。</div>
       <div class="row" style="margin-top:14px;border-top:1px solid var(--hairD)">
         ${met.map(([k,a,b,u],i)=>`<div style="flex:1;padding:11px 0 0 ${i?'12px':'0'};${i?'border-left:1px solid var(--hairD)':''}">
           <div style="font-size:10px;color:var(--onD3)">${k}</div>
@@ -1166,11 +1168,13 @@ function wireScreen(){
 function patchReport(id){
   const f=document.getElementById(id);
   const go=()=>{ try{
+    if(id==='t0frame') syncT0Sex();
     const d=f.contentDocument; if(!d||!d.head||d.getElementById('host-patch')) return;
     if(id==='frframe') d.body.dataset.cta=S.reopenFR?'回到首页':'继续';
     const st=d.createElement('style'); st.id='host-patch';
     st.textContent='#phone{width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important}'+
       '#bars{top:max(30px,env(safe-area-inset-top))!important}.closable #bars{right:62px!important}.page{padding-top:max(64px,calc(env(safe-area-inset-top) + 44px))!important}';
+    if(id==='t0frame') st.textContent+='#phone{--report-header:max(56px,calc(env(safe-area-inset-top) + 26px))}.page{padding-top:8px!important}';
     d.head.appendChild(st);
   }catch(e){} };
   f.addEventListener('load',go); go();

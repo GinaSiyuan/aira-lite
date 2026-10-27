@@ -6,6 +6,8 @@
 <title>Aira — 阶段解读 · 样板</title>
 <style>
 :root{
+  --report-header:max(44px,calc(env(safe-area-inset-top,0px) + 26px));
+  --report-footer:calc(94px + env(safe-area-inset-bottom,0px));
   --page:#EDEDEC; --ink:#101011; --ink2:#6B6B6E; --ink3:#A1A1A5; --hair:#E0E0DE;
   --onD2:rgba(255,255,255,.58); --onD3:rgba(255,255,255,.34); --hairD:rgba(255,255,255,.12);
   --lime:#DCF55A; --coral:#FF8A5B; --amber:#FFB85C; --sky:#7ACBFF; --violet:#B79BFF;
@@ -25,9 +27,44 @@ body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);-webkit-font-sm
 #bars i.done::after,#bars i.cur::after{content:"";position:absolute;inset:0;background:var(--ink)}
 
 /* 翻页 */
-#deck{display:flex;height:100%;transition:transform .5s cubic-bezier(.3,.9,.3,1);touch-action:pan-y}
-.page{flex:0 0 100%;height:100%;padding:52px 22px 104px;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none}
+/* Clip moving pages inside a viewport separate from the fixed header and footer. */
+#report-viewport{position:absolute;inset:var(--report-header) 0 var(--report-footer);overflow:clip}
+#deck{width:100%;display:flex;height:100%;transition:transform .5s cubic-bezier(.3,.9,.3,1);touch-action:pan-y}
+.page{flex:0 0 100%;height:100%;padding:8px 22px 12px;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none}
 .page::-webkit-scrollbar{display:none}
+.page>*{flex:none}
+#c_clock .sg{opacity:0;transition:opacity .5s}
+#c_clock .sg.on{opacity:.5}#c_clock .sg.cur,#c_clock[data-step="4"] .sg.on{opacity:1}
+#c_clock .draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1) .15s}
+#c_clock .sg.on .draw{stroke-dashoffset:0}
+#c_clock .pop{transform:scale(0);transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.3,1.6,.5,1) .9s}
+#c_clock .sg.on .pop{transform:none}
+.sstep{margin-top:6px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06)}
+.sstep .cap{min-height:42px;font-size:13px;line-height:1.62;color:rgba(255,255,255,.88)}
+.sstep .cap b{display:inline-block;margin-right:6px;padding:1px 7px;border-radius:99px;background:rgba(220,245,90,.16);color:#E7FA9A;font-size:10.5px;font-weight:700;vertical-align:1px}
+.sctl{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.sdots{display:flex;gap:6px}
+.sdots button{width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.5);font-size:10.5px;font-weight:700;font-family:var(--sans);cursor:pointer;padding:0;transition:background .3s,color .3s}
+.sdots button.done{background:rgba(255,255,255,.12);color:#fff}
+.sdots button.cur{background:var(--lime);border-color:var(--lime);color:#101011}
+#sleepReplay{border:0;background:none;color:rgba(255,255,255,.62);font-size:12px;font-weight:600;font-family:var(--sans);cursor:pointer;padding:4px 0;visibility:hidden}
+#sleepReplay.show{visibility:visible}
+@media (prefers-reduced-motion:reduce){#c_clock .sg,#c_clock .draw,#c_clock .pop{transition:none}}
+/* 压力页 / 恢复页:进入时依次出现 */
+@keyframes aDraw{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+@keyframes aFade{from{opacity:0}}
+@keyframes aPop{from{transform:scale(0)}}
+@keyframes aGrowY{from{transform:scaleY(0)}}
+@keyframes aGrowX{from{transform:scaleX(0)}}
+@keyframes aSlide{0%{left:var(--from);opacity:0}30%{left:var(--from);opacity:1}}
+.page.on .a-draw{stroke-dasharray:var(--len);animation:aDraw 1.8s cubic-bezier(.4,0,.2,1) var(--d,0s) both}
+.page.on .a-fade{animation:aFade .6s ease var(--d,0s) both}
+.page.on .a-pop{transform-box:fill-box;transform-origin:center;animation:aPop .4s cubic-bezier(.3,1.6,.5,1) var(--d,0s) both}
+.page.on .a-grow{transform-box:fill-box;transform-origin:bottom;animation:aGrowY .5s cubic-bezier(.3,.9,.3,1) var(--d,0s) both}
+.page.on .recovery-markers .ref{transform-origin:left;animation:aGrowX .6s cubic-bezier(.3,.9,.3,1) var(--d,0s) both}
+.page.on .recovery-markers .dot{animation:aSlide .9s cubic-bezier(.5,0,.2,1) var(--d,0s) both}
+.page.on .recovery-markers .st{animation:aFade .5s ease var(--d,0s) both}
+@media (prefers-reduced-motion:reduce){.page.on .a-draw,.page.on .a-fade,.page.on .a-pop,.page.on .a-grow,.page.on .recovery-markers .ref,.page.on .recovery-markers .dot,.page.on .recovery-markers .st{animation:none}}
 .grp{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3);display:flex;justify-content:space-between}
 .page h2{font-size:28px;font-weight:650;letter-spacing:.3px;margin-top:10px}
 .mean{font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.6}
@@ -35,6 +72,7 @@ body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);-webkit-font-sm
 .state b{box-shadow:inset 0 -8px 0 rgba(220,245,90,.85);font-weight:650}
 .page .fog{margin-top:18px;opacity:0;transform:translateY(14px);transition:opacity .5s .12s,transform .6s .12s cubic-bezier(.3,.9,.3,1)}
 .page.on .fog{opacity:1;transform:none}
+.page.on .fog:has(#quad){transition:none}
 
 .cover{justify-content:center}
 .cover .k{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3)}
@@ -43,7 +81,7 @@ body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);-webkit-font-sm
 .cover p{font-size:15px;line-height:1.7;color:var(--ink2)}
 
 /* 底部导航 */
-#nav{position:absolute;left:22px;right:22px;bottom:30px;display:flex;gap:12px;align-items:center;z-index:5}
+#nav{position:absolute;left:22px;right:22px;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;gap:12px;align-items:center;z-index:5}
 #prev{width:52px;height:52px;border-radius:50%;border:1px solid rgba(16,16,17,.14);background:transparent;font-size:18px;color:var(--ink);cursor:pointer;flex:none}
 #next{flex:1;display:flex;align-items:center;gap:14px;background:var(--lime);border-radius:99px;padding:5px 5px 5px 22px;border:0;cursor:pointer;
       box-shadow:0 8px 24px rgba(220,245,90,.3)}
@@ -106,6 +144,7 @@ svg text{font-family:var(--sans)}
 .pill.good{background:rgba(220,245,90,.16);color:#E7FA9A;border:1px solid rgba(220,245,90,.45)}
 .gx{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:15px;font-weight:650}
 .gx i{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4)}
+.kv{display:flex;gap:14px;margin-bottom:10px}.kv>div{flex:1}.kv .k{display:block;font-size:9.5px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.42);margin-bottom:3px;white-space:nowrap}.kv b{font-size:21px;font-weight:650;letter-spacing:-.3px;font-variant-numeric:tabular-nums;white-space:nowrap}.kv b.late{color:#FFD9A0}.kv b small{font-size:11px;font-weight:600;color:rgba(255,255,255,.55);margin-left:2px}
 </style>
 <style>
 input.scrub{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;touch-action:none}
@@ -135,11 +174,30 @@ input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:
 .bmrow .st{flex:none;width:58px;text-align:right;font-size:11px;font-weight:700}.bmrow .st small{display:block;font-size:9px;font-weight:500;color:rgba(255,255,255,.45)}
 .bmd{display:none;font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.72);padding:2px 0 10px;margin-top:-2px}.bmd.on{display:block}
 .bmd b{color:#BFE4FF;font-weight:600}
+.recovery-markers{margin-top:12px}
+.recovery-markers .marker-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px;font-size:12px;line-height:1.5;color:#C2C5BF}
+.recovery-markers .bmrow{display:grid;grid-template-columns:minmax(100px,1.15fr) minmax(64px,1fr) 48px;gap:8px;padding:12px 0;cursor:default}
+.recovery-markers .nm{width:auto;min-width:0}
+.recovery-markers .nm b{font-size:14px;line-height:1.5}
+.recovery-markers .nm small{font-size:12px;line-height:1.55;color:#B8BCB5;margin-top:4px}
+.recovery-markers .bar{width:100%;height:6px}
+.recovery-markers .bar .ref{background:#767B70}
+.recovery-markers .bar .dot{background:#FFB85C}
+.recovery-markers .st{width:auto;color:#FFD9A0;font-size:13px;line-height:1.5}
+.recovery-markers .st small{font-size:12px;color:#B8BCB5}
+.recovery-markers .marker-key{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;line-height:1.5;color:#B8BCB5}
+.recovery-markers .marker-key i{display:inline-block;vertical-align:middle;width:12px;height:6px;border-radius:3px;margin-right:4px;background:#767B70}
+.recovery-markers .marker-key .me{width:7px;height:7px;border-radius:50%;background:#FFB85C}
+/* 男性：睾酮行只在 body.sex-m 时出现；放在最后，不改变已有两行的动画顺序 */
+.recovery-markers .male-only{display:none}
+body.sex-m .recovery-markers .bmrow.male-only{display:grid}
+.recovery-markers .st.in{color:#fff}
 </style>
 </head>
 <body data-report="t0">
 <div id="phone">
   <div id="bars"></div>
+  <div id="report-viewport">
   <div id="deck">
 
     <section class="page">
@@ -155,13 +213,6 @@ input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:
     </section>
 
     <section class="page">
-      <div class="grp"><span>唾液</span><span class="cnt"></span></div>
-      <h2>唾液里看到了两个问题</h2><div class="mean">一天五管，看了 6 样东西。点一行，看看它和你最近的状态有什么关系</div>
-      <div class="fog flat"><div class="bg"></div><div class="pad" id="bmList"></div></div>
-      <div class="state">压力激素一直<b>退不下来</b>，身体修复也<b>跟不上</b>。好在生物钟是准的。</div>
-    </section>
-
-    <section class="page">
       <div class="grp"><span>压力</span><span class="cnt"></span></div>
       <h2>压力激素白天退不下去</h2><div class="mean">正常来说，压力激素（皮质醇）早上最高，到晚上就该退下去</div>
       <div class="fog flat"><div class="bg"></div><div class="pad"><svg id="c_cort" width="100%" viewBox="0 0 325 310"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">紧绷集中在 14–17 点和 21 点后</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">下午和睡前的压力激素，都比正常范围高</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">累不只是没睡够，是压力激素一直没退</span></div></div></div></div>
@@ -171,15 +222,28 @@ input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:
     <section class="page">
       <div class="grp"><span>恢复</span><span class="cnt"></span></div>
       <h2>身体一直在消耗，补得太慢</h2><div class="mean">睡觉时身体放松得怎么样，修复激素够不够</div>
-      <div class="fog cool"><div class="bg"></div><div class="pad"><svg id="c_rec" width="100%" viewBox="0 0 325 204"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">睡觉时越来越难放松，周末也没好转</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">负责修复的激素偏低，抵抗力也弱了</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">身体在靠老本撑着，而且不是练多了</span></div></div></div></div>
+      <div class="fog cool"><div class="bg"></div><div class="pad"><svg id="c_rec" width="100%" viewBox="0 0 325 204"></svg>
+        <section class="recovery-markers" aria-label="唾液修复与免疫指标">
+          <div class="marker-head"><span>唾液 · 修复与免疫</span><span>10月16日 · 演示数据</span></div>
+          <!-- Restore the original saliva overview's demo positions: .19/.8, .25–.6/.8; 62/360, 70–300/360. -->
+          <div class="bmrow"><span class="nm"><b>修复激素</b><small>帮身体修复、扛住压力的激素</small></span><span class="bar" aria-hidden="true"><i class="ref" style="left:31.25%;width:43.75%"></i><i class="dot" style="left:23.75%"></i></span><span class="st">偏低<small>比正常低</small></span></div>
+          <div class="bmrow"><span class="nm"><b>抵抗力</b><small>口腔里的抗体，挡住感冒的第一道防线</small></span><span class="bar" aria-hidden="true"><i class="ref" style="left:19.444444%;width:63.888889%"></i><i class="dot" style="left:17.222222%"></i></span><span class="st">偏低<small>比正常低</small></span></div>
+          <div class="bmrow male-only"><span class="nm"><b>睾酮</b><small>维持肌肉和力量</small></span><span class="bar" aria-hidden="true"><i class="ref" style="left:18.461538%;width:64.615385%"></i><i class="dot" style="left:43.846154%"></i></span><span class="st in">范围内<small>3 天均值</small></span></div>
+          <div class="marker-key"><span><i></i>参考范围</span><span><i class="me"></i>检测位置</span></div>
+        </section>
+        <div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">睡觉时越来越难放松，周末也没好转</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">负责修复的激素偏低，抵抗力也弱了</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">身体在靠老本撑着，而且不是练多了</span></div></div></div></div>
       <div class="state">你并没有多练，<b>这份累来自工作和生活本身</b>。</div>
     </section>
 
     <section class="page">
       <div class="grp"><span>睡眠</span><span class="cnt"></span></div>
-      <h2>入睡难，不怪生物钟</h2><div class="mean">褪黑素是让人犯困的激素，从它能看出你的身体几点想睡</div>
-      <div class="fog viol"><div class="bg"></div><div class="pad"><svg id="c_clock" width="100%" viewBox="0 0 325 296"></svg><div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">躺下平均 38 分钟才睡着</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">晚上 10 点身体就开始犯困了，但睡前压力激素还很高</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">不用调生物钟，要把睡前的压力降下来</span></div></div></div></div>
-      <div class="state">身体零点就准备好睡了，你却要<b>醒着躺半个多小时</b>——是那会儿还没放松下来。</div>
+      <h2>到点想睡，身体却没松下来</h2><div class="mean">用近 30 天的作息推算你的生物钟，再看那一刻的压力激素降下来没有</div>
+      <div class="fog viol"><div class="bg"></div><div class="pad">
+        <svg id="c_clock" width="100%" viewBox="0 0 325 196" data-step="0"></svg>
+        <div class="sstep"><p class="cap" id="sleepCap" aria-live="polite"></p><div class="sctl"><div class="sdots" id="sleepDots"></div><button id="sleepReplay">↻ 重播</button></div></div>
+        <div class="chain"><div class="ln"><span class="src w">手表</span><span class="tx">近 30 晚平均 00:30 才睡着，比生物钟晚了 1 小时</span></div><div class="ln"><span class="src s">唾液</span><span class="tx">23:30 该困时，压力激素还没降到能入睡的水平</span></div><div class="ln res"><span class="src r">所以</span><span class="tx">不用调生物钟，要把睡前的压力降下来</span></div></div>
+      </div></div>
+      <div class="state">身体 23:30 就想睡了，你却要<b>多醒着 1 小时</b>——那会儿压力激素还没降到能入睡的水平。</div>
     </section>
 
     <section class="page">
@@ -195,6 +259,7 @@ input.scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:
       <div class="state">计划已经排好了，<b>四周后再测一次</b>，看看走了多远。</div>
     </section>
 
+  </div>
   </div>
   <div id="nav"><button id="prev" class="hide">←</button><button id="next"><span class="t">下一页</span><span class="knob">→</span></button></div>
 </div>
@@ -244,14 +309,15 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
   const A=[[0,38,68],[8,48,63],[14,58,57],[21,64,53],[29,67,51]], HW=[];
   for(let i=0;i<N;i++){ let k=0; while(k<A.length-2 && i>A[k+1][0]) k++;
     const t=(i-A[k][0])/(A[k+1][0]-A[k][0]);
-    HW.push([A[k][1]+(A[k+1][1]-A[k][1])*t+1.8*Math.sin(i*1.7), A[k][2]+(A[k+1][2]-A[k][2])*t+1.8*Math.cos(i*1.3)]); }
+    const nz=1.8*Math.min(1,(N-1-i)/5);
+    HW.push([A[k][1]+(A[k+1][1]-A[k][1])*t+nz*Math.sin(i*1.7), A[k][2]+(A[k+1][2]-A[k][2])*t+nz*Math.cos(i*1.3)]); }
   const DS=5, DR=-7;
   const CB=HW.map((p,i)=> i<SAMPLE ? p : [p[0]+DS, p[1]+DR]);
   const Q={tl:"状态稳定",tr:"负荷可控",bl:"恢复不足",br:"高负荷"};
   const quadOf=([s,r])=> r>=50 ? (s<50?"tl":"tr") : (s<50?"bl":"br");
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   document.getElementById("d0").textContent=md(0); document.getElementById("d1").textContent=md(29);
-  let pos=29, target=29, m=1, mT=1, ripple=1, raf=null, last=0, revealTimer=null;
+  let pos=29, m=0, mT=0, raf=null, last=0;
   const lerp=(a,f)=>{ const i=Math.floor(f), j=Math.min(29,i+1), t=f-i; return [a[i][0]+(a[j][0]-a[i][0])*t, a[i][1]+(a[j][1]-a[i][1])*t]; };
   const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t];
   const modeEl=document.getElementById("qMode");
@@ -260,8 +326,10 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
     const em=ease(m), d=Math.round(pos), withS=pos>=SAMPLE-.5;
     const hw=lerp(HW,pos), cb=lerp(CB,pos), cur=withS?mix(hw,cb,em):hw, q=quadOf(cur), qh=quadOf(hw);
     /* 落点象限着色 */
-    const qx={tl:[X0,Y0],tr:[px(50),Y0],bl:[X0,py(50)],br:[px(50),py(50)]}[q];
-    el(sv,"rect",{x:qx[0],y:qx[1],width:W/2,height:H/2,fill:q==="br"?"rgba(255,184,92,.13)":"rgba(220,245,90,.06)"});
+    const region=k=>({tl:[X0,Y0],tr:[px(50),Y0],bl:[X0,py(50)],br:[px(50),py(50)]}[k]);
+    const qc=withS?quadOf(cb):qh;
+    const shade=(key,opacity)=>{const [x,y]=region(key);el(sv,"rect",{x,y,width:W/2,height:H/2,fill:key==="br"?"rgba(255,184,92,.13)":"rgba(220,245,90,.06)",opacity});};
+    shade(qh,qh===qc?1:1-em); if(qh!==qc) shade(qc,em);
     [30,40,50,60,70].forEach(v=>{ txt(sv,X0-6,py(v)+3,v,{"text-anchor":"end"}); txt(sv,px(v),Y0+H+14,v,{"text-anchor":"middle"}); });
     el(sv,"line",{x1:px(50),y1:Y0,x2:px(50),y2:Y0+H,stroke:"rgba(255,255,255,.16)","stroke-width":1,"stroke-dasharray":"3 4"});
     el(sv,"line",{x1:X0,y1:py(50),x2:X0+W,y2:py(50),stroke:"rgba(255,255,255,.16)","stroke-width":1,"stroke-dasharray":"3 4"});
@@ -271,88 +339,71 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
     txt(sv,0,Y0-4,"↑ 恢复状态 0–100",{fill:"rgba(255,255,255,.6)","font-weight":600});
     /* 轨迹 */
     const path=a=>a.map(([x,y])=>`${px(x)},${py(y)}`).join(" ");
-    const TR=HW.map((p,i)=> i<SAMPLE ? p : mix(p,CB[i],em));
+    const TR=HW; /* 历史轨迹固定，只移动当前检测点。 */
     el(sv,"polyline",{points:path(TR),fill:"none",stroke:"rgba(255,255,255,.14)","stroke-width":1.3,"stroke-dasharray":"1 4","stroke-linecap":"round"});
-    const walked=TR.slice(0,Math.floor(pos)+1); walked.push(cur);
+    const walked=TR.slice(0,Math.floor(pos)+1); walked.push(hw);
     el(sv,"polyline",{points:path(walked),fill:"none",stroke:"rgba(220,245,90,.5)","stroke-width":1.7,"stroke-linecap":"round","stroke-linejoin":"round"});
     /* 只看手表的位置 + 唾液带来的位移 */
     if(withS && em>.02){
-      const ax=px(hw[0]), ay=py(hw[1]), bx=px(cur[0]), by=py(cur[1]), L=Math.hypot(bx-ax,by-ay);
+      const guide=el(sv,"g",{opacity:em});
+      const ax=px(hw[0]), ay=py(hw[1]), bx=px(cb[0]), by=py(cb[1]), L=Math.hypot(bx-ax,by-ay);
       if(L>14){
         const ux=(bx-ax)/L, uy=(by-ay)/L, sx=ax+ux*8, sy=ay+uy*8, ex=bx-ux*11, ey=by-uy*11;
-        el(sv,"line",{x1:sx,y1:sy,x2:ex,y2:ey,stroke:"#DCF55A","stroke-width":2.2,"stroke-linecap":"round"});
-        el(sv,"path",{d:`M${ex+ux*5} ${ey+uy*5} L${ex-uy*4-ux*2} ${ey+ux*4-uy*2} L${ex+uy*4-ux*2} ${ey-ux*4-uy*2} Z`,fill:"#DCF55A"});
+        el(guide,"line",{x1:sx,y1:sy,x2:ex,y2:ey,stroke:"#DCF55A","stroke-width":2.2,"stroke-linecap":"round"});
+        el(guide,"path",{d:`M${ex+ux*5} ${ey+uy*5} L${ex-uy*4-ux*2} ${ey+ux*4-uy*2} L${ex+uy*4-ux*2} ${ey-ux*4-uy*2} Z`,fill:"#DCF55A"});
       }
-      el(sv,"circle",{cx:ax,cy:ay,r:6,fill:"#151514",stroke:"rgba(255,255,255,.8)","stroke-width":1.6});
-      txt(sv,ax-11,ay-9,"只看手表",{"text-anchor":"end",fill:"rgba(255,255,255,.7)","font-size":9.5});
+      el(guide,"circle",{cx:ax,cy:ay,r:6,fill:"#151514",stroke:"rgba(255,255,255,.8)","stroke-width":1.6});
+      txt(guide,ax+10,ay-8,"只看手表",{fill:"rgba(255,255,255,.7)","font-size":9.5});
       if(em>.6){
         const op=Math.min(1,(em-.6)/.4), lab=`唾液：压力 +${DS} · 恢复 ${DR}`;
-        const g=el(sv,"g",{opacity:op}), cx=ax-12, cy=ay+28;
+        const g=el(sv,"g",{opacity:op}), cx=px(cb[0])-24, cy=py(cb[1])+4;
         const t=txt(g,cx,cy,lab,{"text-anchor":"end","font-size":10,"font-weight":700,fill:"#101011"});
         const w=t.getComputedTextLength()||lab.length*8;
         const r=el(g,"rect",{x:cx-w-8,y:cy-12.5,width:w+16,height:18,rx:9,fill:"#DCF55A"}); g.insertBefore(r,t);
       }
     }
-    /* 当前点 + 落地涟漪 */
+    /* 补充结果淡入；不再播放预测线或扩散光圈。 */
     const cx=px(cur[0]), cy=py(cur[1]);
-    if(ripple<1) el(sv,"circle",{cx,cy,r:8+ripple*20,fill:"none",stroke:q==="br"?"#FFB85C":"#DCF55A","stroke-width":2,opacity:1-ripple});
+    if(withS && em>.7 && d===29 && qc==="br"){
+      const ax=px(cb[0]), ay=py(cb[1]), tx=px(Math.min(78,cb[0]+7)), ty=py(Math.max(28,cb[1]-13));
+      const L=Math.hypot(tx-ax,ty-ay), ux=(tx-ax)/L, uy=(ty-ay)/L;
+      const g=el(sv,"g",{opacity:(em-.7)/.3});
+      el(g,"line",{x1:ax+ux*13,y1:ay+uy*13,x2:tx-ux*9,y2:ty-uy*9,stroke:"#FFB85C","stroke-width":1.8,"stroke-dasharray":"4 4","stroke-linecap":"round"});
+      el(g,"circle",{cx:tx,cy:ty,r:6.5,fill:"none",stroke:"#FFB85C","stroke-width":1.6,"stroke-dasharray":"2.5 2.5"});
+      txt(g,tx-12,ty-2,"再这样下去",{"text-anchor":"end","font-size":9.5,"font-weight":700,fill:"#FFD9A0"});
+      txt(g,tx-12,ty+10,"恢复会越来越跟不上",{"text-anchor":"end","font-size":9,fill:"rgba(255,217,160,.75)"});
+    }
     el(sv,"circle",{cx,cy,r:11,fill:"rgba(220,245,90,.18)"});
     el(sv,"circle",{cx,cy,r:6.5,fill:"#DCF55A",stroke:"#151514","stroke-width":2});
     const left=cur[0]<62;
-    const lbl=!withS?md(d):em>.5?"加上唾液":em<.02?"只看手表":"";
-    if(lbl) txt(sv,cx+(left?12:-12),cy+(withS&&em>.5?16:3.5),lbl,{"text-anchor":left?"start":"end","font-size":9.5,"font-weight":700,fill:"#E7FA9A"});
+    const lbl=!withS?md(d):em<.02?"只看手表":"";
+    const up=withS && lbl;  /* 最后一天的"只看手表"放到点的右上方,避开轨迹 */
+    if(lbl) txt(sv,cx+(up?10:left?12:-12),cy+(up?-8:3.5),lbl,{"text-anchor":up||left?"start":"end","font-size":9.5,"font-weight":700,fill:"#E7FA9A"});
     document.getElementById("qDate").textContent=md(d);
     S("s_quad", !withS ? `${md(d)}，你在<b>「${Q[q]}」</b>。拖一拖日期，看看这个月是怎么走过来的。`
       : em<.5 ? `只看手表，你的负荷好像还<b>可控</b>。切到「加上唾液」再看看。`
-      : qh!==q ? `只看手表，你的负荷好像还可控；加上唾液才看清，<b>身体其实已经在「${Q[q]}」</b>。这段时间先减减负，别再给自己加码。`
+      : qh!==q ? (d===29 ? `只看手表，负荷好像还可控；加上唾液才看清，身体已经在「${Q[q]}」，<b>而且还在往下滑</b>。现在减负，比等扛不住了再停容易得多。`
+                          : `只看手表，你的负荷好像还可控；加上唾液才看清，<b>身体其实已经在「${Q[q]}」</b>。`)
                : `加上唾液，你在<b>「${Q[q]}」</b>。`);
     modeEl.classList.toggle("on",mT>.5);
     [...modeEl.querySelectorAll("button")].forEach(b=>b.classList.toggle("cur",(+b.dataset.m)===(mT>.5?1:0)));
   }
-  function tick(ts){ const dt=Math.min(50,(ts-last)||16); last=ts; let busy=false;
-    const diff=target-pos; if(Math.abs(diff)>.02){ pos+=diff*(1-Math.exp(-dt/110)); busy=true; } else pos=target;
-    if(m!==mT){ const was=m<1; m=mT>m?Math.min(mT,m+dt/850):Math.max(mT,m-dt/600); busy=true; if(was&&m===1) ripple=0; }
-    if(ripple<1){ ripple=Math.min(1,ripple+dt/700); busy=true; }
-    draw(); raf=busy?requestAnimationFrame(tick):null; }
-  const kick=()=>{ if(!raf){ last=performance.now(); raf=requestAnimationFrame(tick);} };
-  const setMode=v=>{ clearTimeout(revealTimer); mT=v; if(pos<SAMPLE-.5){ target=29; } kick(); };
-  modeEl.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setMode(+b.dataset.m); });
+  function tick(ts){
+    const dt=Math.min(50,(ts-last)||16); last=ts;
+    m=mT>m?Math.min(mT,m+dt/400):Math.max(mT,m-dt/400);
+    draw(); raf=m!==mT?requestAnimationFrame(tick):null;
+  }
+  const kick=()=>{
+    if(matchMedia("(prefers-reduced-motion:reduce)").matches){if(raf) cancelAnimationFrame(raf);raf=null;m=mT;draw();return;}
+    if(!raf){last=performance.now();raf=requestAnimationFrame(tick);}
+  };
+  const setMode=v=>{if(pos<SAMPLE-.5){pos=29;sl.value=29;}mT=v;kick();};
+  modeEl.addEventListener("click",e=>{const b=e.target.closest("button");if(b)setMode(+b.dataset.m);});
   const sl=document.getElementById("qSlider");
   ["pointerdown","pointerup","touchstart"].forEach(ev=>sl.addEventListener(ev,e=>e.stopPropagation()));
-  sl.addEventListener("input",e=>{ target=+e.target.value; kick(); });
-  /* 进入这一页:先停在只看手表,再滑进加上唾液 */
-  window.quadReveal=()=>{ clearTimeout(revealTimer); pos=target=29; sl.value=29; m=mT=0; ripple=1; draw();
-    revealTimer=setTimeout(()=>{ mT=1; kick(); },850); };
-  draw();
-})();
-
-/* ---------- 唾液信号面板 ---------- */
-(function(){
-  const box=document.getElementById("bmList");
-  const G=[
-    {g:"退不下来",sub:"压力激素",c:"#FFB85C",rows:[
-      {n:"醒来后的压力激素",t:"正常醒后半小时会明显升高，帮你清醒过来",v:19,lo:50,hi:75,min:0,max:100,st:"升得不够",val:"只升了 19%",d:"早上身体没真正醒过来，难怪<b>周一最难起，一到周末就想往后睡</b>。"},
-      {n:"白天的压力激素",t:"正常从早到晚一路往下降",v:75,lo:85,hi:100,min:40,max:100,st:"降得太慢",val:"降了 75%",d:"压力激素白天降得太慢，所以你<b>下午和晚上总是绷着</b>。"},
-      {n:"睡前的压力激素",t:"正常睡前应该降到很低",v:1.3,lo:.2,hi:.6,min:0,max:2,st:"偏高",val:"正常的 2 倍多",d:"到了睡前，身体还在戒备，所以<b>躺下要半个多小时才睡着</b>。"}]},
-    {g:"补不回来",sub:"修复与免疫",c:"#FFB85C",rows:[
-      {n:"修复激素",t:"帮身体修复、扛住压力的激素",v:.19,lo:.25,hi:.6,min:0,max:.8,st:"偏低",val:"比正常低",d:"身体用来扛压的底子在变薄，<b>睡觉时也越来越难放松</b>。"},
-      {n:"抵抗力",t:"口腔里的抗体，挡住感冒的第一道防线",v:62,lo:70,hi:300,min:0,max:360,st:"偏低",val:"比正常低",d:"抵抗力有点弱了，压力大的时候常这样。<b>这阵子更容易感冒</b>，多留意。"}]},
-    {g:"还守得住",sub:"生物钟",c:"#DCF55A",rows:[
-      {n:"生物钟",t:"身体几点开始犯困",v:22.08,lo:21.5,hi:23.5,min:20,max:26,st:"准时",val:"晚上 10 点",d:"身体每晚 10 点就开始犯困、零点前后就准备好睡了，<b>入睡难不怪生物钟</b>。"}]},
-  ];
-  let open=null;
-  const pct=(v,r)=>Math.max(0,Math.min(100,(v-r.min)/(r.max-r.min)*100));
-  function draw(){
-    box.innerHTML=G.map((g,gi)=>`<div class="bmg" style="color:${g.c}"><i style="background:${g.c}"></i>${g.g}<span>· ${g.sub}</span></div>`+
-      g.rows.map((r,ri)=>{ const k=gi+"-"+ri, bad=g.c!=="#DCF55A";
-        return `<button class="bmrow" data-k="${k}"><span class="nm"><b>${r.n}</b><small>${r.t}</small></span>
-          <span class="bar"><i class="ref" style="left:${pct(r.lo,r)}%;width:${pct(r.hi,r)-pct(r.lo,r)}%"></i>
-            <i class="dot" style="left:${pct(r.v,r)}%;background:${g.c}"></i></span>
-          <span class="st" style="color:${bad?"#FFD9A0":"#E7FA9A"}">${r.st}<small>${r.val}</small></span></button>
-          <div class="bmd ${open===k?"on":""}">${r.d}</div>`; }).join("")).join("")+
-      `<div style="font-size:9px;color:rgba(255,255,255,.38);margin-top:8px">灰色是大多数人的正常范围</div>`;
-  }
-  box.addEventListener("click",e=>{ const b=e.target.closest(".bmrow"); if(!b) return; open=open===b.dataset.k?null:b.dataset.k; draw(); });
+  sl.addEventListener("input",e=>{pos=+e.target.value;draw();});
+  window.quadStop=()=>{if(raf)cancelAnimationFrame(raf);raf=null;};
+  window.quadReveal=()=>{window.quadStop();pos=29;sl.value=29;m=mT=0;draw();};
   draw();
 })();
 
@@ -361,20 +412,22 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
   const sv=document.getElementById("c_cort");
   const X0=36, W=283, span=18, x=h=>X0+(h-6)/span*W;
   const hot=[[14,18],[21,24]];
-  hot.forEach(([a,b])=>el(sv,"rect",{x:x(a),y:20,width:x(b)-x(a),height:252,fill:"rgba(255,184,92,.08)"}));
+  const A=(e,cls,d)=>{ e.classList.add(cls); e.style.setProperty("--d",d+"s"); return e; };
+  hot.forEach(([a,b])=>A(el(sv,"rect",{x:x(a),y:20,width:x(b)-x(a),height:252,fill:"rgba(255,184,92,.08)"}),"a-fade",3.6));
   txt(sv,0,10,"皮质醇 · nmol/L",{fill:"rgba(255,184,92,.95)","font-weight":600});
   const TY=24, TH=118, cy=v=>TY+TH-v/9*TH;
   [0,3,6,9].forEach(t=>{ el(sv,"line",{x1:X0,y1:cy(t),x2:X0+W,y2:cy(t),stroke:"rgba(255,255,255,.07)","stroke-width":1}); txt(sv,X0-6,cy(t)+3,t,{"text-anchor":"end"}); });
   const T=[7.33,7.83,11.5,15,23.5], lo=[3.2,5.4,1.6,.7,.2], hi=[5.4,8.4,3.2,1.4,.6], you=[4.3,5.1,2.7,1.9,1.3];
-  el(sv,"polygon",{points:T.map((t,i)=>`${x(t)},${cy(hi[i])}`).join(" ")+" "+T.slice().reverse().map((t,j)=>`${x(t)},${cy(lo[T.length-1-j])}`).join(" "),fill:"rgba(255,255,255,.14)"});
-  el(sv,"polyline",{points:T.map((t,i)=>`${x(t)},${cy(you[i])}`).join(" "),fill:"none",stroke:"#FFB85C","stroke-width":2.2,"stroke-linejoin":"round"});
-  T.forEach((t,i)=>el(sv,"circle",{cx:x(t),cy:cy(you[i]),r:4,fill:"#FFB85C",stroke:"#151514","stroke-width":2}));
+  A(el(sv,"polygon",{points:T.map((t,i)=>`${x(t)},${cy(hi[i])}`).join(" ")+" "+T.slice().reverse().map((t,j)=>`${x(t)},${cy(lo[T.length-1-j])}`).join(" "),fill:"rgba(255,255,255,.14)"}),"a-fade",.4);
+  const yl=A(el(sv,"polyline",{points:T.map((t,i)=>`${x(t)},${cy(you[i])}`).join(" "),fill:"none",stroke:"#FFB85C","stroke-width":2.2,"stroke-linejoin":"round"}),"a-draw",.6);
+  yl.style.setProperty("--len",Math.ceil(yl.getTotalLength()||400));
+  T.forEach((t,i)=>A(el(sv,"circle",{cx:x(t),cy:cy(you[i]),r:4,fill:"#FFB85C",stroke:"#151514","stroke-width":2}),"a-pop",.6+(x(t)-X0)/W*1.8));
   legend(sv,[["你 · 10/16","#FFB85C"],["正常范围","rgba(255,255,255,.3)"]]);
   txt(sv,0,164,"紧绷 · 30 天平均分钟",{fill:"rgba(255,255,255,.6)","font-weight":600});
   const BY=172, BH=96, mins=[2,3,4,6,5,4,3,8,16,20,18,12,7,5,9,18,22,14], bw=W/18-3, by=v=>BY+BH-v/24*BH;
   [0,10,20].forEach(t=>txt(sv,X0-6,by(t)+3,t,{"text-anchor":"end"}));
   mins.forEach((v,k)=>{ const h=6+k, isHot=hot.some(([a,b])=>h>=a&&h<b);
-    el(sv,"rect",{x:x(h)+1.5,y:by(v),width:bw,height:by(0)-by(v),rx:2.4,fill:isHot?"#FFB85C":"rgba(255,255,255,.3)"}); });
+    A(el(sv,"rect",{x:x(h)+1.5,y:by(v),width:bw,height:by(0)-by(v),rx:2.4,fill:isHot?"#FFB85C":"rgba(255,255,255,.3)"}),"a-grow",2.6+k*.055); });
   [6,12,18,24].forEach(h=>txt(sv,x(h),300,String(h%24).padStart(2,"0")+":00",{"text-anchor":h===6?"start":(h===24?"end":"middle")}));
 })();
 
@@ -389,29 +442,85 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
   const x=i=>36+i*(283/29);
   el(sv,"rect",{x:36,y:y(50),width:283,height:y(42)-y(50),fill:"rgba(255,255,255,.08)"});
   const k=slopePerWeek(hrv)/7, my=avg(hrv);
-  el(sv,"line",{x1:x(0),y1:y(my-k*14.5),x2:x(29),y2:y(my+k*14.5),stroke:"rgba(255,255,255,.7)","stroke-width":1.2,"stroke-dasharray":"4 4"});
-  el(sv,"polyline",{points:hrv.map((v,i)=>`${x(i)},${y(v)}`).join(" "),fill:"none",stroke:"rgba(122,203,255,.45)","stroke-width":1.2});
-  hrv.forEach((v,i)=>el(sv,"circle",{cx:x(i),cy:y(v),r:2.8,fill:"#7ACBFF",stroke:"#151514","stroke-width":1.3}));
+  const A=(e,cls,d)=>{ e.classList.add(cls); e.style.setProperty("--d",d+"s"); return e; };
+  A(el(sv,"line",{x1:x(0),y1:y(my-k*14.5),x2:x(29),y2:y(my+k*14.5),stroke:"rgba(255,255,255,.7)","stroke-width":1.2,"stroke-dasharray":"4 4"}),"a-fade",2.5);
+  const hl=A(el(sv,"polyline",{points:hrv.map((v,i)=>`${x(i)},${y(v)}`).join(" "),fill:"none",stroke:"rgba(122,203,255,.45)","stroke-width":1.2}),"a-draw",.5);
+  hl.style.setProperty("--len",Math.ceil(hl.getTotalLength()||600));
+  hrv.forEach((v,i)=>A(el(sv,"circle",{cx:x(i),cy:y(v),r:2.8,fill:"#7ACBFF",stroke:"#151514","stroke-width":1.3}),"a-pop",.5+i*.062));
+  /* 唾液指标:参考范围先展开,检测点从范围中间滑到实际位置 */
+  sv.closest(".pad").querySelectorAll(".recovery-markers .bmrow").forEach((r,j)=>{
+    const ref=r.querySelector(".ref"), dot=r.querySelector(".dot"), d=3+j*.45;
+    ref.style.setProperty("--d",d+"s");
+    dot.style.setProperty("--from",(parseFloat(ref.style.left)+parseFloat(ref.style.width)/2)+"%"); dot.style.setProperty("--d",(d+.4)+"s");
+    r.querySelector(".st").style.setProperty("--d",(d+1.2)+"s"); });
   [[0,"start"],[14,"middle"],[29,"end"]].forEach(([i,a])=>txt(sv,x(i),194,md(i),{"text-anchor":a}));
 })();
 
-/* ---------- 生物钟:30 晚作息 + 醒着躺 + 身体准备好入睡 ---------- */
+/* ---------- 睡眠:分 4 步讲解 —— 该困的时候,皮质醇还在入睡范围上面 ---------- */
 (function(){
-  const sv=document.getElementById("c_clock"), r=rng(13);
-  const X0=36, W=283, T0=24, PH=244, span=13, bw=W/N-3, bx=i=>X0+i*(W/N), y=h=>T0+h/span*PH;
-  const clock=h=>{ const t=(22+h)%24, hh=Math.floor(t), mm=Math.round((t-hh)*60); return String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0"); };
-  txt(sv,0,10,"上床 → 睡着 → 醒来",{fill:"rgba(255,255,255,.6)","font-weight":600});
-  [2,6,10].forEach(h=>{ el(sv,"line",{x1:X0,y1:y(h),x2:X0+W,y2:y(h),stroke:"rgba(255,255,255,.07)","stroke-width":1}); txt(sv,X0-6,y(h)+3,clock(h),{"text-anchor":"end"}); });
-  for(let i=0;i<N;i++){ const wk=isWeekendNight(i);
-    let onset=2.78+(r()-.5)*.5, dur=6.5+(r()-.5)*.8, lat=.63+(r()-.5)*.25;
-    if(wk){ onset+=1.8+(r()-.5)*.4; dur=7.9+(r()-.5)*.5; }
-    el(sv,"rect",{x:bx(i),y:y(onset-lat),width:bw,height:lat/span*PH,rx:2.4,fill:"#FFB85C"});
-    el(sv,"rect",{x:bx(i),y:y(onset),width:bw,height:dur/span*PH,rx:2.4,fill:wk?"#DCF55A":"rgba(255,255,255,.6)"}); }
-  const ready=2.08;
-  el(sv,"line",{x1:X0,y1:y(ready),x2:X0+W,y2:y(ready),stroke:"#B79BFF","stroke-width":1.8});
-  txt(sv,X0+2,y(ready)-6,"身体准备好入睡 00:05",{"font-size":9.5,"font-weight":700,fill:"#D9C9FF"});
-  [[0,"start"],[14,"middle"],[29,"end"]].forEach(([i,a])=>txt(sv,a==="start"?X0:(a==="end"?X0+W:bx(i)+bw/2),T0+PH+20,md(i),{"text-anchor":a}));
-  legend(sv,[["醒着躺","#FFB85C"],["工作日","rgba(255,255,255,.6)"],["周末","#DCF55A"]]);
+  const sv=document.getElementById("c_clock");
+  const X0=36, W=283, H0=21, H1=25, x=h=>X0+(h-H0)/(H1-H0)*W;
+  const CLOCK=23.5, ASLEEP=24.5, YOU=1.3, LO=.2, HI=.6;
+  const TY=30, TH=122, cy=v=>TY+TH-v/2*TH, AX=TY+TH+18, GY=AX+16;
+  const len=(a,b,c,d)=>Math.hypot(c-a,d-b).toFixed(1);
+  /* 底图:始终可见 */
+  const axisTitle={"text-anchor":"start","font-size":9,"font-weight":600,fill:"rgba(255,184,92,.95)"};
+  txt(sv,0,10,"压力激素（皮质醇）",axisTitle);
+  [0,1,2].forEach(t=>el(sv,"line",{x1:X0,y1:cy(t),x2:X0+W,y2:cy(t),stroke:"rgba(255,255,255,.07)","stroke-width":1}));
+  txt(sv,X0-6,cy(2)+4,"高",{"text-anchor":"end"}); txt(sv,X0-6,cy(0),"低",{"text-anchor":"end"});
+  txt(sv,X0,AX,"21:00",{"text-anchor":"start"});
+  txt(sv,X0+W,GY+3,"时间",{...axisTitle,"text-anchor":"end"});
+  const G=k=>el(sv,"g",{class:"sg","data-s":k});
+  /* ① 生物钟 */
+  const g1=G(1);
+  el(g1,"line",{class:"draw",style:`--len:${len(0,TY-10,0,cy(0))}`,x1:x(CLOCK),y1:TY-10,x2:x(CLOCK),y2:cy(0),stroke:"#DCF55A","stroke-width":1.4,"stroke-dasharray":"3 3"});
+  txt(g1,x(CLOCK),TY-14,"生物钟 · 该困了",{"text-anchor":"middle","font-size":9.5,"font-weight":700,fill:"#E7FA9A"});
+  txt(g1,x(CLOCK),AX,"23:30",{"text-anchor":"middle","font-weight":700,fill:"#E7FA9A"});
+  /* ② 入睡范围 */
+  const g2=G(2);
+  el(g2,"rect",{x:X0,y:cy(HI),width:W,height:cy(LO)-cy(HI),fill:"rgba(220,245,90,.3)"});
+  txt(g2,X0+8,cy(HI)+12,"能入睡的水平",{"font-size":9.5,"font-weight":700,fill:"#E7FA9A"});
+  /* ③ 你的检测 */
+  const g3=G(3), at21=1.9+(YOU-1.9)*(21-15)/(CLOCK-15);
+  el(g3,"line",{class:"draw",style:`--len:${len(x(H0),cy(at21),x(CLOCK),cy(YOU))}`,x1:x(H0),y1:cy(at21),x2:x(CLOCK),y2:cy(YOU),stroke:"rgba(255,184,92,.6)","stroke-width":2,"stroke-linecap":"round"});
+  el(g3,"circle",{class:"pop",cx:x(CLOCK),cy:cy(YOU),r:14,fill:"rgba(255,184,92,.18)"});
+  el(g3,"circle",{class:"pop",cx:x(CLOCK),cy:cy(YOU),r:6,fill:"#FFB85C",stroke:"#151514","stroke-width":2});
+  txt(g3,x(CLOCK)-4,cy(YOU)-16,"你 · 睡前",{"text-anchor":"end","font-size":10,"font-weight":700,fill:"#FFD9A0"});
+  /* ④ 结果 */
+  const g5=G(4);
+  txt(g5,x(ASLEEP),AX,"00:30",{"text-anchor":"middle","font-weight":700,fill:"rgba(255,255,255,.85)"});
+  el(g5,"line",{class:"draw",style:`--len:${len(x(CLOCK),0,x(ASLEEP)-7,0)}`,x1:x(CLOCK),y1:GY,x2:x(ASLEEP)-7,y2:GY,stroke:"rgba(255,255,255,.55)","stroke-width":1.2});
+  el(g5,"path",{d:`M${x(ASLEEP)-11} ${GY-4} L${x(ASLEEP)-5} ${GY} L${x(ASLEEP)-11} ${GY+4}`,fill:"none",stroke:"rgba(255,255,255,.55)","stroke-width":1.2});
+  el(g5,"circle",{cx:x(ASLEEP),cy:GY,r:3.5,fill:"rgba(255,255,255,.8)"});
+  txt(g5,x(CLOCK)-8,GY+3,"多醒着 1 小时才睡着",{"text-anchor":"end",fill:"rgba(255,255,255,.75)","font-weight":600});
+
+  const CAPS=[
+    ["生物钟","根据你近 30 天的入睡时间推算，身体大约 23:30 就开始犯困。"],
+    ["入睡水平","想顺利睡着，压力激素（皮质醇）得先降到能入睡的水平。"],
+    ["你的检测","你睡前的压力激素还没降到能入睡的水平，身体还绷着，没准备好休息。"],
+    ["结果","所以到点了也睡不着，平均要到 00:30 才睡着，多醒着 1 小时。"]];
+  const groups=[...sv.querySelectorAll(".sg")], cap=document.getElementById("sleepCap");
+  const dotsEl=document.getElementById("sleepDots"), replay=document.getElementById("sleepReplay");
+  const dots=CAPS.map((c,i)=>{ const b=document.createElement("button"); b.textContent=i+1; b.setAttribute("aria-label",`第 ${i+1} 步：${c[0]}`); dotsEl.appendChild(b); return b; });
+  let timers=[];
+  function show(n){
+    sv.dataset.step=n;
+    groups.forEach(g=>{ const k=+g.dataset.s; g.classList.toggle("on",k<=n); g.classList.toggle("cur",k===n); });
+    dots.forEach((d,i)=>{ d.className=i+1===n?"cur":(i+1<n?"done":""); });
+    cap.innerHTML=n?`<b>${CAPS[n-1][0]}</b>${CAPS[n-1][1]}`:"&nbsp;";
+    replay.classList.toggle("show",n===CAPS.length);
+  }
+  function stop(){ timers.forEach(clearTimeout); timers=[]; }
+  function play(){
+    stop();
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches){ show(CAPS.length); return; }
+    show(0);
+    CAPS.forEach((c,i)=>timers.push(setTimeout(()=>show(i+1),700+i*3200)));
+  }
+  dots.forEach((d,i)=>d.addEventListener("click",()=>{ stop(); show(i+1); }));
+  replay.addEventListener("click",play);
+  show(CAPS.length);
+  window.sleepPlay=play; window.sleepStop=stop;
 })();
 
 /* ---------- 下一步:现在 → 目标 ---------- */
@@ -443,6 +552,8 @@ for(let i=0;i<N;i++) hrv.push(47.2-i*.25+(r3()-.5)*3.4-(isMidweek(i)?2.2:0));
   let cur=0;
   function go(i){ cur=Math.max(0,Math.min(P-1,i));
     if(cur===0&&window.quadReveal) window.quadReveal();
+    else if(window.quadStop) window.quadStop();
+    if(window.sleepPlay){ if(pages[cur].querySelector("#c_clock")) window.sleepPlay(); else window.sleepStop(); }
     deck.style.transform=`translateX(${-cur*100}%)`;
     pages.forEach((p,k)=>p.classList.toggle("on",k===cur));
     [...bars.children].forEach((b,k)=>{ b.className=k<cur?"done":(k===cur?"cur":""); });

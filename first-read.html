@@ -35,11 +35,16 @@ body{font-family:var(--sans);background:#0a0a0c;color:var(--ink);-webkit-font-sm
 .page .fog{margin-top:18px;opacity:0;transform:translateY(14px);transition:opacity .5s .12s,transform .6s .12s cubic-bezier(.3,.9,.3,1)}
 .page.on .fog{opacity:1;transform:none}
 
-.cover{justify-content:center}
+.cover{justify-content:center;--component-gap:12px;overflow-y:auto}
 .cover .k{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--ink3)}
-.cover h1{font-size:40px;font-weight:650;line-height:1.2;margin:14px 0 14px}
-.cover h1 .hl{box-shadow:inset 0 -14px 0 var(--lime)}
-.cover p{font-size:15px;line-height:1.7;color:var(--ink2)}
+.cover h1{font-size:clamp(23px,7.3vw,30px);font-weight:650;line-height:1.6;margin:var(--component-gap) 0}
+.cover h1 .title-line{display:block}
+.cover h1 .title-group{display:block;margin-top:var(--component-gap)}
+.cover h1 .hl{box-shadow:inset 0 -9px 0 var(--lime);white-space:nowrap}
+.cover p{font-size:15px;line-height:1.8;color:var(--ink2)}
+.cover p .copy-part{display:block;text-wrap:balance}
+.cover p .copy-part+.copy-part{margin-top:var(--component-gap)}
+@media (max-height:640px){.cover{justify-content:flex-start}}
 
 /* 底部导航 */
 #nav{position:absolute;left:22px;right:22px;bottom:30px;display:flex;gap:12px;align-items:center;z-index:5}
@@ -142,8 +147,8 @@ svg text{font-family:var(--sans)}
 
     <section class="page cover">
       <div class="k">下一步</div>
-      <h1>你累，<br>手表看到了。<br>为什么累，<span class="hl">要看唾液</span></h1>
-      <p>压力激素有没有按时退下去、身体修复得怎么样、生物钟准不准，这些手表看不到。一天五管唾液，就能看清。</p>
+      <h1><span class="title-line">不止看到表面的变化，</span><span class="title-line">加入生物指标，</span><span class="title-line">带你深度了解<span class="hl">身体状态。</span></span></h1>
+      <p><span class="copy-part">之前的硬件报告，已经帮你发现了睡眠和精力上的波动。</span><span class="copy-part">接下来的检测会加入生物指标，结合这些线索进行联合分析，帮你更准确地理解当下的健康状态。</span></p>
     </section>
 
   </div>
