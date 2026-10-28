@@ -152,7 +152,7 @@ function neonBar(pct){
          box-shadow:0 0 10px rgba(214,255,60,.8);transition:width .12s linear"></div></div>`;
 }
 function textSphere(size=200,count=46,id=''){
-  const letters='AIRA'; let s=`<div ${id?`id="${id}"`:''} style="position:relative;width:${size}px;height:${size}px;margin:0 auto">`;
+  const letters='LHAB'; let s=`<div ${id?`id="${id}"`:''} style="position:relative;width:${size}px;height:${size}px;margin:0 auto">`;
   s+=`<div style="position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle,rgba(220,245,90,.35),transparent 70%);filter:blur(10px)"></div>`;
   let seed=7;
   const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
@@ -307,8 +307,10 @@ function vWelcome(){
   return `<div class="view"><div class="fogscreen warm"></div>
   <div style="position:relative;display:flex;flex-direction:column;height:100%;padding:0 22px;
        padding-top:max(20px, env(safe-area-inset-top));padding-bottom:max(16px, env(safe-area-inset-bottom))">
-    <div class="row" style="justify-content:space-between;padding-top:4px">
-      <span style="font-size:12px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,.9)">A I R A</span>
+    <div class="row" style="justify-content:space-between;align-items:flex-start;padding-top:4px">
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.9)">L-Hab</div>
+        <div style="font-size:9.5px;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,.55);margin-top:3px">live healthier, age better</div></div>
       <span style="font-size:10px;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,.75);
             padding:5px 9px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14)">抢先体验</span></div>
     <div style="flex:1 0 10px"></div>
